@@ -1,0 +1,60 @@
+.DS_Store
+Thumbs.db
+
+.cursor/
+
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*~
+
+# --- Env / secrets locaux ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.*
+secrets.*
+application-local.yaml
+application-local.yml
+application-local.properties
+
+# --- Java / Maven ---
+**/target/
+**/out/
+**/build/
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Node / Angular (préparé pour plus tard) ---
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+npm-debug.log*
+yarn-error.log*
+
+# --- Docker / local overrides ---
+docker-compose.override.yml
+
+# --- Artefacts générés / téléchargés ---
+backend.zip
+*.zip
+!docs/**/*.zip
+
+# --- Misc ---
+.output/
+*.bak
+*.tmp
