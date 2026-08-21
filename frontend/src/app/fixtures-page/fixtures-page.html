@@ -1,20 +1,22 @@
 <h2>Matchs à venir</h2>
 
-@if (loading) {
+@if (loading()) {
   <p class="loading">Chargement...</p>
-} @else if (errorMessage) {
-  <p class="error">{{ errorMessage }}</p>
-} @else if (matches.length === 0) {
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else if (matches().length === 0) {
   <p>Aucun match à venir.</p>
 } @else {
   <ul class="match-list">
-    @for (match of matches; track match.id) {
+    @for (match of matches(); track match.id) {
       <li>
-        <span class="matchday">J{{ match.matchday }}</span>
-        <span class="teams">
-          {{ match.homeTeam.shortName }} - {{ match.awayTeam.shortName }}
-        </span>
-        <span class="date">{{ match.kickoffAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        <a [routerLink]="['/matches', match.id]">
+          <span class="matchday">J{{ match.matchday }}</span>
+          <span class="teams">
+            {{ match.homeTeam.shortName }} - {{ match.awayTeam.shortName }}
+          </span>
+          <span class="date">{{ match.kickoffAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </a>
       </li>
     }
   </ul>

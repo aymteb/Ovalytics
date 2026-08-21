@@ -7,7 +7,7 @@ import { Match, StandingRow, Team } from './models';
   providedIn: 'root',
 })
 export class CompetitionApi {
-  private readonly baseUrl = 'http://localhost:8080/api/competitions/TOP14';
+  private readonly baseUrl = '/api/competitions/TOP14';
 
   constructor(private http: HttpClient) {}
 
@@ -22,6 +22,10 @@ export class CompetitionApi {
       });
     }
     return this.http.get<Match[]>(`${this.baseUrl}/matches`);
+  }
+
+  getMatch(id: number): Observable<Match> {
+    return this.http.get<Match>(`${this.baseUrl}/matches/${id}`);
   }
 
   getStandings(): Observable<StandingRow[]> {

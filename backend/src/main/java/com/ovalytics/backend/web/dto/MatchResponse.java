@@ -10,5 +10,6 @@ public record MatchResponse(
 		TeamResponse homeTeam,
 		TeamResponse awayTeam,
 		Integer homeScore,
-		Integer awayScore) {
+		Integer awayScore,
+		String analysis) {
 }

@@ -53,6 +53,15 @@ public class CompetitionQueryService {
 		return matches.stream().map(this::toMatchResponse).toList();
 	}
 
+	public MatchResponse getMatch(String competitionCode, Long matchId) {
+		ensureCompetitionExists(competitionCode);
+		RugbyMatch match = rugbyMatchRepository
+				.findByCompetitionCodeAndId(competitionCode, matchId)
+				.orElseThrow(() -> new ResponseStatusException(
+						HttpStatus.NOT_FOUND, "Match not found: " + matchId));
+		return toMatchResponse(match);
+	}
+
 	public List<StandingRowResponse> standings(String competitionCode) {
 		Competition competition = getCompetition(competitionCode);
 		int defensiveBonusLimit = competition.getDefensiveBonusLimit();
@@ -153,7 +162,8 @@ public class CompetitionQueryService {
 				toTeamResponse(match.getHomeTeam()),
 				toTeamResponse(match.getAwayTeam()),
 				match.getHomeScore(),
-				match.getAwayScore());
+				match.getAwayScore(),
+				match.getAnalysis());
 	}
 
 	private static final class MutableStanding {

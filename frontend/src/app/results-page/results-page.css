@@ -7,16 +7,25 @@
 }
 
 .match-list li {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--bordure);
-  align-items: center;
 }
 
 .match-list li:last-child {
   border-bottom: none;
+}
+
+.match-list a {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.85rem 1rem;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.match-list a:hover {
+  background: #fff5f5;
 }
 
 .matchday {

@@ -36,6 +36,13 @@ public class CompetitionController {
 		return competitionQueryService.listMatches(code, status);
 	}
 
+	@GetMapping("/matches/{matchId}")
+	public MatchResponse match(
+			@PathVariable String code,
+			@PathVariable Long matchId) {
+		return competitionQueryService.getMatch(code, matchId);
+	}
+
 	@GetMapping("/standings")
 	public List<StandingRowResponse> standings(@PathVariable String code) {
 		return competitionQueryService.standings(code);

@@ -14,6 +14,7 @@ export interface Match {
   awayTeam: Team;
   homeScore: number | null;
   awayScore: number | null;
+  analysis: string | null;
 }
 
 export interface StandingRow {

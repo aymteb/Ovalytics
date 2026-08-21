@@ -1,9 +1,9 @@
 <h2>Classement</h2>
 
-@if (loading) {
+@if (loading()) {
   <p class="loading">Chargement...</p>
-} @else if (errorMessage) {
-  <p class="error">{{ errorMessage }}</p>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
 } @else {
   <div class="table-scroll">
     <table>
@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (row of rows; track row.teamId) {
+        @for (row of rows(); track row.teamId) {
           <tr>
             <td>{{ row.position }}</td>
             <td>{{ row.teamShortName }}</td>

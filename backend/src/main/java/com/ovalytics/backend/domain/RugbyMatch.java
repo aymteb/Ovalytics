@@ -48,6 +48,9 @@ public class RugbyMatch {
 
 	private Integer awayScore;
 
+	@Column(columnDefinition = "TEXT")
+	private String analysis;
+
 	protected RugbyMatch() {
 	}
 
@@ -104,5 +107,13 @@ public class RugbyMatch {
 
 	public Integer getAwayScore() {
 		return awayScore;
+	}
+
+	public String getAnalysis() {
+		return analysis;
+	}
+
+	public void setAnalysis(String analysis) {
+		this.analysis = analysis;
 	}
 }

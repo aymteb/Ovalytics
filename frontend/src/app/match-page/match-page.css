@@ -1,0 +1,78 @@
+.back {
+  margin: 0 0 1rem;
+}
+
+.back a {
+  color: var(--texte-doux);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back a:hover {
+  color: var(--rouge);
+}
+
+.matchday {
+  margin: 0 0 0.25rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  color: var(--rouge);
+  letter-spacing: 0.04em;
+}
+
+h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  color: var(--texte);
+}
+
+.score {
+  color: var(--rouge);
+}
+
+.versus {
+  color: var(--texte-doux);
+}
+
+.meta {
+  margin: 0.75rem 0 0.25rem;
+  font-weight: 600;
+}
+
+.status {
+  margin: 0;
+  color: var(--texte-doux);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+.cities {
+  margin-top: 1.5rem;
+  color: var(--texte-doux);
+}
+
+.analysis {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--bordure);
+  max-width: 40rem;
+}
+
+.analysis h3 {
+  margin: 0 0 0.75rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--rouge);
+  letter-spacing: 0.04em;
+}
+
+.analysis p {
+  margin: 0;
+  line-height: 1.65;
+}

@@ -1,0 +1,40 @@
+<p class="back">
+  <a routerLink="/fixtures">← Retour</a>
+</p>
+
+@if (loading()) {
+  <p class="loading">Chargement...</p>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else if (match(); as m) {
+  <p class="matchday">Journée {{ m.matchday }}</p>
+  <h2>
+    {{ m.homeTeam.name }}
+    @if (m.status === 'FINISHED') {
+      <span class="score">{{ m.homeScore }} - {{ m.awayScore }}</span>
+    } @else {
+      <span class="versus">–</span>
+    }
+    {{ m.awayTeam.name }}
+  </h2>
+  <p class="meta">
+    {{ m.kickoffAt | date: 'dd/MM/yyyy HH:mm' }}
+  </p>
+  <p class="status">
+    @if (m.status === 'FINISHED') {
+      Terminé
+    } @else {
+      À venir
+    }
+  </p>
+  <p class="cities">
+    {{ m.homeTeam.city }} / {{ m.awayTeam.city }}
+  </p>
+
+  @if (m.analysis) {
+    <section class="analysis">
+      <h3>Analyse</h3>
+      <p>{{ m.analysis }}</p>
+    </section>
+  }
+}
