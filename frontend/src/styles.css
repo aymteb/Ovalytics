@@ -1,0 +1,45 @@
+:root {
+  --rouge: #dc2626;
+  --fond: #fef2f2;
+  --texte: #1a1a1a;
+  --texte-doux: #57534e;
+  --bordure: #fecaca;
+  --surface: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+  color: var(--texte);
+  background: var(--fond);
+  padding: 1.5rem;
+  line-height: 1.5;
+}
+
+h1,
+h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 2rem;
+  color: var(--rouge);
+  margin-bottom: 1rem;
+}
+
+.loading {
+  min-height: 8rem;
+  color: var(--texte-doux);
+}
+
+.error {
+  color: var(--rouge);
+  font-weight: 600;
+}

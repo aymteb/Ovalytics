@@ -1,0 +1,44 @@
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid var(--rouge);
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: var(--rouge);
+  line-height: 1;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+nav a {
+  color: var(--texte);
+  text-decoration: none;
+  font-weight: 600;
+  padding-bottom: 0.15rem;
+  border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+  color: var(--rouge);
+}
+
+nav a.active {
+  color: var(--rouge);
+  border-bottom-color: var(--rouge);
+}
+
+main {
+  max-width: 900px;
+}

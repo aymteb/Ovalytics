@@ -1,0 +1,23 @@
+<h2>Résultats</h2>
+
+@if (loading) {
+  <p class="loading">Chargement...</p>
+} @else if (errorMessage) {
+  <p class="error">{{ errorMessage }}</p>
+} @else if (matches.length === 0) {
+  <p>Aucun resultat.</p>
+} @else {
+  <ul class="match-list">
+    @for (match of matches; track match.id) {
+      <li>
+        <span class="matchday">J{{ match.matchday }}</span>
+        <span class="teams">
+          {{ match.homeTeam.shortName }}
+          {{ match.homeScore }} - {{ match.awayScore }}
+          {{ match.awayTeam.shortName }}
+        </span>
+        <span class="date">{{ match.kickoffAt | date: 'dd/MM/yyyy' }}</span>
+      </li>
+    }
+  </ul>
+}

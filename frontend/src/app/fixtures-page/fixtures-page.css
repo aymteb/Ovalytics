@@ -1,0 +1,38 @@
+.match-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+}
+
+.match-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--bordure);
+  align-items: center;
+}
+
+.match-list li:last-child {
+  border-bottom: none;
+}
+
+.matchday {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  color: var(--rouge);
+  min-width: 2.5rem;
+}
+
+.teams {
+  flex: 1;
+  font-weight: 600;
+  min-width: 10rem;
+}
+
+.date {
+  color: var(--texte-doux);
+  font-size: 0.9rem;
+}

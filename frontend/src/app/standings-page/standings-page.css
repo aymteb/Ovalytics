@@ -1,0 +1,43 @@
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+}
+
+table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--bordure);
+  white-space: nowrap;
+}
+
+th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texte-doux);
+  background: #fff5f5;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td:first-child,
+td:last-child {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.15rem;
+}
+
+td:last-child {
+  color: var(--rouge);
+  font-weight: 400;
+}
