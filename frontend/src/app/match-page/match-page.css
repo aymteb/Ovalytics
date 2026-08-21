@@ -76,3 +76,77 @@ h2 {
   margin: 0;
   line-height: 1.65;
 }
+
+.absences {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--bordure);
+}
+
+.absences h3 {
+  margin: 0 0 1rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--rouge);
+  letter-spacing: 0.04em;
+}
+
+.absence-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .absence-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.absences h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texte-doux);
+}
+
+.absences ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.absences li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--bordure);
+  font-size: 0.95rem;
+}
+
+.absences li:last-child {
+  border-bottom: none;
+}
+
+.absences .name {
+  font-weight: 600;
+}
+
+.absences .type {
+  color: var(--rouge);
+  font-size: 0.85rem;
+}
+
+.absences .note {
+  color: var(--texte-doux);
+  font-size: 0.85rem;
+}
+
+.absences .empty {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: 0.9rem;
+}

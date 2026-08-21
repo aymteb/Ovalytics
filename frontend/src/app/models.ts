@@ -5,6 +5,12 @@ export interface Team {
   city: string;
 }
 
+export interface Absence {
+  playerName: string;
+  type: string;
+  note: string | null;
+}
+
 export interface Match {
   id: number;
   matchday: number;
@@ -15,6 +21,8 @@ export interface Match {
   homeScore: number | null;
   awayScore: number | null;
   analysis: string | null;
+  homeAbsences: Absence[];
+  awayAbsences: Absence[];
 }
 
 export interface StandingRow {

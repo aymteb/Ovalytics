@@ -1,6 +1,7 @@
 package com.ovalytics.backend.web.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record MatchResponse(
 		Long id,
@@ -11,5 +12,7 @@ public record MatchResponse(
 		TeamResponse awayTeam,
 		Integer homeScore,
 		Integer awayScore,
-		String analysis) {
+		String analysis,
+		List<AbsenceResponse> homeAbsences,
+		List<AbsenceResponse> awayAbsences) {
 }

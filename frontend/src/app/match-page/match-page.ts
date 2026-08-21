@@ -39,4 +39,14 @@ export class MatchPage implements OnInit {
       },
     });
   }
+
+  absenceLabel(type: string): string {
+    if (type === 'INJURED') {
+      return 'Blessé';
+    }
+    if (type === 'SUSPENDED') {
+      return 'Suspendu';
+    }
+    return type;
+  }
 }

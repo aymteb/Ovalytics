@@ -10,11 +10,16 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ovalytics.backend.domain.Absence;
+import com.ovalytics.backend.domain.AbsenceType;
 import com.ovalytics.backend.domain.Competition;
 import com.ovalytics.backend.domain.MatchStatus;
+import com.ovalytics.backend.domain.Player;
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.domain.Team;
+import com.ovalytics.backend.repository.AbsenceRepository;
 import com.ovalytics.backend.repository.CompetitionRepository;
+import com.ovalytics.backend.repository.PlayerRepository;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 import com.ovalytics.backend.repository.TeamRepository;
 
@@ -36,14 +41,20 @@ public class Top14DataLoader implements ApplicationRunner {
 	private final CompetitionRepository competitionRepository;
 	private final TeamRepository teamRepository;
 	private final RugbyMatchRepository rugbyMatchRepository;
+	private final PlayerRepository playerRepository;
+	private final AbsenceRepository absenceRepository;
 
 	public Top14DataLoader(
 			CompetitionRepository competitionRepository,
 			TeamRepository teamRepository,
-			RugbyMatchRepository rugbyMatchRepository) {
+			RugbyMatchRepository rugbyMatchRepository,
+			PlayerRepository playerRepository,
+			AbsenceRepository absenceRepository) {
 		this.competitionRepository = competitionRepository;
 		this.teamRepository = teamRepository;
 		this.rugbyMatchRepository = rugbyMatchRepository;
+		this.playerRepository = playerRepository;
+		this.absenceRepository = absenceRepository;
 	}
 
 	@Override
@@ -51,6 +62,7 @@ public class Top14DataLoader implements ApplicationRunner {
 	public void run(ApplicationArguments args) {
 		if (competitionRepository.findByCode("TOP14").isPresent()) {
 			fillMissingAnalyses();
+			seedAbsencesIfNeeded();
 			return;
 		}
 
@@ -89,6 +101,8 @@ public class Top14DataLoader implements ApplicationRunner {
 				scheduled(top14, teams, "PAU", "RAC", 2, LocalDateTime.of(2025, 9, 14, 15, 0), null),
 				scheduled(top14, teams, "MHR", "SFP", 2, LocalDateTime.of(2025, 9, 14, 18, 30), null),
 				scheduled(top14, teams, "USAP", "LOU", 2, LocalDateTime.of(2025, 9, 13, 18, 30), null)));
+
+		seedAbsences(teams);
 	}
 
 	private void fillMissingAnalyses() {
@@ -104,6 +118,30 @@ public class Top14DataLoader implements ApplicationRunner {
 				match.setAnalysis(ASM_TOU_ANALYSIS);
 			}
 		}
+	}
+
+	private void seedAbsencesIfNeeded() {
+		if (playerRepository.count() > 0) {
+			return;
+		}
+		Map<String, Team> teams = new HashMap<>();
+		for (Team team : teamRepository.findByCompetitionCodeOrderByNameAsc("TOP14")) {
+			teams.put(team.getShortName(), team);
+		}
+		seedAbsences(teams);
+	}
+
+	private void seedAbsences(Map<String, Team> teams) {
+		Player vanPillar = playerRepository.save(new Player("Maxime Lafage", teams.get("VAN")));
+		Player vanBack = playerRepository.save(new Player("Romaric Camou", teams.get("VAN")));
+		Player ubbLock = playerRepository.save(new Player("Adam Coleman", teams.get("UBB")));
+		Player ubbWing = playerRepository.save(new Player("Louis Bielle-Biarrey", teams.get("UBB")));
+
+		absenceRepository.saveAll(List.of(
+				new Absence(vanPillar, AbsenceType.INJURED, "Genou"),
+				new Absence(vanBack, AbsenceType.SUSPENDED, "Carton rouge"),
+				new Absence(ubbLock, AbsenceType.INJURED, "Epaule"),
+				new Absence(ubbWing, AbsenceType.INJURED, "Repos")));
 	}
 
 	private static Team team(String name, String shortName, String city, Competition competition) {

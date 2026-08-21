@@ -13,3 +13,8 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false

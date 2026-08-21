@@ -11,13 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import com.ovalytics.backend.domain.Absence;
 import com.ovalytics.backend.domain.Competition;
 import com.ovalytics.backend.domain.MatchStatus;
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.domain.Team;
+import com.ovalytics.backend.repository.AbsenceRepository;
 import com.ovalytics.backend.repository.CompetitionRepository;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 import com.ovalytics.backend.repository.TeamRepository;
+import com.ovalytics.backend.web.dto.AbsenceResponse;
 import com.ovalytics.backend.web.dto.MatchResponse;
 import com.ovalytics.backend.web.dto.StandingRowResponse;
 import com.ovalytics.backend.web.dto.TeamResponse;
@@ -28,14 +31,17 @@ public class CompetitionQueryService {
 	private final CompetitionRepository competitionRepository;
 	private final TeamRepository teamRepository;
 	private final RugbyMatchRepository rugbyMatchRepository;
+	private final AbsenceRepository absenceRepository;
 
 	public CompetitionQueryService(
 			CompetitionRepository competitionRepository,
 			TeamRepository teamRepository,
-			RugbyMatchRepository rugbyMatchRepository) {
+			RugbyMatchRepository rugbyMatchRepository,
+			AbsenceRepository absenceRepository) {
 		this.competitionRepository = competitionRepository;
 		this.teamRepository = teamRepository;
 		this.rugbyMatchRepository = rugbyMatchRepository;
+		this.absenceRepository = absenceRepository;
 	}
 
 	public List<TeamResponse> listTeams(String competitionCode) {
@@ -50,7 +56,9 @@ public class CompetitionQueryService {
 		List<RugbyMatch> matches = status == null
 				? rugbyMatchRepository.findByCompetitionCode(competitionCode)
 				: rugbyMatchRepository.findByCompetitionCodeAndStatus(competitionCode, status);
-		return matches.stream().map(this::toMatchResponse).toList();
+		return matches.stream()
+				.map(match -> toMatchResponse(match, List.of(), List.of()))
+				.toList();
 	}
 
 	public MatchResponse getMatch(String competitionCode, Long matchId) {
@@ -59,7 +67,10 @@ public class CompetitionQueryService {
 				.findByCompetitionCodeAndId(competitionCode, matchId)
 				.orElseThrow(() -> new ResponseStatusException(
 						HttpStatus.NOT_FOUND, "Match not found: " + matchId));
-		return toMatchResponse(match);
+		return toMatchResponse(
+				match,
+				toAbsenceResponses(absenceRepository.findByTeamId(match.getHomeTeam().getId())),
+				toAbsenceResponses(absenceRepository.findByTeamId(match.getAwayTeam().getId())));
 	}
 
 	public List<StandingRowResponse> standings(String competitionCode) {
@@ -153,7 +164,10 @@ public class CompetitionQueryService {
 		return new TeamResponse(team.getId(), team.getName(), team.getShortName(), team.getCity());
 	}
 
-	private MatchResponse toMatchResponse(RugbyMatch match) {
+	private MatchResponse toMatchResponse(
+			RugbyMatch match,
+			List<AbsenceResponse> homeAbsences,
+			List<AbsenceResponse> awayAbsences) {
 		return new MatchResponse(
 				match.getId(),
 				match.getMatchday(),
@@ -163,7 +177,18 @@ public class CompetitionQueryService {
 				toTeamResponse(match.getAwayTeam()),
 				match.getHomeScore(),
 				match.getAwayScore(),
-				match.getAnalysis());
+				match.getAnalysis(),
+				homeAbsences,
+				awayAbsences);
+	}
+
+	private List<AbsenceResponse> toAbsenceResponses(List<Absence> absences) {
+		return absences.stream()
+				.map(absence -> new AbsenceResponse(
+						absence.getPlayer().getName(),
+						absence.getType().name(),
+						absence.getNote()))
+				.toList();
 	}
 
 	private static final class MutableStanding {

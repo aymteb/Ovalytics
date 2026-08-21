@@ -37,4 +37,48 @@
       <p>{{ m.analysis }}</p>
     </section>
   }
+
+  @if (m.homeAbsences.length > 0 || m.awayAbsences.length > 0) {
+    <section class="absences">
+      <h3>Absents</h3>
+      <div class="absence-columns">
+        <div>
+          <h4>{{ m.homeTeam.shortName }}</h4>
+          @if (m.homeAbsences.length === 0) {
+            <p class="empty">Aucun signalé</p>
+          } @else {
+            <ul>
+              @for (absence of m.homeAbsences; track absence.playerName) {
+                <li>
+                  <span class="name">{{ absence.playerName }}</span>
+                  <span class="type">{{ absenceLabel(absence.type) }}</span>
+                  @if (absence.note) {
+                    <span class="note">{{ absence.note }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+        <div>
+          <h4>{{ m.awayTeam.shortName }}</h4>
+          @if (m.awayAbsences.length === 0) {
+            <p class="empty">Aucun signalé</p>
+          } @else {
+            <ul>
+              @for (absence of m.awayAbsences; track absence.playerName) {
+                <li>
+                  <span class="name">{{ absence.playerName }}</span>
+                  <span class="type">{{ absenceLabel(absence.type) }}</span>
+                  @if (absence.note) {
+                    <span class="note">{{ absence.note }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </section>
+  }
 }
