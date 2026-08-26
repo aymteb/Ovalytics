@@ -49,6 +49,17 @@ yarn-error.log*
 # --- Docker / local overrides ---
 docker-compose.override.yml
 
+# --- Terraform ---
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+*_override.tf
+.terraformrc
+terraform.rc
+
 # --- Artefacts générés / téléchargés ---
 backend.zip
 *.zip

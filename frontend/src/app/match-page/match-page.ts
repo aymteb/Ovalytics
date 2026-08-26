@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
-import { Match } from '../models';
+import { Match, TeamForm, VenueRecord } from '../models';
 
 @Component({
   selector: 'app-match-page',
@@ -48,5 +48,9 @@ export class MatchPage implements OnInit {
       return 'Suspendu';
     }
     return type;
+  }
+
+  recordLabel(record: TeamForm | VenueRecord): string {
+    return `${record.played}J · ${record.won}V · ${record.drawn}N · ${record.lost}D`;
   }
 }

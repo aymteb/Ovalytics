@@ -14,5 +14,10 @@ public record MatchResponse(
 		Integer awayScore,
 		String analysis,
 		List<AbsenceResponse> homeAbsences,
-		List<AbsenceResponse> awayAbsences) {
+		List<AbsenceResponse> awayAbsences,
+		TeamFormResponse homeForm,
+		TeamFormResponse awayForm,
+		VenueRecordResponse homeHomeRecord,
+		VenueRecordResponse awayAwayRecord,
+		List<HeadToHeadMatchResponse> headToHead) {
 }

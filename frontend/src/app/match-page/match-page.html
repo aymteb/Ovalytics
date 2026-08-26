@@ -38,6 +38,86 @@
     </section>
   }
 
+  <section class="context">
+    <h3>Avant-match</h3>
+
+    <div class="context-grid">
+      <div>
+        <h4>Forme {{ m.homeTeam.shortName }}</h4>
+        @if (m.homeForm && m.homeForm.played > 0) {
+          <p class="form-line">
+            @for (r of m.homeForm.results; track $index) {
+              <span
+                class="form-pill"
+                [class.form-V]="r === 'V'"
+                [class.form-N]="r === 'N'"
+                [class.form-D]="r === 'D'"
+              >{{ r }}</span>
+            }
+          </p>
+          <p class="muted">{{ recordLabel(m.homeForm) }}</p>
+        } @else {
+          <p class="empty">Pas encore de matchs joués</p>
+        }
+      </div>
+      <div>
+        <h4>Forme {{ m.awayTeam.shortName }}</h4>
+        @if (m.awayForm && m.awayForm.played > 0) {
+          <p class="form-line">
+            @for (r of m.awayForm.results; track $index) {
+              <span
+                class="form-pill"
+                [class.form-V]="r === 'V'"
+                [class.form-N]="r === 'N'"
+                [class.form-D]="r === 'D'"
+              >{{ r }}</span>
+            }
+          </p>
+          <p class="muted">{{ recordLabel(m.awayForm) }}</p>
+        } @else {
+          <p class="empty">Pas encore de matchs joués</p>
+        }
+      </div>
+    </div>
+
+    <div class="context-grid venue">
+      <div>
+        <h4>{{ m.homeTeam.shortName }} à domicile</h4>
+        @if (m.homeHomeRecord && m.homeHomeRecord.played > 0) {
+          <p>{{ recordLabel(m.homeHomeRecord) }}</p>
+        } @else {
+          <p class="empty">Pas encore de matchs joués</p>
+        }
+      </div>
+      <div>
+        <h4>{{ m.awayTeam.shortName }} à l'extérieur</h4>
+        @if (m.awayAwayRecord && m.awayAwayRecord.played > 0) {
+          <p>{{ recordLabel(m.awayAwayRecord) }}</p>
+        } @else {
+          <p class="empty">Pas encore de matchs joués</p>
+        }
+      </div>
+    </div>
+
+    <div class="h2h">
+      <h4>Confrontations récentes</h4>
+      @if (m.headToHead.length === 0) {
+        <p class="empty">Aucune confrontation en base pour l'instant</p>
+      } @else {
+        <ul>
+          @for (h of m.headToHead; track h.id) {
+            <li>
+              <span class="h2h-date">{{ h.kickoffAt | date: 'dd/MM/yyyy' }}</span>
+              <span class="h2h-score">
+                {{ h.homeShortName }} {{ h.homeScore }} - {{ h.awayScore }} {{ h.awayShortName }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </section>
+
   @if (m.homeAbsences.length > 0 || m.awayAbsences.length > 0) {
     <section class="absences">
       <h3>Absents</h3>
