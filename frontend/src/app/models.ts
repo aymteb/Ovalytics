@@ -11,6 +11,30 @@ export interface Absence {
   note: string | null;
 }
 
+export interface TeamForm {
+  results: string[];
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+}
+
+export interface VenueRecord {
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+}
+
+export interface HeadToHeadMatch {
+  id: number;
+  kickoffAt: string;
+  homeShortName: string;
+  awayShortName: string;
+  homeScore: number;
+  awayScore: number;
+}
+
 export interface Match {
   id: number;
   matchday: number;
@@ -23,6 +47,11 @@ export interface Match {
   analysis: string | null;
   homeAbsences: Absence[];
   awayAbsences: Absence[];
+  homeForm: TeamForm | null;
+  awayForm: TeamForm | null;
+  homeHomeRecord: VenueRecord | null;
+  awayAwayRecord: VenueRecord | null;
+  headToHead: HeadToHeadMatch[];
 }
 
 export interface StandingRow {
