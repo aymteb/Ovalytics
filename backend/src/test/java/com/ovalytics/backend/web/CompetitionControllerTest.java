@@ -17,8 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.ovalytics.backend.domain.MatchStatus;
 import com.ovalytics.backend.service.CompetitionQueryService;
 import com.ovalytics.backend.web.dto.AbsenceResponse;
+import com.ovalytics.backend.web.dto.HeadToHeadMatchResponse;
 import com.ovalytics.backend.web.dto.MatchResponse;
+import com.ovalytics.backend.web.dto.TeamFormResponse;
 import com.ovalytics.backend.web.dto.TeamResponse;
+import com.ovalytics.backend.web.dto.VenueRecordResponse;
 
 @WebMvcTest(CompetitionController.class)
 class CompetitionControllerTest {
@@ -75,6 +78,44 @@ class CompetitionControllerTest {
 				.andExpect(jsonPath("$.awayAbsences[0].playerName").value("Adam Coleman"));
 	}
 
+	@Test
+	void matchDetailReturnsFormAndHeadToHead() throws Exception {
+		TeamResponse home = new TeamResponse(1L, "RC Vannes", "VAN", "Vannes");
+		TeamResponse away = new TeamResponse(2L, "Union Bordeaux Begles", "UBB", "Bordeaux");
+		MatchResponse match = new MatchResponse(
+				8L,
+				2,
+				LocalDateTime.of(2025, 9, 13, 16, 0),
+				"SCHEDULED",
+				home,
+				away,
+				null,
+				null,
+				null,
+				List.of(),
+				List.of(),
+				new TeamFormResponse(List.of("V", "D"), 2, 1, 0, 1),
+				new TeamFormResponse(List.of("V", "V"), 2, 2, 0, 0),
+				new VenueRecordResponse(1, 1, 0, 0),
+				new VenueRecordResponse(1, 0, 0, 1),
+				List.of(new HeadToHeadMatchResponse(
+						1L,
+						LocalDateTime.of(2025, 9, 6, 21, 5),
+						"UBB",
+						"VAN",
+						42,
+						7)));
+
+		when(competitionQueryService.getMatch("TOP14", 8L)).thenReturn(match);
+
+		mockMvc.perform(get("/api/competitions/TOP14/matches/8"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.homeForm.results[0]").value("V"))
+				.andExpect(jsonPath("$.awayForm.won").value(2))
+				.andExpect(jsonPath("$.homeHomeRecord.played").value(1))
+				.andExpect(jsonPath("$.headToHead[0].homeShortName").value("UBB"));
+	}
+
 	private static MatchResponse sampleMatch(
 			String analysis,
 			List<AbsenceResponse> homeAbsences,
@@ -92,6 +133,11 @@ class CompetitionControllerTest {
 				null,
 				analysis,
 				homeAbsences,
-				awayAbsences);
+				awayAbsences,
+				null,
+				null,
+				null,
+				null,
+				List.of());
 	}
 }
