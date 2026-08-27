@@ -17,6 +17,7 @@ export interface TeamForm {
   won: number;
   drawn: number;
   lost: number;
+  fromPreviousSeason: number;
 }
 
 export interface VenueRecord {

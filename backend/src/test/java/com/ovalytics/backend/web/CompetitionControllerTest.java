@@ -94,8 +94,8 @@ class CompetitionControllerTest {
 				null,
 				List.of(),
 				List.of(),
-				new TeamFormResponse(List.of("V", "D"), 2, 1, 0, 1),
-				new TeamFormResponse(List.of("V", "V"), 2, 2, 0, 0),
+				new TeamFormResponse(List.of("V", "D"), 2, 1, 0, 1, 1),
+				new TeamFormResponse(List.of("V", "V"), 2, 2, 0, 0, 0),
 				new VenueRecordResponse(1, 1, 0, 0),
 				new VenueRecordResponse(1, 0, 0, 1),
 				List.of(new HeadToHeadMatchResponse(

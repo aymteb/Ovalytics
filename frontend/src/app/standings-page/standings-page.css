@@ -1,8 +1,9 @@
 .table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  background: var(--surface);
-  border: 1px solid var(--bordure);
+  background: var(--color-card);
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-block);
 }
 
 table {
@@ -14,17 +15,26 @@ table {
 th,
 td {
   text-align: left;
-  padding: 0.65rem 0.85rem;
-  border-bottom: 1px solid var(--bordure);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
   white-space: nowrap;
 }
 
 th {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--texte-doux);
-  background: #fff5f5;
+  letter-spacing: 0.06em;
+  color: var(--color-muted-foreground);
+  background: var(--color-muted);
+}
+
+tbody tr {
+  transition: background-color var(--transition);
+}
+
+tbody tr:hover {
+  background: color-mix(in srgb, var(--color-primary) 6%, white);
 }
 
 tbody tr:last-child td {
@@ -33,11 +43,11 @@ tbody tr:last-child td {
 
 td:first-child,
 td:last-child {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.03em;
 }
 
 td:last-child {
-  color: var(--rouge);
-  font-weight: 400;
+  color: var(--color-primary);
 }

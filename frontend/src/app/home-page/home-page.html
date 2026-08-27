@@ -1,0 +1,54 @@
+<section class="hero" aria-label="Ovalytics">
+  <img
+    class="hero-media"
+    src="/hero-stadium.png"
+    alt=""
+    width="1920"
+    height="1080"
+    decoding="async"
+    fetchpriority="high"
+  />
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <div class="hero-content">
+    <p class="brand">Ovalytics</p>
+    <h2 class="headline">Le rugby qu’on lit le week-end</h2>
+    <p class="lede">
+      Scores, forme, absences — une vraie lecture avant le coup d’envoi.
+    </p>
+    <div class="cta-row">
+      <a routerLink="/fixtures" class="cta cta-primary">Matchs à venir</a>
+      <a routerLink="/standings" class="cta cta-secondary">Classement</a>
+    </div>
+  </div>
+</section>
+
+<section class="spotlight">
+  <div class="spotlight-head">
+    <h2>À l’affiche</h2>
+    <a routerLink="/fixtures" class="see-all">Tout le calendrier</a>
+  </div>
+
+  @if (loading()) {
+    <p class="loading">Chargement...</p>
+  } @else if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  } @else if (featured().length === 0) {
+    <p class="empty">Pas encore de match à venir en base.</p>
+  } @else {
+    <ul class="spotlight-list">
+      @for (match of featured(); track match.id) {
+        <li>
+          <a [routerLink]="['/matches', match.id]" class="spotlight-card">
+            <span class="matchday">J{{ match.matchday }}</span>
+            <span class="fixture">
+              <span class="team">{{ match.homeTeam.shortName }}</span>
+              <span class="sep">–</span>
+              <span class="team">{{ match.awayTeam.shortName }}</span>
+            </span>
+            <span class="date">{{ match.kickoffAt | date: 'EEE d MMM · HH:mm' }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,12 +1,20 @@
-<header>
-  <h1>Ovalytics</h1>
-  <nav>
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+
+<header class="site-header">
+  <div class="brand-block">
+    <a routerLink="/" class="brand-link">
+      <p class="brand-kicker">Top 14</p>
+      <h1>Ovalytics</h1>
+    </a>
+  </div>
+  <nav aria-label="Navigation principale">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
     <a routerLink="/fixtures" routerLinkActive="active">Matchs à venir</a>
     <a routerLink="/results" routerLinkActive="active">Résultats</a>
     <a routerLink="/standings" routerLinkActive="active">Classement</a>
   </nav>
 </header>
 
-<main>
+<main id="contenu">
   <router-outlet />
 </main>

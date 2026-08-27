@@ -48,6 +48,21 @@ public interface RugbyMatchRepository extends JpaRepository<RugbyMatch, Long> {
 			@Param("id") Long id);
 
 	@Query("""
+			select m from RugbyMatch m
+			join fetch m.homeTeam
+			join fetch m.awayTeam
+			where m.competition.code = :code
+			  and m.homeTeam.shortName = :home
+			  and m.awayTeam.shortName = :away
+			  and m.matchday = :matchday
+			""")
+	Optional<RugbyMatch> findByCompetitionAndTeamsAndMatchday(
+			@Param("code") String code,
+			@Param("home") String homeShortName,
+			@Param("away") String awayShortName,
+			@Param("matchday") int matchday);
+
+	@Query("""
 			select count(m) > 0
 			from RugbyMatch m
 			where m.competition.code = :code

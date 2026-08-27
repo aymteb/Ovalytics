@@ -53,4 +53,14 @@ export class MatchPage implements OnInit {
   recordLabel(record: TeamForm | VenueRecord): string {
     return `${record.played}J · ${record.won}V · ${record.drawn}N · ${record.lost}D`;
   }
+
+  formSeasonNote(form: TeamForm): string {
+    if (!form.fromPreviousSeason || form.fromPreviousSeason <= 0) {
+      return '';
+    }
+    if (form.fromPreviousSeason === 1) {
+      return 'dont 1 saison dernière';
+    }
+    return `dont ${form.fromPreviousSeason} saison dernière`;
+  }
 }

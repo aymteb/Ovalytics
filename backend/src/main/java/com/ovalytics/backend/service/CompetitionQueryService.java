@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.ovalytics.backend.domain.Absence;
 import com.ovalytics.backend.domain.Competition;
 import com.ovalytics.backend.domain.MatchStatus;
+import com.ovalytics.backend.domain.OffensiveBonusRule;
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.domain.Team;
 import com.ovalytics.backend.repository.AbsenceRepository;
@@ -58,17 +59,23 @@ public class CompetitionQueryService {
 	}
 
 	public List<MatchResponse> listMatches(String competitionCode, MatchStatus status) {
-		ensureCompetitionExists(competitionCode);
+		Competition competition = getCompetition(competitionCode);
 		List<RugbyMatch> matches = status == null
 				? rugbyMatchRepository.findByCompetitionCode(competitionCode)
 				: rugbyMatchRepository.findByCompetitionCodeAndStatus(competitionCode, status);
+		if (status == MatchStatus.FINISHED) {
+			LocalDateTime seasonStart = competition.getSeasonStart().atStartOfDay();
+			matches = matches.stream()
+					.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
+					.toList();
+		}
 		return matches.stream()
 				.map(match -> toMatchResponse(match, List.of(), List.of(), null, null, null, null, List.of()))
 				.toList();
 	}
 
 	public MatchResponse getMatch(String competitionCode, Long matchId) {
-		ensureCompetitionExists(competitionCode);
+		Competition competition = getCompetition(competitionCode);
 		RugbyMatch match = rugbyMatchRepository
 				.findByCompetitionCodeAndId(competitionCode, matchId)
 				.orElseThrow(() -> new ResponseStatusException(
@@ -77,6 +84,7 @@ public class CompetitionQueryService {
 		List<RugbyMatch> finished = rugbyMatchRepository
 				.findByCompetitionCodeAndStatus(competitionCode, MatchStatus.FINISHED);
 		LocalDateTime before = match.getKickoffAt();
+		LocalDateTime seasonStart = competition.getSeasonStart().atStartOfDay();
 		Long homeId = match.getHomeTeam().getId();
 		Long awayId = match.getAwayTeam().getId();
 
@@ -84,8 +92,8 @@ public class CompetitionQueryService {
 				match,
 				toAbsenceResponses(absenceRepository.findByTeamId(homeId)),
 				toAbsenceResponses(absenceRepository.findByTeamId(awayId)),
-				buildForm(finished, homeId, before),
-				buildForm(finished, awayId, before),
+				buildForm(finished, homeId, before, seasonStart),
+				buildForm(finished, awayId, before, seasonStart),
 				buildVenueRecord(finished, homeId, true, before),
 				buildVenueRecord(finished, awayId, false, before),
 				buildHeadToHead(finished, homeId, awayId, before));
@@ -94,9 +102,14 @@ public class CompetitionQueryService {
 	public List<StandingRowResponse> standings(String competitionCode) {
 		Competition competition = getCompetition(competitionCode);
 		int defensiveBonusLimit = competition.getDefensiveBonusLimit();
+		OffensiveBonusRule offensiveBonusRule = competition.getOffensiveBonusRule();
+		int offensiveBonusThreshold = competition.getOffensiveBonusThreshold();
+		LocalDateTime seasonStart = competition.getSeasonStart().atStartOfDay();
 		List<Team> teams = teamRepository.findByCompetitionCodeOrderByNameAsc(competitionCode);
 		List<RugbyMatch> finished = rugbyMatchRepository.findByCompetitionCodeAndStatus(
-				competitionCode, MatchStatus.FINISHED);
+				competitionCode, MatchStatus.FINISHED).stream()
+				.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
+				.toList();
 
 		Map<Long, MutableStanding> byTeamId = new HashMap<>();
 		for (Team team : teams) {
@@ -138,6 +151,23 @@ public class CompetitionQueryService {
 				home.points += 2;
 				away.points += 2;
 			}
+
+			if (OffensiveBonus.earned(
+					offensiveBonusRule,
+					offensiveBonusThreshold,
+					match.getHomeTries(),
+					match.getAwayTries())) {
+				home.bonus++;
+				home.points += 1;
+			}
+			if (OffensiveBonus.earned(
+					offensiveBonusRule,
+					offensiveBonusThreshold,
+					match.getAwayTries(),
+					match.getHomeTries())) {
+				away.bonus++;
+				away.points += 1;
+			}
 		}
 
 		List<MutableStanding> rows = new ArrayList<>(byTeamId.values());
@@ -168,13 +198,33 @@ public class CompetitionQueryService {
 		return result;
 	}
 
-	private TeamFormResponse buildForm(List<RugbyMatch> finished, Long teamId, LocalDateTime before) {
-		List<RugbyMatch> teamMatches = finished.stream()
+	private TeamFormResponse buildForm(
+			List<RugbyMatch> finished,
+			Long teamId,
+			LocalDateTime before,
+			LocalDateTime seasonStart) {
+		List<RugbyMatch> currentSeason = finished.stream()
 				.filter(m -> m.getKickoffAt().isBefore(before))
+				.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
 				.filter(m -> involvesTeam(m, teamId))
 				.sorted(Comparator.comparing(RugbyMatch::getKickoffAt).reversed())
 				.limit(FORM_SIZE)
 				.toList();
+
+		List<RugbyMatch> previousSeason = List.of();
+		if (currentSeason.size() < FORM_SIZE) {
+			int needed = FORM_SIZE - currentSeason.size();
+			previousSeason = finished.stream()
+					.filter(m -> m.getKickoffAt().isBefore(before))
+					.filter(m -> m.getKickoffAt().isBefore(seasonStart))
+					.filter(m -> involvesTeam(m, teamId))
+					.sorted(Comparator.comparing(RugbyMatch::getKickoffAt).reversed())
+					.limit(needed)
+					.toList();
+		}
+
+		List<RugbyMatch> teamMatches = new ArrayList<>(currentSeason);
+		teamMatches.addAll(previousSeason);
 
 		List<String> results = new ArrayList<>();
 		int won = 0;
@@ -191,7 +241,13 @@ public class CompetitionQueryService {
 				lost++;
 			}
 		}
-		return new TeamFormResponse(results, teamMatches.size(), won, drawn, lost);
+		return new TeamFormResponse(
+				results,
+				teamMatches.size(),
+				won,
+				drawn,
+				lost,
+				previousSeason.size());
 	}
 
 	private VenueRecordResponse buildVenueRecord(

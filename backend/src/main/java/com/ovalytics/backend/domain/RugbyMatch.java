@@ -48,6 +48,10 @@ public class RugbyMatch {
 
 	private Integer awayScore;
 
+	private Integer homeTries;
+
+	private Integer awayTries;
+
 	@Column(columnDefinition = "TEXT")
 	private String analysis;
 
@@ -62,7 +66,9 @@ public class RugbyMatch {
 			int matchday,
 			MatchStatus status,
 			Integer homeScore,
-			Integer awayScore) {
+			Integer awayScore,
+			Integer homeTries,
+			Integer awayTries) {
 		this.competition = competition;
 		this.homeTeam = homeTeam;
 		this.awayTeam = awayTeam;
@@ -71,6 +77,8 @@ public class RugbyMatch {
 		this.status = status;
 		this.homeScore = homeScore;
 		this.awayScore = awayScore;
+		this.homeTries = homeTries;
+		this.awayTries = awayTries;
 	}
 
 	public Long getId() {
@@ -109,11 +117,43 @@ public class RugbyMatch {
 		return awayScore;
 	}
 
+	public Integer getHomeTries() {
+		return homeTries;
+	}
+
+	public Integer getAwayTries() {
+		return awayTries;
+	}
+
 	public String getAnalysis() {
 		return analysis;
 	}
 
 	public void setAnalysis(String analysis) {
 		this.analysis = analysis;
+	}
+
+	public void setKickoffAt(LocalDateTime kickoffAt) {
+		this.kickoffAt = kickoffAt;
+	}
+
+	public void setStatus(MatchStatus status) {
+		this.status = status;
+	}
+
+	public void setHomeScore(Integer homeScore) {
+		this.homeScore = homeScore;
+	}
+
+	public void setAwayScore(Integer awayScore) {
+		this.awayScore = awayScore;
+	}
+
+	public void setHomeTries(Integer homeTries) {
+		this.homeTries = homeTries;
+	}
+
+	public void setAwayTries(Integer awayTries) {
+		this.awayTries = awayTries;
 	}
 }

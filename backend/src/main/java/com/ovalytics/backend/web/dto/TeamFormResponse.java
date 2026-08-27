@@ -7,5 +7,6 @@ public record TeamFormResponse(
 		int played,
 		int won,
 		int drawn,
-		int lost) {
+		int lost,
+		int fromPreviousSeason) {
 }

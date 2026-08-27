@@ -31,14 +31,40 @@ public class MatchImportProcessor implements ItemProcessor<MatchCsvRow, RugbyMat
 
 	@Override
 	public RugbyMatch process(MatchCsvRow row) {
-		if (rugbyMatchRepository.existsByCompetitionAndTeamsAndMatchday(
-				row.competitionCode(),
-				row.homeShortName(),
-				row.awayShortName(),
-				row.matchday())) {
-			return null;
-		}
+		Integer homeScore = parseInt(row.homeScore());
+		Integer awayScore = parseInt(row.awayScore());
+		Integer homeTries = parseInt(row.homeTries());
+		Integer awayTries = parseInt(row.awayTries());
+		MatchStatus status = MatchStatus.valueOf(row.status());
+		LocalDateTime kickoffAt = LocalDateTime.parse(row.kickoffAt());
 
+		return rugbyMatchRepository
+				.findByCompetitionAndTeamsAndMatchday(
+						row.competitionCode(),
+						row.homeShortName(),
+						row.awayShortName(),
+						row.matchday())
+				.map(existing -> {
+					existing.setKickoffAt(kickoffAt);
+					existing.setStatus(status);
+					existing.setHomeScore(homeScore);
+					existing.setAwayScore(awayScore);
+					existing.setHomeTries(homeTries);
+					existing.setAwayTries(awayTries);
+					return existing;
+				})
+				.orElseGet(() -> createMatch(
+						row, kickoffAt, status, homeScore, awayScore, homeTries, awayTries));
+	}
+
+	private RugbyMatch createMatch(
+			MatchCsvRow row,
+			LocalDateTime kickoffAt,
+			MatchStatus status,
+			Integer homeScore,
+			Integer awayScore,
+			Integer homeTries,
+			Integer awayTries) {
 		Competition competition = competitionRepository.findByCode(row.competitionCode())
 				.orElseThrow(() -> new IllegalStateException(
 						"Competition introuvable: " + row.competitionCode()));
@@ -53,21 +79,20 @@ public class MatchImportProcessor implements ItemProcessor<MatchCsvRow, RugbyMat
 				.orElseThrow(() -> new IllegalStateException(
 						"Equipe introuvable: " + row.awayShortName()));
 
-		Integer homeScore = parseScore(row.homeScore());
-		Integer awayScore = parseScore(row.awayScore());
-
 		return new RugbyMatch(
 				competition,
 				home,
 				away,
-				LocalDateTime.parse(row.kickoffAt()),
+				kickoffAt,
 				row.matchday(),
-				MatchStatus.valueOf(row.status()),
+				status,
 				homeScore,
-				awayScore);
+				awayScore,
+				homeTries,
+				awayTries);
 	}
 
-	private static Integer parseScore(String value) {
+	private static Integer parseInt(String value) {
 		if (value == null || value.isBlank()) {
 			return null;
 		}

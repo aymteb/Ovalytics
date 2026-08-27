@@ -23,7 +23,7 @@ public class MatchImportJobConfig {
 	public FlatFileItemReader<MatchCsvRow> matchCsvReader() {
 		return new FlatFileItemReaderBuilder<MatchCsvRow>()
 				.name("matchCsvReader")
-				.resource(new ClassPathResource("data/top14-j3.csv"))
+				.resource(new ClassPathResource("data/top14-import.csv"))
 				.linesToSkip(1)
 				.delimited()
 				.names(
@@ -34,7 +34,9 @@ public class MatchImportJobConfig {
 						"kickoffAt",
 						"status",
 						"homeScore",
-						"awayScore")
+						"awayScore",
+						"homeTries",
+						"awayTries")
 				.fieldSetMapper(fields -> new MatchCsvRow(
 						fields.readString("competitionCode"),
 						fields.readString("homeShortName"),
@@ -43,7 +45,9 @@ public class MatchImportJobConfig {
 						fields.readString("kickoffAt"),
 						fields.readString("status"),
 						fields.readString("homeScore"),
-						fields.readString("awayScore")))
+						fields.readString("awayScore"),
+						fields.readString("homeTries"),
+						fields.readString("awayTries")))
 				.build();
 	}
 
