@@ -1,0 +1,53 @@
+:host {
+  display: inline-flex;
+}
+
+.team-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.team-logo img,
+.team-logo .badge {
+  display: block;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-block);
+}
+
+.size-sm img,
+.size-sm .badge {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.55rem;
+}
+
+.size-md img,
+.size-md .badge {
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 0.65rem;
+}
+
+.size-lg img,
+.size-lg .badge {
+  width: 4rem;
+  height: 4rem;
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.label {
+  font-weight: 700;
+  font-size: 0.85rem;
+}

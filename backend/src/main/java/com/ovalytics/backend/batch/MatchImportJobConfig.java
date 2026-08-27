@@ -8,22 +8,26 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 
 @Configuration
+@EnableConfigurationProperties(MatchImportProperties.class)
 public class MatchImportJobConfig {
 
 	@Bean
-	public FlatFileItemReader<MatchCsvRow> matchCsvReader() {
+	public FlatFileItemReader<MatchCsvRow> matchCsvReader(
+			MatchImportProperties properties,
+			ResourceLoader resourceLoader) {
 		return new FlatFileItemReaderBuilder<MatchCsvRow>()
 				.name("matchCsvReader")
-				.resource(new ClassPathResource("data/top14-import.csv"))
+				.resource(MatchImportResource.resolve(properties.getFile(), resourceLoader))
 				.linesToSkip(1)
 				.delimited()
 				.names(

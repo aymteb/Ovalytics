@@ -23,7 +23,9 @@
         @for (row of rows(); track row.teamId) {
           <tr>
             <td>{{ row.position }}</td>
-            <td>{{ row.teamShortName }}</td>
+            <td class="club-cell">
+              <app-team-logo [shortName]="row.teamShortName" size="sm" />
+            </td>
             <td>{{ row.played }}</td>
             <td>{{ row.won }}</td>
             <td>{{ row.drawn }}</td>

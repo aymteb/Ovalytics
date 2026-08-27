@@ -1,0 +1,27 @@
+<span
+  class="team-logo"
+  [class.size-sm]="size() === 'sm'"
+  [class.size-md]="size() === 'md'"
+  [class.size-lg]="size() === 'lg'"
+  [class.with-label]="showLabel()"
+>
+  @if (!imgFailed()) {
+    <img
+      [src]="logoSrc()"
+      [alt]="shortName()"
+      [title]="shortName()"
+      (error)="onImgError()"
+    />
+  } @else {
+    <span
+      class="badge"
+      [style.background-color]="brand().bg"
+      [style.color]="brand().text"
+    >
+      {{ shortName() }}
+    </span>
+  }
+  @if (showLabel()) {
+    <span class="label">{{ shortName() }}</span>
+  }
+</span>

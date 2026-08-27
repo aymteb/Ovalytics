@@ -49,11 +49,18 @@
 }
 
 .teams {
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 3.5vw, 1.85rem);
-  line-height: 1.1;
-  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   min-width: 0;
+}
+
+.teams .score,
+.teams .sep {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
 }
 
 .date {

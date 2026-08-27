@@ -1,0 +1,141 @@
+<p class="back">
+  <a routerLink="/transfers">← Transferts</a>
+</p>
+
+@if (loading()) {
+  <p class="loading">Chargement...</p>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else if (mercato(); as m) {
+  <header class="hero">
+    <app-team-logo [shortName]="m.team.shortName" size="lg" />
+    <div class="hero-text">
+      <p class="eyebrow">{{ m.competitionName }}</p>
+      <h2>{{ m.team.name }}</h2>
+      <p class="meta">{{ m.team.city }}</p>
+    </div>
+  </header>
+
+  <section class="block">
+    <h3>Arrivées</h3>
+    @if (m.arrivals.length === 0) {
+      <p class="empty">Aucune</p>
+    } @else {
+      <ul>
+        @for (t of m.arrivals; track t.id) {
+          <li>
+            @if (playerLink(t); as link) {
+              <a [routerLink]="link" class="player">{{ t.playerName }}</a>
+            } @else {
+              <span class="player">{{ t.playerName }}</span>
+            }
+            <span class="meta">depuis {{ t.fromClub }}</span>
+            <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+            @if (t.contractLength) {
+              <span class="duration">{{ t.contractLength }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="block">
+    <h3>Départs</h3>
+    @if (m.departures.length === 0) {
+      <p class="empty">Aucun</p>
+    } @else {
+      <ul>
+        @for (t of m.departures; track t.id) {
+          <li>
+            @if (playerLink(t); as link) {
+              <a [routerLink]="link" class="player">{{ t.playerName }}</a>
+            } @else {
+              <span class="player">{{ t.playerName }}</span>
+            }
+            <span class="meta">vers {{ t.toClub }}</span>
+            <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+            @if (t.contractLength) {
+              <span class="duration">{{ t.contractLength }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="block">
+    <h3>Prolongations</h3>
+    @if (m.extensions.length === 0) {
+      <p class="empty">Aucune</p>
+    } @else {
+      <ul>
+        @for (t of m.extensions; track t.id) {
+          <li>
+            @if (playerLink(t); as link) {
+              <a [routerLink]="link" class="player">{{ t.playerName }}</a>
+            } @else {
+              <span class="player">{{ t.playerName }}</span>
+            }
+            @if (t.contractLength) {
+              <span class="duration">{{ t.contractLength }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="block contract-end">
+    <h3>Fin de contrat ({{ m.contractEndWatchYear }})</h3>
+    <p class="intro-block">
+      Joueurs dont le contrat court jusqu'en {{ m.contractEndWatchYear }}.
+    </p>
+    @if (m.contractEndsNextYear.length === 0) {
+      <p class="empty">Aucun pour cette échéance.</p>
+    } @else {
+      <ul>
+        @for (p of m.contractEndsNextYear; track p.id) {
+          <li>
+            <a [routerLink]="['/players', p.id]" class="player">{{ p.name }}</a>
+            @if (p.position) {
+              <span class="meta">{{ p.position }}</span>
+            }
+            @if (p.contractEndDate) {
+              <span class="contract">{{ contractLabel(p.contractEndDate) }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="block squad">
+    <h3>Effectif</h3>
+    @if (squadGroups().length === 0) {
+      <p class="empty">Aucun joueur en base pour ce club.</p>
+    } @else {
+      @for (group of squadGroups(); track group.position) {
+        <div class="squad-group">
+          <h4>{{ group.position }}</h4>
+          <ul>
+            @for (p of group.players; track p.id) {
+              <li>
+                <a [routerLink]="['/players', p.id]" class="player">{{ p.name }}</a>
+                @if (p.age) {
+                  <span class="meta">{{ p.age }} ans</span>
+                }
+                @if (p.nationality) {
+                  <span class="meta">{{ p.nationality }}</span>
+                }
+                @if (p.contractEndDate) {
+                  <span class="contract">{{ contractLabel(p.contractEndDate) }}</span>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+  </section>
+}

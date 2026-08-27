@@ -29,6 +29,11 @@ th {
   background: var(--color-muted);
 }
 
+.club-cell {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 tbody tr {
   transition: background-color var(--transition);
 }

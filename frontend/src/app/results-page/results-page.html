@@ -13,9 +13,9 @@
         <a [routerLink]="['/matches', match.id]">
           <span class="matchday">J{{ match.matchday }}</span>
           <span class="teams">
-            {{ match.homeTeam.shortName }}
-            {{ match.homeScore }} - {{ match.awayScore }}
-            {{ match.awayTeam.shortName }}
+            <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+            <span class="score">{{ match.homeScore }} - {{ match.awayScore }}</span>
+            <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
           </span>
           <span class="date">{{ match.kickoffAt | date: 'dd/MM/yyyy' }}</span>
         </a>

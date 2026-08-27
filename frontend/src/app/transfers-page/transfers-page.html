@@ -1,0 +1,176 @@
+<h2>Transferts</h2>
+<p class="intro">
+  Journal d’actu mercato (toutes compétitions), ou vue club par club pour un championnat.
+</p>
+
+<div class="tabs" role="tablist" aria-label="Vue des transferts">
+  <button
+    type="button"
+    role="tab"
+    class="tab"
+    [class.active]="tab() === 'journal'"
+    [attr.aria-selected]="tab() === 'journal'"
+    (click)="setTab('journal')"
+  >
+    Journal
+  </button>
+  <button
+    type="button"
+    role="tab"
+    class="tab"
+    [class.active]="tab() === 'clubs'"
+    [attr.aria-selected]="tab() === 'clubs'"
+    (click)="setTab('clubs')"
+  >
+    Par club
+  </button>
+</div>
+
+@if (tab() === 'clubs' && competitions().length > 0) {
+  <label class="competition-picker">
+    <span>Championnat</span>
+    <select
+      [value]="selectedCode()"
+      (change)="onCompetitionChange($any($event.target).value)"
+    >
+      @for (c of competitions(); track c.code) {
+        <option [value]="c.code" [selected]="c.code === selectedCode()">
+          {{ c.name }} ({{ c.season }})
+        </option>
+      }
+    </select>
+  </label>
+}
+
+@if (loading()) {
+  <p class="loading">Chargement...</p>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else if (tab() === 'journal') {
+  @if (journalTransfers().length === 0) {
+    <p>Aucun transfert en base.</p>
+  } @else {
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Championnat</th>
+            <th>Joueur</th>
+            <th>Type</th>
+            <th>De</th>
+            <th>Vers</th>
+            <th>Durée</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of journalTransfers(); track t.id) {
+            <tr>
+              <td>{{ t.transferDate | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ t.competitionName }}</td>
+              <td class="player">
+                @if (playerLink(t); as link) {
+                  <a [routerLink]="link">{{ t.playerName }}</a>
+                } @else {
+                  {{ t.playerName }}
+                }
+              </td>
+              <td>
+                <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+              </td>
+              <td>{{ t.fromClub }}</td>
+              <td>{{ t.toClub }}</td>
+              <td class="duration">{{ t.contractLength || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+} @else if (clubTransfers().length === 0) {
+  <p>Aucun transfert en base pour ce championnat.</p>
+} @else {
+  <nav class="club-jump" aria-label="Aller à un club">
+    @for (board of clubBoards(); track board.team.id) {
+      <a [routerLink]="clubLink(board.team)" class="club-jump-link">
+        <app-team-logo [shortName]="board.team.shortName" size="md" />
+      </a>
+    }
+  </nav>
+
+  @for (board of clubBoards(); track board.team.id) {
+    <section class="club-block">
+      <h3>
+        <a [routerLink]="clubLink(board.team)">{{ board.team.name }}</a>
+      </h3>
+
+      <div class="club-columns">
+        <div>
+          <h4>Arrivées</h4>
+          @if (board.arrivals.length === 0) {
+            <p class="empty">Aucune</p>
+          } @else {
+            <ul>
+              @for (t of board.arrivals; track t.id) {
+                <li>
+                  @if (playerLink(t); as link) {
+                    <a [routerLink]="link" class="player">{{ t.playerName }}</a>
+                  } @else {
+                    <span class="player">{{ t.playerName }}</span>
+                  }
+                  <span class="meta">depuis {{ t.fromClub }}</span>
+                  @if (t.contractLength) {
+                    <span class="duration">{{ t.contractLength }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+        <div>
+          <h4>Départs</h4>
+          @if (board.departures.length === 0) {
+            <p class="empty">Aucun</p>
+          } @else {
+            <ul>
+              @for (t of board.departures; track t.id) {
+                <li>
+                  @if (playerLink(t); as link) {
+                    <a [routerLink]="link" class="player">{{ t.playerName }}</a>
+                  } @else {
+                    <span class="player">{{ t.playerName }}</span>
+                  }
+                  <span class="meta">vers {{ t.toClub }}</span>
+                  @if (t.contractLength) {
+                    <span class="duration">{{ t.contractLength }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+        <div>
+          <h4>Prolongations</h4>
+          @if (board.extensions.length === 0) {
+            <p class="empty">Aucune</p>
+          } @else {
+            <ul>
+              @for (t of board.extensions; track t.id) {
+                <li>
+                  @if (playerLink(t); as link) {
+                    <a [routerLink]="link" class="player">{{ t.playerName }}</a>
+                  } @else {
+                    <span class="player">{{ t.playerName }}</span>
+                  }
+                  @if (t.contractLength) {
+                    <span class="duration">{{ t.contractLength }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </section>
+  }
+}

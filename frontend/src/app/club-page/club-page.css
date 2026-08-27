@@ -1,0 +1,197 @@
+:host {
+  display: block;
+  animation: rise-in 360ms ease both;
+}
+
+.back {
+  margin: 0 0 var(--space-4);
+}
+
+.back a {
+  color: var(--color-muted-foreground);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition);
+}
+
+.back a:hover {
+  color: var(--color-accent);
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+  background: var(--color-card);
+  border: 2px solid var(--color-border);
+  border-left: 6px solid var(--color-primary);
+  box-shadow: var(--shadow-block);
+}
+
+.hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-1);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  letter-spacing: 0.04em;
+}
+
+.hero .meta {
+  margin: var(--space-2) 0 0;
+  color: var(--color-muted-foreground);
+}
+
+.block {
+  margin-bottom: var(--space-5);
+}
+
+.block h3 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.empty {
+  margin: 0;
+  color: var(--color-muted-foreground);
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-card);
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-block);
+}
+
+li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+.player {
+  font-weight: 700;
+  color: var(--color-foreground);
+  text-decoration: none;
+}
+
+a.player:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.meta {
+  color: var(--color-muted-foreground);
+  font-size: 0.95rem;
+}
+
+.contract {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+}
+
+.duration {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+}
+
+.type {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.type[data-type='LEAVE'],
+.type[data-type='CONTRACT_END'] {
+  color: var(--color-muted-foreground);
+}
+
+.type[data-type='LOAN'] {
+  color: var(--color-accent);
+}
+
+.squad-group {
+  margin-bottom: var(--space-4);
+}
+
+.squad-group h4 {
+  margin: 0 0 var(--space-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+.squad-group ul {
+  margin-bottom: 0;
+}
+
+.intro-block {
+  margin: -0.25rem 0 var(--space-3);
+  color: var(--color-muted-foreground);
+  font-size: 0.95rem;
+}
+
+.contract-end ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-card);
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-block);
+}
+
+.contract-end li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.contract-end li:last-child {
+  border-bottom: none;
+}
+
+.contract-end a.player {
+  font-weight: 700;
+  color: var(--color-foreground);
+  text-decoration: none;
+}
+
+.contract-end a.player:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}

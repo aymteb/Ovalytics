@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import com.ovalytics.backend.web.dto.HeadToHeadMatchResponse;
 import com.ovalytics.backend.web.dto.MatchResponse;
 import com.ovalytics.backend.web.dto.TeamFormResponse;
 import com.ovalytics.backend.web.dto.TeamResponse;
+import com.ovalytics.backend.web.dto.TransferResponse;
 import com.ovalytics.backend.web.dto.VenueRecordResponse;
 
 @WebMvcTest(CompetitionController.class)
@@ -114,6 +116,32 @@ class CompetitionControllerTest {
 				.andExpect(jsonPath("$.awayForm.won").value(2))
 				.andExpect(jsonPath("$.homeHomeRecord.played").value(1))
 				.andExpect(jsonPath("$.headToHead[0].homeShortName").value("UBB"));
+	}
+
+	@Test
+	void transfersReturnsJsonList() throws Exception {
+		when(competitionQueryService.listTransfers("TOP14")).thenReturn(List.of(
+				new TransferResponse(
+						1L,
+						LocalDate.of(2025, 7, 10),
+						"Cameron Woki",
+						12L,
+						"JOIN",
+						"RAC",
+						"UBB",
+						10L,
+						6L,
+						"3 ans",
+						"TOP14",
+						"Top 14")));
+
+		mockMvc.perform(get("/api/competitions/TOP14/transfers"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].playerName").value("Cameron Woki"))
+				.andExpect(jsonPath("$[0].type").value("JOIN"))
+				.andExpect(jsonPath("$[0].fromClub").value("RAC"))
+				.andExpect(jsonPath("$[0].toClub").value("UBB"))
+				.andExpect(jsonPath("$[0].contractLength").value("3 ans"));
 	}
 
 	private static MatchResponse sampleMatch(

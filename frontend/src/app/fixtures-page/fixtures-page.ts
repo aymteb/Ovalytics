@@ -3,10 +3,11 @@ import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { Match } from '../models';
+import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
   selector: 'app-fixtures-page',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TeamLogo],
   templateUrl: './fixtures-page.html',
   styleUrl: './fixtures-page.css',
 })

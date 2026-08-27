@@ -3,10 +3,11 @@ import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { Match } from '../models';
+import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
   selector: 'app-results-page',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TeamLogo],
   templateUrl: './results-page.html',
   styleUrl: './results-page.css',
 })

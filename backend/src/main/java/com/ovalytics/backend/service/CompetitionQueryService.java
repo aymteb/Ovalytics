@@ -1,5 +1,6 @@
 package com.ovalytics.backend.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,20 +14,34 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.ovalytics.backend.domain.Absence;
 import com.ovalytics.backend.domain.Competition;
+import com.ovalytics.backend.domain.MatchAppearance;
 import com.ovalytics.backend.domain.MatchStatus;
 import com.ovalytics.backend.domain.OffensiveBonusRule;
+import com.ovalytics.backend.domain.Player;
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.domain.Team;
+import com.ovalytics.backend.domain.Transfer;
+import com.ovalytics.backend.domain.TransferType;
 import com.ovalytics.backend.repository.AbsenceRepository;
 import com.ovalytics.backend.repository.CompetitionRepository;
+import com.ovalytics.backend.repository.MatchAppearanceRepository;
+import com.ovalytics.backend.repository.PlayerRepository;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 import com.ovalytics.backend.repository.TeamRepository;
+import com.ovalytics.backend.repository.TransferRepository;
 import com.ovalytics.backend.web.dto.AbsenceResponse;
+import com.ovalytics.backend.web.dto.ClubMercatoResponse;
+import com.ovalytics.backend.web.dto.CompetitionResponse;
 import com.ovalytics.backend.web.dto.HeadToHeadMatchResponse;
 import com.ovalytics.backend.web.dto.MatchResponse;
+import com.ovalytics.backend.web.dto.PlayerAppearanceResponse;
+import com.ovalytics.backend.web.dto.PlayerDetailResponse;
+import com.ovalytics.backend.web.dto.PlayerTotalsResponse;
+import com.ovalytics.backend.web.dto.SquadPlayerResponse;
 import com.ovalytics.backend.web.dto.StandingRowResponse;
 import com.ovalytics.backend.web.dto.TeamFormResponse;
 import com.ovalytics.backend.web.dto.TeamResponse;
+import com.ovalytics.backend.web.dto.TransferResponse;
 import com.ovalytics.backend.web.dto.VenueRecordResponse;
 
 @Service
@@ -39,16 +54,40 @@ public class CompetitionQueryService {
 	private final TeamRepository teamRepository;
 	private final RugbyMatchRepository rugbyMatchRepository;
 	private final AbsenceRepository absenceRepository;
+	private final TransferRepository transferRepository;
+	private final PlayerRepository playerRepository;
+	private final MatchAppearanceRepository matchAppearanceRepository;
 
 	public CompetitionQueryService(
 			CompetitionRepository competitionRepository,
 			TeamRepository teamRepository,
 			RugbyMatchRepository rugbyMatchRepository,
-			AbsenceRepository absenceRepository) {
+			AbsenceRepository absenceRepository,
+			TransferRepository transferRepository,
+			PlayerRepository playerRepository,
+			MatchAppearanceRepository matchAppearanceRepository) {
 		this.competitionRepository = competitionRepository;
 		this.teamRepository = teamRepository;
 		this.rugbyMatchRepository = rugbyMatchRepository;
 		this.absenceRepository = absenceRepository;
+		this.transferRepository = transferRepository;
+		this.playerRepository = playerRepository;
+		this.matchAppearanceRepository = matchAppearanceRepository;
+	}
+
+	public List<CompetitionResponse> listCompetitions() {
+		return competitionRepository.findAllByOrderByNameAsc().stream()
+				.sorted((a, b) -> {
+					if ("TOP14".equals(a.getCode())) {
+						return -1;
+					}
+					if ("TOP14".equals(b.getCode())) {
+						return 1;
+					}
+					return a.getName().compareToIgnoreCase(b.getName());
+				})
+				.map(c -> new CompetitionResponse(c.getId(), c.getName(), c.getCode(), c.getSeason()))
+				.toList();
 	}
 
 	public List<TeamResponse> listTeams(String competitionCode) {
@@ -97,6 +136,99 @@ public class CompetitionQueryService {
 				buildVenueRecord(finished, homeId, true, before),
 				buildVenueRecord(finished, awayId, false, before),
 				buildHeadToHead(finished, homeId, awayId, before));
+	}
+
+	public List<TransferResponse> listTransfers(String competitionCode) {
+		ensureCompetitionExists(competitionCode);
+		return transferRepository.findByCompetitionCodeOrderByTransferDateDesc(competitionCode).stream()
+				.map(this::toTransferResponse)
+				.toList();
+	}
+
+	public List<TransferResponse> listAllTransfers() {
+		return transferRepository.findAllByOrderByTransferDateDesc().stream()
+				.map(this::toTransferResponse)
+				.toList();
+	}
+
+	public ClubMercatoResponse clubMercato(String competitionCode, String shortName) {
+		Competition competition = getCompetition(competitionCode);
+		Team team = teamRepository.findByCompetitionCodeAndShortName(competitionCode, shortName)
+				.orElseThrow(() -> new ResponseStatusException(
+						HttpStatus.NOT_FOUND, "Club not found: " + shortName));
+		List<Transfer> transfers = transferRepository
+				.findByCompetitionCodeOrderByTransferDateDesc(competitionCode);
+
+		List<TransferResponse> arrivals = transfers.stream()
+				.filter(t -> t.getToTeam() != null && t.getToTeam().getId().equals(team.getId()))
+				.filter(t -> t.getType() == TransferType.JOIN || t.getType() == TransferType.LOAN)
+				.map(this::toTransferResponse)
+				.toList();
+		List<TransferResponse> departures = transfers.stream()
+				.filter(t -> t.getFromTeam() != null && t.getFromTeam().getId().equals(team.getId()))
+				.filter(t -> t.getType() == TransferType.LEAVE
+						|| t.getType() == TransferType.LOAN
+						|| t.getType() == TransferType.CONTRACT_END)
+				.map(this::toTransferResponse)
+				.toList();
+		List<TransferResponse> extensions = transfers.stream()
+				.filter(t -> t.getType() == TransferType.EXTENSION)
+				.filter(t -> (t.getToTeam() != null && t.getToTeam().getId().equals(team.getId()))
+						|| (t.getFromTeam() != null && t.getFromTeam().getId().equals(team.getId())))
+				.map(this::toTransferResponse)
+				.toList();
+
+		List<SquadPlayerResponse> squad = playerRepository
+				.findByTeamIdOrderByNameAsc(team.getId())
+				.stream()
+				.map(this::toSquadPlayerResponse)
+				.toList();
+		int contractEndWatchYear = contractEndWatchYear(competition.getSeason());
+		List<SquadPlayerResponse> contractEndsNextYear = squad.stream()
+				.filter(p -> p.contractEndDate() != null
+						&& p.contractEndDate().getYear() == contractEndWatchYear)
+				.toList();
+
+		return new ClubMercatoResponse(
+				toTeamResponse(team),
+				competition.getCode(),
+				competition.getName(),
+				arrivals,
+				departures,
+				extensions,
+				contractEndWatchYear,
+				contractEndsNextYear,
+				squad);
+	}
+
+	public PlayerDetailResponse getPlayer(Long playerId) {
+		Player player = playerRepository.findByIdWithTeam(playerId)
+				.orElseThrow(() -> new ResponseStatusException(
+						HttpStatus.NOT_FOUND, "Player not found: " + playerId));
+		List<TransferResponse> transfers = transferRepository
+				.findByPlayerIdOrderByTransferDateDesc(playerId)
+				.stream()
+				.map(this::toTransferResponse)
+				.toList();
+		List<PlayerAppearanceResponse> appearances = matchAppearanceRepository
+				.findByPlayerIdOrderByKickoffDesc(playerId)
+				.stream()
+				.map(a -> toAppearanceResponse(a, player.getTeam().getId()))
+				.toList();
+		return new PlayerDetailResponse(
+				player.getId(),
+				player.getName(),
+				toTeamResponse(player.getTeam()),
+				player.getTeam().getCompetition().getCode(),
+				player.getTeam().getCompetition().getName(),
+				player.getPosition(),
+				player.getAge(),
+				player.getHeightCm(),
+				player.getWeightKg(),
+				player.getNationality(),
+				toTotals(appearances),
+				appearances,
+				transfers);
 	}
 
 	public List<StandingRowResponse> standings(String competitionCode) {
@@ -321,6 +453,111 @@ public class CompetitionQueryService {
 			return "D";
 		}
 		return "N";
+	}
+
+	private SquadPlayerResponse toSquadPlayerResponse(Player player) {
+		return new SquadPlayerResponse(
+				player.getId(),
+				player.getName(),
+				player.getPosition(),
+				player.getAge(),
+				player.getHeightCm(),
+				player.getWeightKg(),
+				player.getNationality(),
+				player.getContractEndDate());
+	}
+
+	private static int contractEndWatchYear(String season) {
+		String[] parts = season.split("-");
+		if (parts.length == 2) {
+			try {
+				return Integer.parseInt(parts[1].trim()) + 1;
+			} catch (NumberFormatException ignored) {
+				// ignore
+			}
+		}
+		return LocalDate.now().getYear() + 1;
+	}
+
+	private TransferResponse toTransferResponse(Transfer transfer) {
+		return new TransferResponse(
+				transfer.getId(),
+				transfer.getTransferDate(),
+				transfer.getPlayerName(),
+				transfer.getPlayer() != null ? transfer.getPlayer().getId() : null,
+				transfer.getType().name(),
+				clubLabel(transfer.getFromTeam(), transfer.getFromClubName()),
+				clubLabel(transfer.getToTeam(), transfer.getToClubName()),
+				transfer.getFromTeam() != null ? transfer.getFromTeam().getId() : null,
+				transfer.getToTeam() != null ? transfer.getToTeam().getId() : null,
+				transfer.getContractLength(),
+				transfer.getCompetition().getCode(),
+				transfer.getCompetition().getName());
+	}
+
+	private PlayerAppearanceResponse toAppearanceResponse(MatchAppearance appearance, Long playerTeamId) {
+		RugbyMatch match = appearance.getMatch();
+		boolean home = match.getHomeTeam().getId().equals(playerTeamId);
+		Team opponent = home ? match.getAwayTeam() : match.getHomeTeam();
+		Integer teamScore = home ? match.getHomeScore() : match.getAwayScore();
+		Integer oppScore = home ? match.getAwayScore() : match.getHomeScore();
+		return new PlayerAppearanceResponse(
+				match.getId(),
+				match.getKickoffAt(),
+				match.getMatchday(),
+				match.getCompetition().getCode(),
+				opponent.getShortName(),
+				home ? "DOM" : "EXT",
+				resultLabel(teamScore, oppScore),
+				match.getHomeScore(),
+				match.getAwayScore(),
+				appearance.getJerseyNumber(),
+				appearance.isStarter(),
+				appearance.getMinutesPlayed(),
+				appearance.getTries(),
+				appearance.getYellowCards(),
+				appearance.getRedCards());
+	}
+
+	private static PlayerTotalsResponse toTotals(List<PlayerAppearanceResponse> appearances) {
+		int starts = 0;
+		int minutes = 0;
+		int tries = 0;
+		int yellow = 0;
+		int red = 0;
+		for (PlayerAppearanceResponse a : appearances) {
+			if (a.starter()) {
+				starts++;
+			}
+			minutes += a.minutesPlayed();
+			tries += a.tries();
+			yellow += a.yellowCards();
+			red += a.redCards();
+		}
+		return new PlayerTotalsResponse(appearances.size(), starts, minutes, tries, yellow, red);
+	}
+
+	private static String resultLabel(Integer teamScore, Integer oppScore) {
+		if (teamScore == null || oppScore == null) {
+			return "—";
+		}
+		if (teamScore > oppScore) {
+			return "V";
+		}
+		if (teamScore < oppScore) {
+			return "D";
+		}
+		return "N";
+	}
+
+	private String clubLabel(Team team, String fallbackName) {
+		if (team != null) {
+			return team.getShortName();
+		}
+		if (fallbackName != null && !fallbackName.isBlank()) {
+			return fallbackName;
+		}
+		return "—";
 	}
 
 	private void ensureCompetitionExists(String competitionCode) {

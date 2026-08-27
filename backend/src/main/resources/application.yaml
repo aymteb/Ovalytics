@@ -18,3 +18,7 @@ spring:
       initialize-schema: always
     job:
       enabled: false
+
+ovalytics:
+  import:
+    file:

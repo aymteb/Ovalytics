@@ -17,7 +17,7 @@
     </p>
     <div class="cta-row">
       <a routerLink="/fixtures" class="cta cta-primary">Matchs à venir</a>
-      <a routerLink="/standings" class="cta cta-secondary">Classement</a>
+      <a routerLink="/transfers" class="cta cta-secondary">Transferts</a>
     </div>
   </div>
 </section>
@@ -41,9 +41,9 @@
           <a [routerLink]="['/matches', match.id]" class="spotlight-card">
             <span class="matchday">J{{ match.matchday }}</span>
             <span class="fixture">
-              <span class="team">{{ match.homeTeam.shortName }}</span>
+              <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
               <span class="sep">–</span>
-              <span class="team">{{ match.awayTeam.shortName }}</span>
+              <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
             </span>
             <span class="date">{{ match.kickoffAt | date: 'EEE d MMM · HH:mm' }}</span>
           </a>

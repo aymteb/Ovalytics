@@ -1,0 +1,135 @@
+<p class="back">
+  <a routerLink="/transfers">← Transferts</a>
+</p>
+
+@if (loading()) {
+  <p class="loading">Chargement...</p>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else if (player(); as p) {
+  <header class="hero">
+    <p class="eyebrow">{{ p.competitionName }}</p>
+    <h2>{{ p.name }}</h2>
+    <p class="identity">
+      @if (p.position) {
+        <span>{{ p.position }}</span>
+      }
+      @if (p.age) {
+        <span>{{ p.age }} ans</span>
+      }
+      @if (p.nationality) {
+        <span>{{ p.nationality }}</span>
+      }
+      @if (p.heightCm && p.weightKg) {
+        <span>{{ p.heightCm }} cm · {{ p.weightKg }} kg</span>
+      }
+    </p>
+    <p class="meta">
+      Club actuel :
+      <a [routerLink]="['/clubs', p.competitionCode, p.team.shortName]">
+        {{ p.team.name }}
+      </a>
+      ({{ p.team.shortName }})
+    </p>
+  </header>
+
+  <section class="block">
+    <h3>Totaux</h3>
+    <ul class="totals">
+      <li><span class="label">Matchs</span><span class="value">{{ p.totals.matches }}</span></li>
+      <li><span class="label">Titulaire</span><span class="value">{{ p.totals.starts }}</span></li>
+      <li><span class="label">Minutes</span><span class="value">{{ p.totals.minutes }}'</span></li>
+      <li><span class="label">Essais</span><span class="value">{{ p.totals.tries }}</span></li>
+      <li><span class="label">Jaunes</span><span class="value">{{ p.totals.yellowCards }}</span></li>
+      <li><span class="label">Rouges</span><span class="value">{{ p.totals.redCards }}</span></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h3>Feuilles de match</h3>
+    @if (p.appearances.length === 0) {
+      <p class="empty">Aucune feuille de match en démo pour ce joueur.</p>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>J.</th>
+              <th>Adv.</th>
+              <th>Lieu</th>
+              <th>V/N/D</th>
+              <th>Score</th>
+              <th>N°</th>
+              <th>Min</th>
+              <th>E</th>
+              <th>CJ</th>
+              <th>CR</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of p.appearances; track a.matchId) {
+              <tr>
+                <td>{{ a.kickoffAt | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ a.matchday }}</td>
+                <td>
+                  <a [routerLink]="['/matches', a.matchId]">{{ a.opponentShortName }}</a>
+                </td>
+                <td>{{ a.venue }}</td>
+                <td>{{ a.result }}</td>
+                <td>
+                  @if (a.homeScore != null && a.awayScore != null) {
+                    {{ a.homeScore }}-{{ a.awayScore }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ a.jerseyNumber }}{{ a.starter ? '' : ' (r)' }}</td>
+                <td>{{ a.minutesPlayed }}'</td>
+                <td>{{ a.tries || '—' }}</td>
+                <td>{{ a.yellowCards || '—' }}</td>
+                <td>{{ a.redCards || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <section class="block">
+    <h3>Mouvements</h3>
+    @if (p.transfers.length === 0) {
+      <p class="empty">Aucun mouvement enregistré.</p>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Championnat</th>
+              <th>Type</th>
+              <th>De</th>
+              <th>Vers</th>
+              <th>Durée</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of p.transfers; track t.id) {
+              <tr>
+                <td>{{ t.transferDate | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ t.competitionName }}</td>
+                <td>
+                  <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+                </td>
+                <td>{{ t.fromClub }}</td>
+                <td>{{ t.toClub }}</td>
+                <td class="duration">{{ t.contractLength || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+}

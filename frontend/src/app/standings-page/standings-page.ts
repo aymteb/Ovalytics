@@ -1,10 +1,11 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CompetitionApi } from '../competition-api';
 import { StandingRow } from '../models';
+import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
   selector: 'app-standings-page',
-  imports: [],
+  imports: [TeamLogo],
   templateUrl: './standings-page.html',
   styleUrl: './standings-page.css',
 })
