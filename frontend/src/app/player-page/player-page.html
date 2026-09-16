@@ -48,7 +48,7 @@
   <section class="block">
     <h3>Feuilles de match</h3>
     @if (p.appearances.length === 0) {
-      <p class="empty">Aucune feuille de match en démo pour ce joueur.</p>
+      <p class="empty">Aucune feuille de match importée pour ce joueur.</p>
     } @else {
       <div class="table-scroll">
         <table>
@@ -97,8 +97,19 @@
     }
   </section>
 
+  @if (careerEntries().length > 0) {
+    <section class="block">
+      <h3>Parcours</h3>
+      <ul class="career-list">
+        @for (entry of careerEntries(); track entry) {
+          <li>{{ entry }}</li>
+        }
+      </ul>
+    </section>
+  }
+
   <section class="block">
-    <h3>Mouvements</h3>
+    <h3>Transferts</h3>
     @if (p.transfers.length === 0) {
       <p class="empty">Aucun mouvement enregistré.</p>
     } @else {
@@ -108,10 +119,10 @@
             <tr>
               <th>Date</th>
               <th>Championnat</th>
-              <th>Type</th>
-              <th>De</th>
-              <th>Vers</th>
-              <th>Durée</th>
+              <th>Mouvement</th>
+              @if (showTransferDuration()) {
+                <th>Durée</th>
+              }
             </tr>
           </thead>
           <tbody>
@@ -120,11 +131,28 @@
                 <td>{{ t.transferDate | date: 'dd/MM/yyyy' }}</td>
                 <td>{{ t.competitionName }}</td>
                 <td>
-                  <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+                  <div class="movement">
+                    <div class="club-chip">
+                      @if (clubShort(t, 'from'); as fromShort) {
+                        <app-team-logo [shortName]="fromShort" size="sm" />
+                      } @else {
+                        <span class="club-fallback">{{ clubFallback(t, 'from') }}</span>
+                      }
+                    </div>
+                    <span class="arrow" aria-hidden="true">→</span>
+                    <div class="club-chip">
+                      @if (clubShort(t, 'to'); as toShort) {
+                        <app-team-logo [shortName]="toShort" size="sm" />
+                      } @else {
+                        <span class="club-fallback">{{ clubFallback(t, 'to') }}</span>
+                      }
+                    </div>
+                    <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+                  </div>
                 </td>
-                <td>{{ t.fromClub }}</td>
-                <td>{{ t.toClub }}</td>
-                <td class="duration">{{ t.contractLength || '—' }}</td>
+                @if (showTransferDuration()) {
+                  <td class="duration">{{ t.contractLength }}</td>
+                }
               </tr>
             }
           </tbody>

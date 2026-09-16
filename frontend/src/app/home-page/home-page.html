@@ -13,7 +13,7 @@
     <p class="brand">Ovalytics</p>
     <h2 class="headline">Le rugby qu’on lit le week-end</h2>
     <p class="lede">
-      Scores, forme, absences — une vraie lecture avant le coup d’envoi.
+      Scores en direct, forme, absences — une vraie lecture avant et pendant le match.
     </p>
     <div class="cta-row">
       <a routerLink="/fixtures" class="cta cta-primary">Matchs à venir</a>
@@ -22,31 +22,77 @@
   </div>
 </section>
 
-<section class="spotlight">
-  <div class="spotlight-head">
-    <h2>À l’affiche</h2>
-    <a routerLink="/fixtures" class="see-all">Tout le calendrier</a>
+<section class="live-feed" aria-labelledby="live-heading">
+  <div class="live-head">
+    <h2 id="live-heading">En direct</h2>
+    <a routerLink="/results" class="see-all">Résultats</a>
+  </div>
+
+  @if (liveLoading()) {
+    <p class="loading">Chargement...</p>
+  } @else if (liveErrorMessage()) {
+    <p class="error">{{ liveErrorMessage() }}</p>
+  } @else if (liveMatches().length === 0) {
+    <p class="empty">Aucun match en cours pour le moment.</p>
+  } @else {
+    <ul class="live-list">
+      @for (match of liveMatches(); track match.id) {
+        <li>
+          <a [routerLink]="['/matches', match.id]" class="live-card">
+            <span class="live-badge">Live</span>
+            <span class="live-meta">
+              {{ competitionLabel(match.competitionCode) }} · J{{ match.matchday }}
+            </span>
+            <span class="live-teams">
+              <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+              <span class="live-score">{{ match.homeScore }} - {{ match.awayScore }}</span>
+              <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+            </span>
+            <time [attr.datetime]="match.kickoffAt">
+              {{ match.kickoffAt | date: 'EEE d MMM · HH:mm' }}
+            </time>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+<section class="news-feed" aria-labelledby="news-heading">
+  <div class="news-head">
+    <h2 id="news-heading">Actualités</h2>
+    <a routerLink="/fixtures" class="see-all">Calendrier</a>
   </div>
 
   @if (loading()) {
     <p class="loading">Chargement...</p>
   } @else if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
-  } @else if (featured().length === 0) {
-    <p class="empty">Pas encore de match à venir en base.</p>
+  } @else if (news().length === 0) {
+    <p class="empty">Pas encore d’actualités en base. Lance l’import news après le scrap.</p>
   } @else {
-    <ul class="spotlight-list">
-      @for (match of featured(); track match.id) {
+    <ul class="news-list">
+      @for (item of news(); track item.id) {
         <li>
-          <a [routerLink]="['/matches', match.id]" class="spotlight-card">
-            <span class="matchday">J{{ match.matchday }}</span>
-            <span class="fixture">
-              <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
-              <span class="sep">–</span>
-              <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
-            </span>
-            <span class="date">{{ match.kickoffAt | date: 'EEE d MMM · HH:mm' }}</span>
-          </a>
+          <article class="news-card">
+            <div class="news-meta">
+              <span class="source">{{ item.source }}</span>
+              <time [attr.datetime]="item.publishedAt">
+                {{ item.publishedAt | date: 'EEE d MMM · HH:mm' }}
+              </time>
+              @if (item.competitionCode) {
+                <span class="tag">{{ competitionLabel(item.competitionCode) }}</span>
+              }
+            </div>
+            <h3>
+              <a [href]="item.sourceUrl" target="_blank" rel="noopener noreferrer">
+                {{ item.title }}
+              </a>
+            </h3>
+            @if (item.summary) {
+              <p class="summary">{{ item.summary }}</p>
+            }
+          </article>
         </li>
       }
     </ul>

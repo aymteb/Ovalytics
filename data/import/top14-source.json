@@ -1,0 +1,88 @@
+{
+  "matches": [
+    {
+      "competitionCode": "TOP14",
+      "homeShortName": "TOU",
+      "awayShortName": "VAN",
+      "matchday": 1,
+      "kickoffAt": "2025-09-06T21:05:00",
+      "status": "FINISHED",
+      "homeScore": "42",
+      "awayScore": "14",
+      "homeTries": "6",
+      "awayTries": "2"
+    },
+    {
+      "competitionCode": "TOP14",
+      "homeShortName": "UBB",
+      "awayShortName": "ASM",
+      "matchday": 1,
+      "kickoffAt": "2025-09-06T16:00:00",
+      "status": "FINISHED",
+      "homeScore": "28",
+      "awayScore": "21",
+      "homeTries": "4",
+      "awayTries": "3"
+    },
+    {
+      "competitionCode": "TOP14",
+      "homeShortName": "LAR",
+      "awayShortName": "CAS",
+      "matchday": 1,
+      "kickoffAt": "2025-09-06T18:30:00",
+      "status": "FINISHED",
+      "homeScore": "24",
+      "awayScore": "20",
+      "homeTries": "3",
+      "awayTries": "2"
+    },
+    {
+      "competitionCode": "TOP14",
+      "homeShortName": "TOL",
+      "awayShortName": "BAY",
+      "matchday": 1,
+      "kickoffAt": "2025-09-07T21:05:00",
+      "status": "FINISHED",
+      "homeScore": "33",
+      "awayScore": "19",
+      "homeTries": "5",
+      "awayTries": "2"
+    },
+    {
+      "competitionCode": "TOP14",
+      "homeShortName": "SFP",
+      "awayShortName": "PAU",
+      "matchday": 1,
+      "kickoffAt": "2025-09-07T17:00:00",
+      "status": "FINISHED",
+      "homeScore": "27",
+      "awayScore": "27",
+      "homeTries": "3",
+      "awayTries": "3"
+    },
+    {
+      "competitionCode": "TOP14",
+      "homeShortName": "RAC",
+      "awayShortName": "MHR",
+      "matchday": 1,
+      "kickoffAt": "2025-09-07T15:00:00",
+      "status": "FINISHED",
+      "homeScore": "31",
+      "awayScore": "17",
+      "homeTries": "4",
+      "awayTries": "2"
+    },
+    {
+      "competitionCode": "TOP14",
+      "homeShortName": "LOU",
+      "awayShortName": "USAP",
+      "matchday": 1,
+      "kickoffAt": "2025-09-07T21:05:00",
+      "status": "FINISHED",
+      "homeScore": "22",
+      "awayScore": "16",
+      "homeTries": "2",
+      "awayTries": "2"
+    }
+  ]
+}

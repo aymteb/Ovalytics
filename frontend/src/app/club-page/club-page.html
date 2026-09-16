@@ -89,15 +89,19 @@
   <section class="block contract-end">
     <h3>Fin de contrat ({{ m.contractEndWatchYear }})</h3>
     <p class="intro-block">
-      Joueurs dont le contrat court jusqu'en {{ m.contractEndWatchYear }}.
+      Joueurs listés « En fin de contrat » sur All Rugby pour {{ m.contractEndWatchYear }}.
     </p>
     @if (m.contractEndsNextYear.length === 0) {
-      <p class="empty">Aucun pour cette échéance.</p>
+      <p class="empty">Aucun joueur connu pour cette échéance.</p>
     } @else {
       <ul>
-        @for (p of m.contractEndsNextYear; track p.id) {
+        @for (p of m.contractEndsNextYear; track p.name) {
           <li>
-            <a [routerLink]="['/players', p.id]" class="player">{{ p.name }}</a>
+            @if (p.id) {
+              <a [routerLink]="['/players', p.id]" class="player">{{ p.name }}</a>
+            } @else {
+              <span class="player">{{ p.name }}</span>
+            }
             @if (p.position) {
               <span class="meta">{{ p.position }}</span>
             }
@@ -111,31 +115,39 @@
   </section>
 
   <section class="block squad">
-    <h3>Effectif</h3>
+    <h3>Effectif projeté</h3>
+    <p class="squad-intro">
+      Effectif projeté. Couleurs = statut JIFF. Tri par âge dans chaque poste.
+    </p>
     @if (squadGroups().length === 0) {
       <p class="empty">Aucun joueur en base pour ce club.</p>
     } @else {
-      @for (group of squadGroups(); track group.position) {
-        <div class="squad-group">
-          <h4>{{ group.position }}</h4>
-          <ul>
-            @for (p of group.players; track p.id) {
-              <li>
-                <a [routerLink]="['/players', p.id]" class="player">{{ p.name }}</a>
-                @if (p.age) {
-                  <span class="meta">{{ p.age }} ans</span>
-                }
-                @if (p.nationality) {
-                  <span class="meta">{{ p.nationality }}</span>
-                }
-                @if (p.contractEndDate) {
-                  <span class="contract">{{ contractLabel(p.contractEndDate) }}</span>
-                }
-              </li>
-            }
-          </ul>
-        </div>
-      }
+      <p class="legend">
+        <span class="status espoir">Espoirs</span>
+        <span class="status espoir-non-jiff">Espoirs non-JIFF</span>
+        <span class="status jiff">JIFF</span>
+        <span class="status non-jiff">NON-JIFF</span>
+      </p>
+      <div class="squad-grid">
+        @for (group of squadGroups(); track group.position) {
+          <div class="squad-column">
+            <h4>{{ group.position }}</h4>
+            <ol>
+              @for (player of group.players; track player.id) {
+                <li>
+                  <a
+                    [routerLink]="['/players', player.id]"
+                    [class]="'squad-player ' + playerStatusClass(player)"
+                  >{{ player.name }}</a>
+                  @if (player.age) {
+                    <span class="age">, {{ player.age }} ans</span>
+                  }
+                </li>
+              }
+            </ol>
+          </div>
+        }
+      </div>
     }
   </section>
 }

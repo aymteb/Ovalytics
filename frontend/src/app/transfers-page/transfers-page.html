@@ -1,6 +1,6 @@
 <h2>Transferts</h2>
 <p class="intro">
-  Journal d’actu mercato (toutes compétitions), ou vue club par club pour un championnat.
+  Mercato de la saison suivante (annonces déjà connues). Les fins de contrat sont sur la fiche de chaque club.
 </p>
 
 <div class="tabs" role="tablist" aria-label="Vue des transferts">
@@ -57,10 +57,10 @@
             <th>Date</th>
             <th>Championnat</th>
             <th>Joueur</th>
-            <th>Type</th>
-            <th>De</th>
-            <th>Vers</th>
-            <th>Durée</th>
+            <th>Mouvement</th>
+            @if (showDurationColumn()) {
+              <th>Durée</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -76,20 +76,38 @@
                 }
               </td>
               <td>
-                <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+                <div class="movement">
+                  <div class="club-chip">
+                    @if (clubShort(t, 'from'); as fromShort) {
+                      <app-team-logo [shortName]="fromShort" size="sm" />
+                    } @else {
+                      <span class="club-fallback">{{ clubFallback(t, 'from') }}</span>
+                    }
+                  </div>
+                  <span class="arrow" aria-hidden="true">→</span>
+                  <div class="club-chip">
+                    @if (clubShort(t, 'to'); as toShort) {
+                      <app-team-logo [shortName]="toShort" size="sm" />
+                    } @else {
+                      <span class="club-fallback">{{ clubFallback(t, 'to') }}</span>
+                    }
+                  </div>
+                  <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
+                </div>
               </td>
-              <td>{{ t.fromClub }}</td>
-              <td>{{ t.toClub }}</td>
-              <td class="duration">{{ t.contractLength || '—' }}</td>
+              @if (showDurationColumn()) {
+                <td class="duration">{{ t.contractLength }}</td>
+              }
             </tr>
           }
         </tbody>
       </table>
     </div>
   }
-} @else if (clubTransfers().length === 0) {
-  <p>Aucun transfert en base pour ce championnat.</p>
-} @else {
+} @else if (tab() === 'clubs') {
+  @if (teams().length === 0) {
+    <p>Aucun club pour ce championnat.</p>
+  } @else {
   <nav class="club-jump" aria-label="Aller à un club">
     @for (board of clubBoards(); track board.team.id) {
       <a [routerLink]="clubLink(board.team)" class="club-jump-link">
@@ -108,7 +126,7 @@
         <div>
           <h4>Arrivées</h4>
           @if (board.arrivals.length === 0) {
-            <p class="empty">Aucune</p>
+            <p class="empty">Aucune pour l’instant</p>
           } @else {
             <ul>
               @for (t of board.arrivals; track t.id) {
@@ -130,7 +148,7 @@
         <div>
           <h4>Départs</h4>
           @if (board.departures.length === 0) {
-            <p class="empty">Aucun</p>
+            <p class="empty">Aucun pour l’instant</p>
           } @else {
             <ul>
               @for (t of board.departures; track t.id) {
@@ -152,7 +170,7 @@
         <div>
           <h4>Prolongations</h4>
           @if (board.extensions.length === 0) {
-            <p class="empty">Aucune</p>
+            <p class="empty">Aucune pour l’instant</p>
           } @else {
             <ul>
               @for (t of board.extensions; track t.id) {
@@ -172,5 +190,6 @@
         </div>
       </div>
     </section>
+  }
   }
 }

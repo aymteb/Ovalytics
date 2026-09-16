@@ -115,8 +115,16 @@ public class Transfer {
 		return fromTeam;
 	}
 
+	public void setFromTeam(Team fromTeam) {
+		this.fromTeam = fromTeam;
+	}
+
 	public Team getToTeam() {
 		return toTeam;
+	}
+
+	public void setToTeam(Team toTeam) {
+		this.toTeam = toTeam;
 	}
 
 	public String getFromClubName() {
@@ -129,5 +137,17 @@ public class Transfer {
 
 	public String getContractLength() {
 		return contractLength;
+	}
+
+	public void setFromClubName(String fromClubName) {
+		this.fromClubName = fromClubName;
+	}
+
+	public void setToClubName(String toClubName) {
+		this.toClubName = toClubName;
+	}
+
+	public void setContractLength(String contractLength) {
+		this.contractLength = contractLength;
 	}
 }

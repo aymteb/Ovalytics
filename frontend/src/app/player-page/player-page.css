@@ -155,6 +155,45 @@ th {
   color: var(--color-muted-foreground);
 }
 
+.movement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+}
+
+.club-chip {
+  display: inline-flex;
+  align-items: center;
+}
+
+.club-fallback {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+  max-width: 8rem;
+}
+
+.arrow {
+  font-weight: 800;
+  color: var(--color-muted-foreground);
+}
+
+.career-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.career-list li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.career-list li:last-child {
+  border-bottom: none;
+}
+
 .type {
   font-size: 0.75rem;
   font-weight: 700;

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ovalytics.backend.domain.Absence;
-import com.ovalytics.backend.domain.AbsenceType;
 import com.ovalytics.backend.domain.Competition;
 import com.ovalytics.backend.domain.MatchAppearance;
 import com.ovalytics.backend.domain.MatchStatus;
@@ -37,19 +36,7 @@ import com.ovalytics.backend.repository.TransferRepository;
 @Order(1)
 public class Top14DataLoader implements ApplicationRunner {
 
-	private static final LocalDate SEASON_START = LocalDate.of(2025, 8, 1);
-
-	private static final String VAN_UBB_ANALYSIS = """
-			Vannes accueille Bordeaux-Bègles avec l'ambition de poser un vrai problème à domicile. \
-			L'UBB reste favori sur le papier, plus dense devant et plus tranchant derrière. \
-			Scénario probable : victoire bordelaise, avec un bonus offensif possible si le rythme monte tôt. \
-			Réserve classique : carton, mêlée qui s'effondre, ou Vannes qui verrouille le score.""";
-
-	private static final String ASM_TOU_ANALYSIS = """
-			Clermont-Toulouse, c'est souvent une affiche de caractère. Toulouse arrive avec plus de solutions \
-			et une habitude des gros matchs ; Clermont peut basculer le match s'il impose son pack. \
-			Lecture : victoire toulousaine, sans forcément le bonus. \
-			Tout peut basculer sur les absences de dernière minute et la discipline.""";
+	private static final LocalDate SEASON_START = LocalDate.of(2026, 8, 1);
 
 	private final CompetitionRepository competitionRepository;
 	private final TeamRepository teamRepository;
@@ -81,14 +68,18 @@ public class Top14DataLoader implements ApplicationRunner {
 	public void run(ApplicationArguments args) {
 		if (competitionRepository.findByCode("TOP14").isPresent()) {
 			Competition top14 = competitionRepository.findByCode("TOP14").orElseThrow();
+			top14.setSeason("2026-2027");
 			top14.setSeasonStart(SEASON_START);
 			top14.setOffensiveBonusRule(OffensiveBonusRule.TRY_DIFFERENCE);
 			top14.setOffensiveBonusThreshold(3);
+			removeObsoleteDemoMatches();
+			removeOverdueScheduledMatches();
 			dedupePlayersIfNeeded();
-			fillMissingAnalyses();
-			fillMissingTries();
+			if (hasImportedSchedule(top14)) {
+				cleanupDemoData(top14);
+				return;
+			}
 			seedPreviousSeasonIfNeeded(top14);
-			seedAbsencesIfNeeded();
 			seedTransfersIfNeeded(top14);
 			fillPlayerProfilesIfNeeded();
 			fillContractEndDatesIfNeeded();
@@ -101,7 +92,7 @@ public class Top14DataLoader implements ApplicationRunner {
 				new Competition(
 						"Top 14",
 						"TOP14",
-						"2025-2026",
+						"2026-2027",
 						SEASON_START,
 						5,
 						OffensiveBonusRule.TRY_DIFFERENCE,
@@ -126,23 +117,6 @@ public class Top14DataLoader implements ApplicationRunner {
 
 		rugbyMatchRepository.saveAll(previousSeasonMatches(top14, teams));
 
-		rugbyMatchRepository.saveAll(List.of(
-				finished(top14, teams, "TOU", "VAN", 1, LocalDateTime.of(2025, 9, 6, 21, 5), 42, 14, 6, 2, null),
-				finished(top14, teams, "UBB", "ASM", 1, LocalDateTime.of(2025, 9, 6, 16, 0), 28, 21, 4, 3, null),
-				finished(top14, teams, "LAR", "CAS", 1, LocalDateTime.of(2025, 9, 6, 18, 30), 24, 20, 3, 2, null),
-				finished(top14, teams, "TOL", "BAY", 1, LocalDateTime.of(2025, 9, 7, 21, 5), 33, 19, 5, 2, null),
-				finished(top14, teams, "SFP", "PAU", 1, LocalDateTime.of(2025, 9, 7, 17, 0), 27, 27, 3, 3, null),
-				finished(top14, teams, "RAC", "MHR", 1, LocalDateTime.of(2025, 9, 7, 15, 0), 31, 17, 4, 2, null),
-				finished(top14, teams, "LOU", "USAP", 1, LocalDateTime.of(2025, 9, 7, 21, 5), 22, 16, 2, 2, null),
-				scheduled(top14, teams, "VAN", "UBB", 2, LocalDateTime.of(2025, 9, 13, 16, 0), VAN_UBB_ANALYSIS),
-				scheduled(top14, teams, "ASM", "TOU", 2, LocalDateTime.of(2025, 9, 13, 21, 5), ASM_TOU_ANALYSIS),
-				scheduled(top14, teams, "CAS", "TOL", 2, LocalDateTime.of(2025, 9, 14, 17, 0), null),
-				scheduled(top14, teams, "BAY", "LAR", 2, LocalDateTime.of(2025, 9, 14, 21, 5), null),
-				scheduled(top14, teams, "PAU", "RAC", 2, LocalDateTime.of(2025, 9, 14, 15, 0), null),
-				scheduled(top14, teams, "MHR", "SFP", 2, LocalDateTime.of(2025, 9, 14, 18, 30), null),
-				scheduled(top14, teams, "USAP", "LOU", 2, LocalDateTime.of(2025, 9, 13, 18, 30), null)));
-
-		seedAbsences(teams);
 		seedTransfers(top14, teams);
 		seedAppearances();
 		seedSquad(teams);
@@ -205,103 +179,90 @@ public class Top14DataLoader implements ApplicationRunner {
 				finished(top14, teams, "PAU", "VAN", 26, LocalDateTime.of(2025, 6, 8, 21, 5), 17, 23, 2, 3, null));
 	}
 
-	private void fillMissingAnalyses() {
-		for (RugbyMatch match : rugbyMatchRepository.findByCompetitionCode("TOP14")) {
-			if (match.getAnalysis() != null) {
+	private boolean hasImportedSchedule(Competition competition) {
+		LocalDateTime seasonStart = competition.getSeasonStart().atStartOfDay();
+		long scheduled = rugbyMatchRepository.countByCompetitionCodeAndStatusSince(
+				competition.getCode(),
+				MatchStatus.SCHEDULED,
+				seasonStart);
+		return scheduled >= 30;
+	}
+
+	private void cleanupDemoData(Competition top14) {
+		LocalDateTime seasonStart = top14.getSeasonStart().atStartOfDay();
+		for (RugbyMatch match : rugbyMatchRepository.findByCompetitionCode(top14.getCode())) {
+			if (match.getKickoffAt().isBefore(seasonStart)) {
+				matchAppearanceRepository.deleteByMatchId(match.getId());
+				rugbyMatchRepository.delete(match);
 				continue;
 			}
-			String home = match.getHomeTeam().getShortName();
-			String away = match.getAwayTeam().getShortName();
-			if ("VAN".equals(home) && "UBB".equals(away)) {
-				match.setAnalysis(VAN_UBB_ANALYSIS);
-			} else if ("ASM".equals(home) && "TOU".equals(away)) {
-				match.setAnalysis(ASM_TOU_ANALYSIS);
+			if (match.getAnalysis() != null && isDemoAnalysis(match.getAnalysis())) {
+				match.setAnalysis(null);
 			}
 		}
+		transferRepository.findByCompetitionCodeOrderByTransferDateDesc(top14.getCode()).stream()
+				.filter(t -> t.getPlayer() != null)
+				.forEach(transferRepository::delete);
 	}
 
-	private void fillMissingTries() {
-		for (RugbyMatch match : rugbyMatchRepository.findByCompetitionCodeAndStatus(
-				"TOP14", MatchStatus.FINISHED)) {
-			if (match.getHomeTries() != null) {
-				continue;
-			}
-			String home = match.getHomeTeam().getShortName();
-			String away = match.getAwayTeam().getShortName();
-			int[] tries = demoTries(home, away, match.getMatchday());
-			if (tries != null) {
-				match.setHomeTries(tries[0]);
-				match.setAwayTries(tries[1]);
-			}
+	private static boolean isDemoAnalysis(String analysis) {
+		return analysis.contains("Vannes accueille Bordeaux")
+				|| analysis.contains("Clermont-Toulouse");
+	}
+
+	private void removeOverdueScheduledMatches() {
+		LocalDateTime seasonStart = SEASON_START.atStartOfDay();
+		LocalDateTime now = LocalDateTime.now();
+		List<RugbyMatch> overdue = rugbyMatchRepository
+				.findByCompetitionCodeAndStatus("TOP14", MatchStatus.SCHEDULED)
+				.stream()
+				.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
+				.filter(m -> m.getKickoffAt().isBefore(now))
+				.toList();
+		for (RugbyMatch match : overdue) {
+			matchAppearanceRepository.deleteByMatchId(match.getId());
+			rugbyMatchRepository.delete(match);
 		}
 	}
 
-	private static int[] demoTries(String home, String away, int matchday) {
-		if (matchday != 1) {
-			return null;
+	private void removeObsoleteDemoMatches() {
+		LocalDateTime seasonStart = SEASON_START.atStartOfDay();
+		for (String[] fixture : OBSOLETE_DEMO_FIXTURES) {
+			rugbyMatchRepository
+					.findByCompetitionAndTeamsAndMatchday(
+							"TOP14", fixture[0], fixture[1], Integer.parseInt(fixture[2]))
+					.ifPresent(match -> {
+						if (match.getKickoffAt().isBefore(seasonStart)) {
+							return;
+						}
+						matchAppearanceRepository.deleteByMatchId(match.getId());
+						rugbyMatchRepository.delete(match);
+					});
 		}
-		return switch (home + "-" + away) {
-			case "TOU-VAN" -> new int[] {6, 2};
-			case "UBB-ASM" -> new int[] {4, 3};
-			case "LAR-CAS" -> new int[] {3, 2};
-			case "TOL-BAY" -> new int[] {5, 2};
-			case "SFP-PAU" -> new int[] {3, 3};
-			case "RAC-MHR" -> new int[] {4, 2};
-			case "LOU-USAP" -> new int[] {2, 2};
-			default -> null;
-		};
 	}
 
-	private void seedAbsencesIfNeeded() {
-		if (playerRepository.count() > 0) {
-			return;
-		}
-		Map<String, Team> teams = new HashMap<>();
-		for (Team team : teamRepository.findByCompetitionCodeOrderByNameAsc("TOP14")) {
-			teams.put(team.getShortName(), team);
-		}
-		seedAbsences(teams);
-	}
-
-	private void seedAbsences(Map<String, Team> teams) {
-		Player vanPillar = ensurePlayer(
-				"Maxime Lafage", teams.get("VAN"), "Demi d'ouverture", 28, 178, 86, "France",
-				LocalDate.of(2027, 6, 30));
-		Player vanBack = ensurePlayer(
-				"Romaric Camou", teams.get("VAN"), "Ailier", 26, 182, 88, "France",
-				LocalDate.of(2026, 6, 30));
-		Player ubbLock = ensurePlayer(
-				"Adam Coleman", teams.get("UBB"), "Deuxième ligne", 34, 204, 122, "Australie",
-				LocalDate.of(2026, 6, 30));
-		Player ubbWing = ensurePlayer(
-				"Louis Bielle-Biarrey", teams.get("UBB"), "Ailier", 22, 184, 84, "France",
-				LocalDate.of(2028, 6, 30));
-
-		absenceRepository.saveAll(List.of(
-				new Absence(vanPillar, AbsenceType.INJURED, "Genou"),
-				new Absence(vanBack, AbsenceType.SUSPENDED, "Carton rouge"),
-				new Absence(ubbLock, AbsenceType.INJURED, "Epaule"),
-				new Absence(ubbWing, AbsenceType.INJURED, "Hamstring")));
-	}
+	private static final List<String[]> OBSOLETE_DEMO_FIXTURES = List.of(
+			new String[] {"TOU", "VAN", "1"},
+			new String[] {"UBB", "ASM", "1"},
+			new String[] {"LAR", "CAS", "1"},
+			new String[] {"TOL", "BAY", "1"},
+			new String[] {"SFP", "PAU", "1"},
+			new String[] {"RAC", "MHR", "1"},
+			new String[] {"LOU", "USAP", "1"},
+			new String[] {"VAN", "UBB", "2"},
+			new String[] {"ASM", "TOU", "2"},
+			new String[] {"CAS", "TOL", "2"},
+			new String[] {"BAY", "LAR", "2"},
+			new String[] {"PAU", "RAC", "2"},
+			new String[] {"MHR", "SFP", "2"},
+			new String[] {"USAP", "LOU", "2"});
 
 	private void seedTransfersIfNeeded(Competition top14) {
-		Map<String, Team> teams = new HashMap<>();
-		for (Team team : teamRepository.findByCompetitionCodeOrderByNameAsc("TOP14")) {
-			teams.put(team.getShortName(), team);
-		}
 		if (!transferRepository.existsByCompetitionCode("TOP14")) {
-			seedTransfers(top14, teams);
-			return;
-		}
-		boolean needsReseed = transferRepository
-				.findByCompetitionCodeOrderByTransferDateDesc("TOP14")
-				.stream()
-				.anyMatch(t -> t.getContractLength() == null
-						|| t.getContractLength().isBlank()
-						|| t.getPlayer() == null);
-		if (needsReseed) {
-			transferRepository.deleteAll(
-					transferRepository.findByCompetitionCodeOrderByTransferDateDesc("TOP14"));
+			Map<String, Team> teams = new HashMap<>();
+			for (Team team : teamRepository.findByCompetitionCodeOrderByNameAsc("TOP14")) {
+				teams.put(team.getShortName(), team);
+			}
 			seedTransfers(top14, teams);
 		}
 	}
@@ -449,6 +410,9 @@ public class Top14DataLoader implements ApplicationRunner {
 	}
 
 	private void seedSquadIfNeeded() {
+		if (playerRepository.countByCompetitionCode("TOP14") > 80) {
+			return;
+		}
 		Map<String, Team> teams = new HashMap<>();
 		for (Team team : teamRepository.findByCompetitionCodeOrderByNameAsc("TOP14")) {
 			teams.put(team.getShortName(), team);
@@ -536,7 +500,7 @@ public class Top14DataLoader implements ApplicationRunner {
 	private void dedupePlayersIfNeeded() {
 		Map<String, List<Player>> groups = new HashMap<>();
 		for (Player player : playerRepository.findAll()) {
-			String key = player.getTeam().getId() + "::" + player.getName();
+			String key = player.getTeam().getId() + "::" + player.getName().trim().toLowerCase();
 			groups.computeIfAbsent(key, k -> new ArrayList<>()).add(player);
 		}
 		for (List<Player> group : groups.values()) {
@@ -600,14 +564,11 @@ public class Top14DataLoader implements ApplicationRunner {
 		}
 
 		List<MatchAppearance> appearances = new ArrayList<>();
-		addAppearance(appearances, dupont, "TOU", "VAN", 1, 9, true, 72, 1, 0, 0);
 		addAppearance(appearances, dupont, "TOU", "UBB", 22, 9, true, 80, 0, 0, 0);
 		addAppearance(appearances, dupont, "TOL", "TOU", 23, 9, true, 65, 1, 1, 0);
 		addAppearance(appearances, dupont, "TOU", "LAR", 24, 9, true, 80, 0, 0, 0);
-		addAppearance(appearances, ramos, "TOU", "VAN", 1, 15, true, 80, 0, 0, 0);
 		addAppearance(appearances, ramos, "TOU", "UBB", 22, 15, true, 80, 1, 0, 0);
 		addAppearance(appearances, ramos, "TOL", "TOU", 23, 15, true, 74, 0, 0, 0);
-		addAppearance(appearances, woki, "UBB", "ASM", 1, 4, true, 70, 0, 0, 0);
 		addAppearance(appearances, woki, "TOU", "UBB", 22, 4, true, 68, 0, 1, 0);
 		addAppearance(appearances, woki, "UBB", "LAR", 23, 19, false, 28, 0, 0, 0);
 		addAppearance(appearances, woki, "TOL", "UBB", 25, 4, true, 75, 0, 0, 0);
@@ -682,26 +643,4 @@ public class Top14DataLoader implements ApplicationRunner {
 		return match;
 	}
 
-	private static RugbyMatch scheduled(
-			Competition competition,
-			Map<String, Team> teams,
-			String home,
-			String away,
-			int matchday,
-			LocalDateTime kickoffAt,
-			String analysis) {
-		RugbyMatch match = new RugbyMatch(
-				competition,
-				teams.get(home),
-				teams.get(away),
-				kickoffAt,
-				matchday,
-				MatchStatus.SCHEDULED,
-				null,
-				null,
-				null,
-				null);
-		match.setAnalysis(analysis);
-		return match;
-	}
 }

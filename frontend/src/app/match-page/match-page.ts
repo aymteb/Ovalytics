@@ -3,10 +3,11 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { Match, TeamForm, VenueRecord } from '../models';
+import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
   selector: 'app-match-page',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TeamLogo],
   templateUrl: './match-page.html',
   styleUrl: './match-page.css',
 })
@@ -47,11 +48,23 @@ export class MatchPage implements OnInit {
     if (type === 'SUSPENDED') {
       return 'Suspendu';
     }
+    if (type === 'INTERNATIONAL') {
+      return 'Sélection';
+    }
     return type;
   }
 
   recordLabel(record: TeamForm | VenueRecord): string {
-    return `${record.played}J · ${record.won}V · ${record.drawn}N · ${record.lost}D`;
+    return [
+      this.countLabel(record.played, 'joué', 'joués'),
+      this.countLabel(record.won, 'gagné', 'gagnés'),
+      this.countLabel(record.drawn, 'nul', 'nuls'),
+      this.countLabel(record.lost, 'perdu', 'perdus'),
+    ].join(' · ');
+  }
+
+  private countLabel(value: number, singular: string, plural: string): string {
+    return `${value} ${value <= 1 ? singular : plural}`;
   }
 
   formSeasonNote(form: TeamForm): string {

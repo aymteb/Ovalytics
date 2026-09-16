@@ -12,6 +12,7 @@ import com.ovalytics.backend.domain.Team;
 import com.ovalytics.backend.repository.CompetitionRepository;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 import com.ovalytics.backend.repository.TeamRepository;
+import com.ovalytics.backend.service.PendingTeamRefreshService;
 
 @Component
 public class MatchImportProcessor implements ItemProcessor<MatchCsvRow, RugbyMatch> {
@@ -19,14 +20,17 @@ public class MatchImportProcessor implements ItemProcessor<MatchCsvRow, RugbyMat
 	private final CompetitionRepository competitionRepository;
 	private final TeamRepository teamRepository;
 	private final RugbyMatchRepository rugbyMatchRepository;
+	private final PendingTeamRefreshService pendingTeamRefreshService;
 
 	public MatchImportProcessor(
 			CompetitionRepository competitionRepository,
 			TeamRepository teamRepository,
-			RugbyMatchRepository rugbyMatchRepository) {
+			RugbyMatchRepository rugbyMatchRepository,
+			PendingTeamRefreshService pendingTeamRefreshService) {
 		this.competitionRepository = competitionRepository;
 		this.teamRepository = teamRepository;
 		this.rugbyMatchRepository = rugbyMatchRepository;
+		this.pendingTeamRefreshService = pendingTeamRefreshService;
 	}
 
 	@Override
@@ -38,23 +42,54 @@ public class MatchImportProcessor implements ItemProcessor<MatchCsvRow, RugbyMat
 		MatchStatus status = MatchStatus.valueOf(row.status());
 		LocalDateTime kickoffAt = LocalDateTime.parse(row.kickoffAt());
 
-		return rugbyMatchRepository
-				.findByCompetitionAndTeamsAndMatchday(
-						row.competitionCode(),
-						row.homeShortName(),
-						row.awayShortName(),
-						row.matchday())
+		return findExisting(row, kickoffAt)
 				.map(existing -> {
+					MatchStatus previousStatus = existing.getStatus();
 					existing.setKickoffAt(kickoffAt);
 					existing.setStatus(status);
 					existing.setHomeScore(homeScore);
 					existing.setAwayScore(awayScore);
 					existing.setHomeTries(homeTries);
 					existing.setAwayTries(awayTries);
+					enqueueIfFinished(previousStatus, existing);
 					return existing;
 				})
-				.orElseGet(() -> createMatch(
-						row, kickoffAt, status, homeScore, awayScore, homeTries, awayTries));
+				.orElseGet(() -> {
+					RugbyMatch created = createMatch(
+							row, kickoffAt, status, homeScore, awayScore, homeTries, awayTries);
+					enqueueIfFinished(MatchStatus.SCHEDULED, created);
+					return created;
+				});
+	}
+
+	private java.util.Optional<RugbyMatch> findExisting(MatchCsvRow row, LocalDateTime kickoffAt) {
+		var byMatchday = rugbyMatchRepository.findByCompetitionAndTeamsAndMatchday(
+				row.competitionCode(),
+				row.homeShortName(),
+				row.awayShortName(),
+				row.matchday());
+		if (byMatchday.isPresent()) {
+			return byMatchday;
+		}
+		var dayStart = kickoffAt.toLocalDate().atStartOfDay();
+		var dayEnd = dayStart.plusDays(1);
+		return rugbyMatchRepository.findByTeamsOnDate(
+				row.competitionCode(),
+				row.homeShortName(),
+				row.awayShortName(),
+				dayStart,
+				dayEnd);
+	}
+
+	private void enqueueIfFinished(MatchStatus previousStatus, RugbyMatch match) {
+		if (previousStatus == MatchStatus.FINISHED || match.getStatus() != MatchStatus.FINISHED) {
+			return;
+		}
+		if (match.getKickoffAt().isBefore(LocalDateTime.now().minusDays(14))) {
+			return;
+		}
+		pendingTeamRefreshService.enqueue(match.getHomeTeam());
+		pendingTeamRefreshService.enqueue(match.getAwayTeam());
 	}
 
 	private RugbyMatch createMatch(

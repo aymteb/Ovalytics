@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { getTeamBrand, teamLogoUrl } from '../team-branding';
 
 @Component({
@@ -11,11 +11,11 @@ export class TeamLogo {
   size = input<'sm' | 'md' | 'lg'>('md');
   showLabel = input(false);
 
-  imgFailed = signal(false);
+  private imgFailed = signal(false);
 
-  logoSrc(): string {
-    return teamLogoUrl(this.shortName());
-  }
+  logoSrc = computed(() => teamLogoUrl(this.shortName()));
+
+  showBadge = computed(() => this.imgFailed());
 
   brand(): { bg: string; text: string } {
     return getTeamBrand(this.shortName());

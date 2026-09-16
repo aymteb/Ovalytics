@@ -156,6 +156,30 @@ tbody tr:last-child td {
   white-space: nowrap;
 }
 
+.movement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+}
+
+.club-chip {
+  display: inline-flex;
+  align-items: center;
+}
+
+.club-fallback {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+  max-width: 8rem;
+}
+
+.arrow {
+  font-weight: 800;
+  color: var(--color-muted-foreground);
+}
+
 .club-jump {
   display: flex;
   flex-wrap: wrap;

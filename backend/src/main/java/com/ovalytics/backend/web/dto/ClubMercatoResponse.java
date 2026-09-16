@@ -11,5 +11,6 @@ public record ClubMercatoResponse(
 		List<TransferResponse> extensions,
 		int contractEndWatchYear,
 		List<SquadPlayerResponse> contractEndsNextYear,
-		List<SquadPlayerResponse> squad) {
+		List<SquadPlayerResponse> squad,
+		ClubJiffSummaryResponse jiffSummary) {
 }

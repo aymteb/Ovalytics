@@ -55,6 +55,9 @@ public class RugbyMatch {
 	@Column(columnDefinition = "TEXT")
 	private String analysis;
 
+	@Column(name = "flashscore_event_id", length = 32)
+	private String flashscoreEventId;
+
 	protected RugbyMatch() {
 	}
 
@@ -155,5 +158,13 @@ public class RugbyMatch {
 
 	public void setAwayTries(Integer awayTries) {
 		this.awayTries = awayTries;
+	}
+
+	public String getFlashscoreEventId() {
+		return flashscoreEventId;
+	}
+
+	public void setFlashscoreEventId(String flashscoreEventId) {
+		this.flashscoreEventId = flashscoreEventId;
 	}
 }

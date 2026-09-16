@@ -5,7 +5,7 @@
   [class.size-lg]="size() === 'lg'"
   [class.with-label]="showLabel()"
 >
-  @if (!imgFailed()) {
+  @if (!showBadge()) {
     <img
       [src]="logoSrc()"
       [alt]="shortName()"

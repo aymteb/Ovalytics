@@ -21,4 +21,29 @@ spring:
 
 ovalytics:
   import:
-    file:
+    file: ../data/import/top14-matches.csv
+    news:
+      file: ../data/import/news.csv
+    transfer:
+      file: ../data/import/transfers.csv
+    prod2:
+      file: ../data/import/prod2-matches.csv
+    squad:
+      file: ../data/import/squads.csv
+    player-profile:
+      file: ../data/import/player-profiles.csv
+    player-appearance:
+      file: ../data/import/player-appearances.csv
+    absence:
+      file: ../data/import/absences.csv
+  live-scores:
+    enabled: true
+    poll-interval-ms: 60000
+    user-agent: Ovalytics/1.0
+  team-refresh:
+    enabled: true
+    cron: "0 0 23 * * *"
+    scrape-enabled: true
+    repo-root: ..
+    profiles-output: data/import/player-profiles.csv
+    python-command: python3

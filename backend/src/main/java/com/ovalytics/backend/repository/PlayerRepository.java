@@ -23,5 +23,14 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
 	Optional<Player> findByTeamIdAndName(Long teamId, String name);
 
+	Optional<Player> findByTeamIdAndNameIgnoreCase(Long teamId, String name);
+
 	List<Player> findByTeamIdOrderByNameAsc(Long teamId);
+
+	@Query("""
+			select count(p) from Player p
+			join p.team t
+			where t.competition.code = :code
+			""")
+	long countByCompetitionCode(@Param("code") String code);
 }

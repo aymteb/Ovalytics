@@ -12,14 +12,37 @@ interface SquadGroup {
 const POSITION_ORDER = [
   'Pilier',
   'Talonneur',
-  'Deuxième ligne',
-  'Troisième ligne',
-  'Demi de mêlée',
-  "Demi d'ouverture",
+  '2ème ligne',
+  '3ème ligne',
+  'Mêlée',
+  'Ouverture',
   'Centre',
   'Ailier',
   'Arrière',
 ];
+
+const POSITION_ALIASES: Record<string, string> = {
+  pilier: 'Pilier',
+  talonneur: 'Talonneur',
+  '2ème ligne': '2ème ligne',
+  '2eme ligne': '2ème ligne',
+  'deuxième ligne': '2ème ligne',
+  'deuxieme ligne': '2ème ligne',
+  '3ème ligne': '3ème ligne',
+  '3eme ligne': '3ème ligne',
+  'troisième ligne': '3ème ligne',
+  'troisieme ligne': '3ème ligne',
+  mêlée: 'Mêlée',
+  melee: 'Mêlée',
+  'demi de mêlée': 'Mêlée',
+  'demi de melee': 'Mêlée',
+  ouverture: 'Ouverture',
+  "demi d'ouverture": 'Ouverture',
+  centre: 'Centre',
+  ailier: 'Ailier',
+  arrière: 'Arrière',
+  arriere: 'Arrière',
+};
 
 @Component({
   selector: 'app-club-page',
@@ -86,10 +109,27 @@ export class ClubPage implements OnInit {
     return `jusqu'en ${year}`;
   }
 
+  playerStatusClass(player: SquadPlayer): string {
+    if (player.jiffStatus === 'ESPOIR_NON_JIFF') {
+      return 'espoir-non-jiff';
+    }
+    if (player.contractType === 'ESPOIR') {
+      return 'espoir';
+    }
+    if (player.jiffStatus === 'NON_JIFF') {
+      return 'non-jiff';
+    }
+    if (player.jiffStatus === 'JIFF') {
+      return 'jiff';
+    }
+    return 'plain';
+  }
+
   private buildSquadGroups(squad: SquadPlayer[]): SquadGroup[] {
     const byPosition = new Map<string, SquadPlayer[]>();
+
     for (const player of squad) {
-      const position = player.position?.trim() || 'Autre';
+      const position = this.normalizePosition(player.position) || 'Sans poste';
       const list = byPosition.get(position) ?? [];
       list.push(player);
       byPosition.set(position, list);
@@ -99,13 +139,37 @@ export class ClubPage implements OnInit {
     for (const position of POSITION_ORDER) {
       const players = byPosition.get(position);
       if (players && players.length > 0) {
-        groups.push({ position, players });
+        groups.push({ position, players: this.sortByAge(players) });
         byPosition.delete(position);
       }
     }
     for (const [position, players] of byPosition) {
-      groups.push({ position, players });
+      groups.push({ position, players: this.sortByAge(players) });
     }
     return groups;
+  }
+
+  private sortByAge(players: SquadPlayer[]): SquadPlayer[] {
+    return [...players].sort((a, b) => {
+      const ageA = a.age ?? 0;
+      const ageB = b.age ?? 0;
+      if (ageA !== ageB) {
+        return ageB - ageA;
+      }
+      const espoirA = a.contractType === 'ESPOIR' ? 1 : 0;
+      const espoirB = b.contractType === 'ESPOIR' ? 1 : 0;
+      if (espoirA !== espoirB) {
+        return espoirA - espoirB;
+      }
+      return a.name.localeCompare(b.name, 'fr');
+    });
+  }
+
+  private normalizePosition(position: string | null): string {
+    if (!position?.trim()) {
+      return '';
+    }
+    const key = position.trim().toLowerCase();
+    return POSITION_ALIASES[key] ?? position.trim();
   }
 }

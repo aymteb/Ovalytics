@@ -75,6 +75,10 @@ public class Competition {
 		return season;
 	}
 
+	public void setSeason(String season) {
+		this.season = season;
+	}
+
 	public LocalDate getSeasonStart() {
 		return seasonStart != null ? seasonStart : LocalDate.of(2025, 8, 1);
 	}

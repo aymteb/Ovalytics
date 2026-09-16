@@ -1,12 +1,14 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
-import { PlayerDetail } from '../models';
+import { PlayerDetail, Transfer } from '../models';
+import { resolveClubShort } from '../team-branding';
+import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
   selector: 'app-player-page',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TeamLogo],
   templateUrl: './player-page.html',
   styleUrl: './player-page.css',
 })
@@ -14,6 +16,21 @@ export class PlayerPage implements OnInit {
   player = signal<PlayerDetail | null>(null);
   errorMessage = signal('');
   loading = signal(true);
+
+  careerEntries = computed(() => {
+    const history = this.player()?.careerHistory;
+    if (!history) {
+      return [];
+    }
+    return history
+      .split('|')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  });
+
+  showTransferDuration = computed(() =>
+    (this.player()?.transfers ?? []).some((transfer) => !!transfer.contractLength?.trim()),
+  );
 
   constructor(
     private route: ActivatedRoute,
@@ -55,5 +72,15 @@ export class PlayerPage implements OnInit {
       default:
         return type;
     }
+  }
+
+  clubShort(transfer: Transfer, side: 'from' | 'to'): string | null {
+    const label = side === 'from' ? transfer.fromClub : transfer.toClub;
+    return resolveClubShort(label);
+  }
+
+  clubFallback(transfer: Transfer, side: 'from' | 'to'): string {
+    const label = side === 'from' ? transfer.fromClub : transfer.toClub;
+    return label?.trim() || '—';
   }
 }

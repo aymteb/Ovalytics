@@ -8,13 +8,21 @@
   gap: var(--space-2);
 }
 
-.team-logo img,
-.team-logo .badge {
+.team-logo img {
   display: block;
+  object-fit: contain;
+}
+
+.team-logo .badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
-  object-fit: cover;
   border: 2px solid var(--color-border);
   box-shadow: var(--shadow-block);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .size-sm img,
@@ -36,15 +44,6 @@
   width: 4rem;
   height: 4rem;
   font-size: 0.85rem;
-}
-
-.badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .label {

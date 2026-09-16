@@ -10,5 +10,7 @@ public record SquadPlayerResponse(
 		Integer heightCm,
 		Integer weightKg,
 		String nationality,
+		String contractType,
+		String jiffStatus,
 		LocalDate contractEndDate) {
 }

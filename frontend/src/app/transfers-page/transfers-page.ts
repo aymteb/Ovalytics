@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Team, Transfer } from '../models';
+import { resolveClubShort } from '../team-branding';
 import { TeamLogo } from '../team-logo/team-logo';
 
 type TransfersTab = 'journal' | 'clubs';
@@ -32,6 +33,9 @@ export class TransfersPage implements OnInit {
   loading = signal(true);
 
   clubBoards = computed(() => this.buildClubBoards(this.teams(), this.clubTransfers()));
+  showDurationColumn = computed(() =>
+    this.journalTransfers().some((transfer) => !!transfer.contractLength?.trim()),
+  );
 
   constructor(private api: CompetitionApi) {}
 
@@ -99,6 +103,16 @@ export class TransfersPage implements OnInit {
     return transfer.playerId ? ['/players', String(transfer.playerId)] : null;
   }
 
+  clubShort(transfer: Transfer, side: 'from' | 'to'): string | null {
+    const label = side === 'from' ? transfer.fromClub : transfer.toClub;
+    return resolveClubShort(label);
+  }
+
+  clubFallback(transfer: Transfer, side: 'from' | 'to'): string {
+    const label = side === 'from' ? transfer.fromClub : transfer.toClub;
+    return label?.trim() || '—';
+  }
+
   private loadJournal(): void {
     this.api.getTransferJournal().subscribe({
       next: (transfers) => {
@@ -152,7 +166,7 @@ export class TransfersPage implements OnInit {
         const departures = transfers.filter(
           (t) =>
             t.fromTeamId === team.id &&
-            (t.type === 'LEAVE' || t.type === 'LOAN' || t.type === 'CONTRACT_END'),
+            (t.type === 'LEAVE' || t.type === 'LOAN'),
         );
         const extensions = transfers.filter(
           (t) =>
@@ -160,12 +174,6 @@ export class TransfersPage implements OnInit {
             (t.toTeamId === team.id || t.fromTeamId === team.id),
         );
         return { team, arrivals, departures, extensions };
-      })
-      .filter(
-        (board) =>
-          board.arrivals.length > 0 ||
-          board.departures.length > 0 ||
-          board.extensions.length > 0,
-      );
+      });
   }
 }

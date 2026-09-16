@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -25,4 +26,8 @@ public interface MatchAppearanceRepository extends JpaRepository<MatchAppearance
 	boolean existsByPlayerId(Long playerId);
 
 	Optional<MatchAppearance> findByPlayerIdAndMatchId(Long playerId, Long matchId);
+
+	@Modifying
+	@Query("delete from MatchAppearance a where a.match.id = :matchId")
+	void deleteByMatchId(@Param("matchId") Long matchId);
 }

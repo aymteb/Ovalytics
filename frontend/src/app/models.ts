@@ -45,6 +45,8 @@ export interface HeadToHeadMatch {
 
 export interface Match {
   id: number;
+  competitionCode: string;
+  competitionName: string;
   matchday: number;
   kickoffAt: string;
   status: string;
@@ -93,6 +95,12 @@ export interface Transfer {
   competitionName: string;
 }
 
+export interface ClubJiffSummary {
+  jiffCount: number;
+  nonJiffCount: number;
+  nonJiffLimit: number;
+}
+
 export interface ClubMercato {
   team: Team;
   competitionCode: string;
@@ -103,16 +111,19 @@ export interface ClubMercato {
   contractEndWatchYear: number;
   contractEndsNextYear: SquadPlayer[];
   squad: SquadPlayer[];
+  jiffSummary: ClubJiffSummary | null;
 }
 
 export interface SquadPlayer {
-  id: number;
+  id: number | null;
   name: string;
   position: string | null;
   age: number | null;
   heightCm: number | null;
   weightKg: number | null;
   nationality: string | null;
+  contractType: string | null;
+  jiffStatus: string | null;
   contractEndDate: string | null;
 }
 
@@ -130,6 +141,7 @@ export interface PlayerDetail {
   totals: PlayerTotals;
   appearances: PlayerAppearance[];
   transfers: Transfer[];
+  careerHistory: string | null;
 }
 
 export interface PlayerTotals {
@@ -139,6 +151,16 @@ export interface PlayerTotals {
   tries: number;
   yellowCards: number;
   redCards: number;
+}
+
+export interface NewsItem {
+  id: number;
+  title: string;
+  summary: string | null;
+  sourceUrl: string;
+  publishedAt: string;
+  source: string;
+  competitionCode: string | null;
 }
 
 export interface PlayerAppearance {

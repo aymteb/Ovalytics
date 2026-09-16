@@ -39,7 +39,31 @@ public class Player {
 	@Column(length = 60)
 	private String nationality;
 
+	@Column(length = 10)
+	private String contractType;
+
+	@Column(length = 20)
+	private String jiffStatus;
+
 	private LocalDate contractEndDate;
+
+	@Column(length = 255)
+	private String allRugbyProfileUrl;
+
+	private Integer seasonMatches;
+
+	private Integer seasonStarts;
+
+	private Integer seasonMinutes;
+
+	private Integer seasonTries;
+
+	private Integer seasonYellowCards;
+
+	private Integer seasonRedCards;
+
+	@Column(length = 1000)
+	private String careerHistory;
 
 	protected Player() {
 	}
@@ -86,8 +110,16 @@ public class Player {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public Team getTeam() {
 		return team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
 	public String getPosition() {
@@ -108,6 +140,22 @@ public class Player {
 
 	public String getNationality() {
 		return nationality;
+	}
+
+	public String getContractType() {
+		return contractType;
+	}
+
+	public void setContractType(String contractType) {
+		this.contractType = contractType;
+	}
+
+	public String getJiffStatus() {
+		return jiffStatus;
+	}
+
+	public void setJiffStatus(String jiffStatus) {
+		this.jiffStatus = jiffStatus;
 	}
 
 	public LocalDate getContractEndDate() {
@@ -136,5 +184,69 @@ public class Player {
 
 	public void setContractEndDate(LocalDate contractEndDate) {
 		this.contractEndDate = contractEndDate;
+	}
+
+	public String getAllRugbyProfileUrl() {
+		return allRugbyProfileUrl;
+	}
+
+	public void setAllRugbyProfileUrl(String allRugbyProfileUrl) {
+		this.allRugbyProfileUrl = allRugbyProfileUrl;
+	}
+
+	public Integer getSeasonMatches() {
+		return seasonMatches;
+	}
+
+	public void setSeasonMatches(Integer seasonMatches) {
+		this.seasonMatches = seasonMatches;
+	}
+
+	public Integer getSeasonStarts() {
+		return seasonStarts;
+	}
+
+	public void setSeasonStarts(Integer seasonStarts) {
+		this.seasonStarts = seasonStarts;
+	}
+
+	public Integer getSeasonMinutes() {
+		return seasonMinutes;
+	}
+
+	public void setSeasonMinutes(Integer seasonMinutes) {
+		this.seasonMinutes = seasonMinutes;
+	}
+
+	public Integer getSeasonTries() {
+		return seasonTries;
+	}
+
+	public void setSeasonTries(Integer seasonTries) {
+		this.seasonTries = seasonTries;
+	}
+
+	public Integer getSeasonYellowCards() {
+		return seasonYellowCards;
+	}
+
+	public void setSeasonYellowCards(Integer seasonYellowCards) {
+		this.seasonYellowCards = seasonYellowCards;
+	}
+
+	public Integer getSeasonRedCards() {
+		return seasonRedCards;
+	}
+
+	public void setSeasonRedCards(Integer seasonRedCards) {
+		this.seasonRedCards = seasonRedCards;
+	}
+
+	public String getCareerHistory() {
+		return careerHistory;
+	}
+
+	public void setCareerHistory(String careerHistory) {
+		this.careerHistory = careerHistory;
 	}
 }

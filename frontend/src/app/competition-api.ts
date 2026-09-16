@@ -1,7 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Competition, ClubMercato, Match, PlayerDetail, StandingRow, Team, Transfer } from './models';
+import {
+  Competition,
+  ClubMercato,
+  Match,
+  NewsItem,
+  PlayerDetail,
+  StandingRow,
+  Team,
+  Transfer,
+} from './models';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +37,18 @@ export class CompetitionApi {
     return this.http.get<Match[]>(`${this.apiBase}/${code}/matches`);
   }
 
+  getAllMatches(status?: string): Observable<Match[]> {
+    if (status) {
+      return this.http.get<Match[]>('/api/matches', { params: { status } });
+    }
+    return this.http.get<Match[]>('/api/matches');
+  }
+
   getMatch(id: number, code = 'TOP14'): Observable<Match> {
+    return this.http.get<Match>(`/api/matches/${id}`);
+  }
+
+  getMatchForCompetition(id: number, code = 'TOP14'): Observable<Match> {
     return this.http.get<Match>(`${this.apiBase}/${code}/matches/${id}`);
   }
 
@@ -52,5 +72,9 @@ export class CompetitionApi {
 
   getPlayer(id: number): Observable<PlayerDetail> {
     return this.http.get<PlayerDetail>(`/api/players/${id}`);
+  }
+
+  getNews(limit = 20): Observable<NewsItem[]> {
+    return this.http.get<NewsItem[]>('/api/news', { params: { limit } });
   }
 }

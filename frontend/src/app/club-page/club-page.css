@@ -140,21 +140,92 @@ a.player:hover {
   color: var(--color-accent);
 }
 
-.squad-group {
-  margin-bottom: var(--space-4);
+.squad-intro {
+  margin: -0.25rem 0 var(--space-3);
+  color: var(--color-muted-foreground);
+  font-size: 0.95rem;
 }
 
-.squad-group h4 {
-  margin: 0 0 var(--space-2);
-  font-size: 0.8rem;
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-4);
+  font-size: 0.9rem;
+}
+
+.legend .status {
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+}
+
+.squad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-5) var(--space-4);
+}
+
+.squad-column h4 {
+  margin: 0 0 var(--space-2);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-foreground);
+}
+
+.squad-column ol {
+  margin: 0;
+  padding: 0 0 0 1.35rem;
+  list-style: decimal;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.squad-column li {
+  display: list-item;
+  padding: 0.2rem 0;
+  border: none;
+  font-size: 0.95rem;
+  line-height: 1.4;
   color: var(--color-muted-foreground);
 }
 
-.squad-group ul {
-  margin-bottom: 0;
+.squad-player {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.squad-player:hover {
+  text-decoration: underline;
+}
+
+.squad-column .age {
+  color: var(--color-muted-foreground);
+  font-weight: 400;
+}
+
+.status.jiff,
+.squad-player.jiff {
+  color: #1565c0;
+}
+
+.status.non-jiff,
+.squad-player.non-jiff {
+  color: #2e7d32;
+}
+
+.status.espoir,
+.squad-player.espoir {
+  color: #5b9bd5;
+}
+
+.status.espoir-non-jiff,
+.squad-player.espoir-non-jiff {
+  color: #00838f;
+}
+
+.squad-player.plain {
+  color: var(--color-foreground);
 }
 
 .intro-block {
@@ -194,4 +265,10 @@ a.player:hover {
 .contract-end a.player:hover {
   color: var(--color-accent);
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .squad-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }

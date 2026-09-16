@@ -15,5 +15,6 @@ public record PlayerDetailResponse(
 		String nationality,
 		PlayerTotalsResponse totals,
 		List<PlayerAppearanceResponse> appearances,
-		List<TransferResponse> transfers) {
+		List<TransferResponse> transfers,
+		String careerHistory) {
 }

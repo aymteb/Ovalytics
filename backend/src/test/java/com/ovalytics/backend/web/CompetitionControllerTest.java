@@ -86,6 +86,8 @@ class CompetitionControllerTest {
 		TeamResponse away = new TeamResponse(2L, "Union Bordeaux Begles", "UBB", "Bordeaux");
 		MatchResponse match = new MatchResponse(
 				8L,
+				"TOP14",
+				"Top 14",
 				2,
 				LocalDateTime.of(2025, 9, 13, 16, 0),
 				"SCHEDULED",
@@ -152,6 +154,8 @@ class CompetitionControllerTest {
 		TeamResponse away = new TeamResponse(2L, "Union Bordeaux Begles", "UBB", "Bordeaux");
 		return new MatchResponse(
 				8L,
+				"TOP14",
+				"Top 14",
 				2,
 				LocalDateTime.of(2025, 9, 13, 16, 0),
 				"SCHEDULED",
