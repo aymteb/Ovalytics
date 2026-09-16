@@ -48,6 +48,10 @@ public class Absence {
 		return player;
 	}
 
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+
 	public AbsenceType getType() {
 		return type;
 	}

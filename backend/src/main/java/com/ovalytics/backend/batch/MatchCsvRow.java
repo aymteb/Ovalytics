@@ -8,5 +8,7 @@ public record MatchCsvRow(
 		String kickoffAt,
 		String status,
 		String homeScore,
-		String awayScore) {
+		String awayScore,
+		String homeTries,
+		String awayTries) {
 }

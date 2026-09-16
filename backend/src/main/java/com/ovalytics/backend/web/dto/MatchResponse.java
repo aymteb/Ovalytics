@@ -5,6 +5,8 @@ import java.util.List;
 
 public record MatchResponse(
 		Long id,
+		String competitionCode,
+		String competitionName,
 		int matchday,
 		LocalDateTime kickoffAt,
 		String status,

@@ -1,44 +1,78 @@
-header {
+:host {
+  display: block;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) var(--space-7);
+}
+
+.site-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 3px solid var(--rouge);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-card);
+  border: 2px solid var(--color-border);
+  border-left: 6px solid var(--color-primary);
+  box-shadow: var(--shadow-block);
+}
+
+.brand-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.brand-link:hover h1 {
+  color: var(--color-brand);
+}
+
+.brand-kicker {
+  margin: 0 0 var(--space-1);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
 }
 
 h1 {
   margin: 0;
-  font-size: 2.5rem;
-  color: var(--rouge);
-  line-height: 1;
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
+  color: var(--color-primary);
+  line-height: 0.95;
 }
 
 nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
+  gap: var(--space-2) var(--space-4);
 }
 
 nav a {
-  color: var(--texte);
+  color: var(--color-foreground);
   text-decoration: none;
   font-weight: 600;
-  padding-bottom: 0.15rem;
-  border-bottom: 2px solid transparent;
+  font-size: 0.95rem;
+  padding: var(--space-2) 0;
+  border-bottom: 3px solid transparent;
+  transition:
+    color var(--transition),
+    border-color var(--transition);
 }
 
 nav a:hover {
-  color: var(--rouge);
+  color: var(--color-primary);
 }
 
 nav a.active {
-  color: var(--rouge);
-  border-bottom-color: var(--rouge);
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
 
 main {
-  max-width: 900px;
+  min-width: 0;
 }

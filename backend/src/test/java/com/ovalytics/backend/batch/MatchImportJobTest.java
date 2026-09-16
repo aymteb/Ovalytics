@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.ovalytics.backend.domain.MatchStatus;
+import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 
 @SpringBootTest
@@ -29,7 +30,7 @@ class MatchImportJobTest {
 	private RugbyMatchRepository rugbyMatchRepository;
 
 	@Test
-	void importsMatchday3FromCsv() throws Exception {
+	void importsNewMatchdaysAndUpdatesExistingScores() throws Exception {
 		assertThat(rugbyMatchRepository.existsByCompetitionAndTeamsAndMatchday(
 				"TOP14", "TOU", "UBB", 3)).isFalse();
 
@@ -40,9 +41,22 @@ class MatchImportJobTest {
 						.toJobParameters());
 
 		assertThat(execution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+
 		assertThat(rugbyMatchRepository.existsByCompetitionAndTeamsAndMatchday(
 				"TOP14", "TOU", "UBB", 3)).isTrue();
+		assertThat(rugbyMatchRepository.existsByCompetitionAndTeamsAndMatchday(
+				"TOP14", "UBB", "LAR", 4)).isTrue();
+
+		RugbyMatch vanUbb = rugbyMatchRepository
+				.findByCompetitionAndTeamsAndMatchday("TOP14", "VAN", "UBB", 2)
+				.orElseThrow();
+		assertThat(vanUbb.getStatus()).isEqualTo(MatchStatus.FINISHED);
+		assertThat(vanUbb.getHomeScore()).isEqualTo(17);
+		assertThat(vanUbb.getAwayScore()).isEqualTo(34);
+		assertThat(vanUbb.getHomeTries()).isEqualTo(2);
+		assertThat(vanUbb.getAwayTries()).isEqualTo(5);
+
 		assertThat(rugbyMatchRepository.findByCompetitionCodeAndStatus(
-				"TOP14", MatchStatus.SCHEDULED)).hasSizeGreaterThanOrEqualTo(4);
+				"TOP14", MatchStatus.SCHEDULED)).hasSizeGreaterThanOrEqualTo(10);
 	}
 }

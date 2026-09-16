@@ -13,3 +13,26 @@ spring:
       initialize-schema: always
     job:
       enabled: false
+
+ovalytics:
+  import:
+    file: ""
+    news:
+      file: ""
+    transfer:
+      file: ""
+    prod2:
+      file: ""
+    squad:
+      file: ""
+    player-profile:
+      file: ""
+    player-appearance:
+      file: ""
+    absence:
+      file: ""
+  live-scores:
+    enabled: false
+  team-refresh:
+    enabled: false
+    scrape-enabled: false

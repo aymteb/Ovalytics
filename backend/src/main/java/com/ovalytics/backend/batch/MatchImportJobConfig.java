@@ -8,22 +8,26 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 
 @Configuration
+@EnableConfigurationProperties(MatchImportProperties.class)
 public class MatchImportJobConfig {
 
 	@Bean
-	public FlatFileItemReader<MatchCsvRow> matchCsvReader() {
+	public FlatFileItemReader<MatchCsvRow> matchCsvReader(
+			MatchImportProperties properties,
+			ResourceLoader resourceLoader) {
 		return new FlatFileItemReaderBuilder<MatchCsvRow>()
 				.name("matchCsvReader")
-				.resource(new ClassPathResource("data/top14-j3.csv"))
+				.resource(MatchImportResource.resolve(properties.getFile(), resourceLoader))
 				.linesToSkip(1)
 				.delimited()
 				.names(
@@ -34,7 +38,9 @@ public class MatchImportJobConfig {
 						"kickoffAt",
 						"status",
 						"homeScore",
-						"awayScore")
+						"awayScore",
+						"homeTries",
+						"awayTries")
 				.fieldSetMapper(fields -> new MatchCsvRow(
 						fields.readString("competitionCode"),
 						fields.readString("homeShortName"),
@@ -43,7 +49,9 @@ public class MatchImportJobConfig {
 						fields.readString("kickoffAt"),
 						fields.readString("status"),
 						fields.readString("homeScore"),
-						fields.readString("awayScore")))
+						fields.readString("awayScore"),
+						fields.readString("homeTries"),
+						fields.readString("awayTries")))
 				.build();
 	}
 

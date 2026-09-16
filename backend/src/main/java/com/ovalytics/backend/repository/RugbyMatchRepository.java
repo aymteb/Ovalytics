@@ -1,5 +1,6 @@
 package com.ovalytics.backend.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,21 @@ public interface RugbyMatchRepository extends JpaRepository<RugbyMatch, Long> {
 			@Param("id") Long id);
 
 	@Query("""
+			select m from RugbyMatch m
+			join fetch m.homeTeam
+			join fetch m.awayTeam
+			where m.competition.code = :code
+			  and m.homeTeam.shortName = :home
+			  and m.awayTeam.shortName = :away
+			  and m.matchday = :matchday
+			""")
+	Optional<RugbyMatch> findByCompetitionAndTeamsAndMatchday(
+			@Param("code") String code,
+			@Param("home") String homeShortName,
+			@Param("away") String awayShortName,
+			@Param("matchday") int matchday);
+
+	@Query("""
 			select count(m) > 0
 			from RugbyMatch m
 			where m.competition.code = :code
@@ -60,4 +76,55 @@ public interface RugbyMatchRepository extends JpaRepository<RugbyMatch, Long> {
 			@Param("home") String homeShortName,
 			@Param("away") String awayShortName,
 			@Param("matchday") int matchday);
+
+	@Query("""
+			select m from RugbyMatch m
+			join fetch m.homeTeam
+			join fetch m.awayTeam
+			join fetch m.competition
+			where m.id = :id
+			""")
+	Optional<RugbyMatch> findByIdWithDetails(@Param("id") Long id);
+
+	@Query("""
+			select count(m) from RugbyMatch m
+			where m.competition.code = :code
+			  and m.status = :status
+			  and m.kickoffAt >= :since
+			""")
+	long countByCompetitionCodeAndStatusSince(
+			@Param("code") String code,
+			@Param("status") MatchStatus status,
+			@Param("since") LocalDateTime since);
+
+	Optional<RugbyMatch> findByFlashscoreEventId(String flashscoreEventId);
+
+	@Query("""
+			select m from RugbyMatch m
+			join fetch m.homeTeam
+			join fetch m.awayTeam
+			join fetch m.competition
+			where m.competition.code = :code
+			  and m.homeTeam.shortName = :home
+			  and m.awayTeam.shortName = :away
+			  and m.kickoffAt >= :dayStart
+			  and m.kickoffAt < :dayEnd
+			""")
+	Optional<RugbyMatch> findByTeamsOnDate(
+			@Param("code") String code,
+			@Param("home") String homeShortName,
+			@Param("away") String awayShortName,
+			@Param("dayStart") LocalDateTime dayStart,
+			@Param("dayEnd") LocalDateTime dayEnd);
+
+	@Query("""
+			select count(m) > 0 from RugbyMatch m
+			where m.status = :live
+			   or (m.status = :scheduled and m.kickoffAt >= :from and m.kickoffAt <= :to)
+			""")
+	boolean shouldPollLiveScores(
+			@Param("scheduled") MatchStatus scheduled,
+			@Param("live") MatchStatus live,
+			@Param("from") LocalDateTime from,
+			@Param("to") LocalDateTime to);
 }

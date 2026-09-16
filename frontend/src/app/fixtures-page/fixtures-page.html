@@ -1,23 +1,103 @@
 <h2>Matchs à venir</h2>
 
+<div class="view-tabs" role="tablist" aria-label="Mode d'affichage">
+  <button
+    type="button"
+    role="tab"
+    [class.active]="view() === 'hub'"
+    [attr.aria-selected]="view() === 'hub'"
+    (click)="setView('hub')"
+  >
+    Par date
+  </button>
+  <button
+    type="button"
+    role="tab"
+    [class.active]="view() === 'competition'"
+    [attr.aria-selected]="view() === 'competition'"
+    (click)="setView('competition')"
+  >
+    Par championnat
+  </button>
+</div>
+
+@if (view() === 'competition' && competitions().length > 0) {
+  <label class="competition-picker">
+    <span>Championnat</span>
+    <select
+      [value]="selectedCode()"
+      (change)="onCompetitionChange($any($event.target).value)"
+    >
+      @for (c of competitions(); track c.code) {
+        <option [value]="c.code">{{ c.name }} · {{ c.season }}</option>
+      }
+    </select>
+  </label>
+}
+
 @if (loading()) {
   <p class="loading">Chargement...</p>
 } @else if (errorMessage()) {
   <p class="error">{{ errorMessage() }}</p>
-} @else if (matches().length === 0) {
-  <p>Aucun match à venir.</p>
+} @else if (view() === 'hub') {
+  @if (hubGroups().length === 0) {
+    <p>Aucun match à venir.</p>
+  } @else {
+    <div class="hub-groups">
+      @for (day of hubGroups(); track day.dateKey) {
+        <section class="hub-day">
+          <h3 class="hub-day-title">
+            {{ day.dateKey | date: 'EEEE d MMMM y' : '' : 'fr' }}
+          </h3>
+          @for (league of day.leagues; track league.code) {
+            <div class="hub-league">
+              <h4 class="hub-league-title">{{ league.name }}</h4>
+              <ul class="hub-match-list">
+                @for (match of league.matches; track match.id) {
+                  <li>
+                    <a [routerLink]="['/matches', match.id]" class="hub-match-row">
+                      <span class="hub-time">{{ match.kickoffAt | date: 'HH:mm' }}</span>
+                      <span class="hub-teams">
+                        <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+                        <span class="sep">–</span>
+                        <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+                      </span>
+                      <span class="hub-matchday">J{{ match.matchday }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </section>
+      }
+    </div>
+  }
 } @else {
-  <ul class="match-list">
-    @for (match of matches(); track match.id) {
-      <li>
-        <a [routerLink]="['/matches', match.id]">
-          <span class="matchday">J{{ match.matchday }}</span>
-          <span class="teams">
-            {{ match.homeTeam.shortName }} - {{ match.awayTeam.shortName }}
-          </span>
-          <span class="date">{{ match.kickoffAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-        </a>
-      </li>
-    }
-  </ul>
+  @if (matchdayGroups().length === 0) {
+    <p>Aucun match à venir pour ce championnat.</p>
+  } @else {
+    <div class="matchday-groups">
+      @for (group of matchdayGroups(); track group.matchday) {
+        <section class="matchday-block">
+          <h3 class="matchday-title">Journée {{ group.matchday }}</h3>
+          <ul class="match-list">
+            @for (match of group.matches; track match.id) {
+              <li>
+                <a [routerLink]="['/matches', match.id]">
+                  <span class="matchday">J{{ match.matchday }}</span>
+                  <span class="teams">
+                    <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+                    <span class="sep">–</span>
+                    <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+                  </span>
+                  <span class="date">{{ match.kickoffAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+  }
 }
