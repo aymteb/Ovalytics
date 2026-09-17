@@ -57,21 +57,31 @@ pipeline {
                         echo "docker absent dans Jenkins — stage CD ignoré"
                         exit 0
                     fi
-                    if ! command -v kind >/dev/null 2>&1; then
-                        echo "kind absent dans Jenkins — stage CD ignoré (voir README)"
-                        exit 0
+
+                    mkdir -p "$HOME/bin"
+                    export PATH="$HOME/bin:$PATH"
+                    ARCH="$(uname -m)"
+                    case "$ARCH" in
+                      aarch64|arm64) ARCH=arm64 ;;
+                      x86_64|amd64) ARCH=amd64 ;;
+                    esac
+
+                    curl -fsSL -o "$HOME/bin/kind" "https://kind.sigs.k8s.io/dl/v0.32.0/kind-linux-${ARCH}"
+                    chmod +x "$HOME/bin/kind"
+                    if ! command -v kubectl >/dev/null 2>&1; then
+                        KVER="$(curl -fsSL https://dl.k8s.io/release/stable.txt)"
+                        curl -fsSL -o "$HOME/bin/kubectl" "https://dl.k8s.io/release/${KVER}/bin/linux/${ARCH}/kubectl"
+                        chmod +x "$HOME/bin/kubectl"
                     fi
                     if ! command -v terraform >/dev/null 2>&1; then
-                        echo "terraform absent dans Jenkins — stage CD ignoré (voir README)"
-                        exit 0
+                        TF=1.11.4
+                        curl -fsSL -o /tmp/terraform.zip "https://releases.hashicorp.com/terraform/${TF}/terraform_${TF}_linux_${ARCH}.zip"
+                        unzip -qo /tmp/terraform.zip -d "$HOME/bin"
+                        rm -f /tmp/terraform.zip
                     fi
-                    if ! command -v kubectl >/dev/null 2>&1; then
-                        echo "kubectl absent dans Jenkins — stage CD ignoré (voir README)"
-                        exit 0
-                    fi
+
                     if ! kind get clusters 2>/dev/null | grep -qx ovalytics; then
-                        echo "Cluster kind ovalytics absent — stage CD ignoré"
-                        exit 0
+                        kind create cluster --config infra/kind-config.yaml
                     fi
 
                     echo "CD : build image + load kind + terraform apply"
@@ -82,6 +92,7 @@ pipeline {
                     kind get kubeconfig --name ovalytics > "$HOME/.kube/config"
                     sed -i 's/127.0.0.1/host.docker.internal/g' "$HOME/.kube/config"
                     export KUBECONFIG="$HOME/.kube/config"
+                    kubectl config set-cluster kind-ovalytics --insecure-skip-tls-verify=true
 
                     cd infra/terraform
                     terraform init -input=false
