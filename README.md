@@ -189,8 +189,10 @@ Ordre recommandé : **effectifs** (`squads.csv`) puis **fiches** (`player-profil
 ### Services
 
 1. **PostgreSQL** (plugin) — à **lier** au service backend (Railway injecte alors `PGHOST`, `PGUSER`, etc.)
-2. **backend** — Dockerfile `backend/Dockerfile`, contexte = **racine** du repo  
-3. **frontend** — Dockerfile `frontend/Dockerfile`, contexte = dossier `frontend/`
+2. **backend** — Root Directory = `backend`, Dockerfile = `Dockerfile`
+3. **frontend** — Root Directory = `frontend`, Dockerfile = `Dockerfile`
+
+Les CSV ne sont plus dans l’image backend (`/import` vide au boot). Les données viennent du miroir Postgres local → Railway.
 
 ### Variables à poser (le minimum)
 

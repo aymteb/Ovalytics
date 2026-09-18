@@ -15,8 +15,8 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
@@ -26,6 +26,8 @@ services:
       PGDATABASE: ovalytics
       PGUSER: ovalytics
       PGPASSWORD: ovalytics
+    volumes:
+      - ./data/import:/import
     depends_on:
       db:
         condition: service_healthy
