@@ -127,4 +127,19 @@ public interface RugbyMatchRepository extends JpaRepository<RugbyMatch, Long> {
 			@Param("live") MatchStatus live,
 			@Param("from") LocalDateTime from,
 			@Param("to") LocalDateTime to);
+
+	@Query("""
+			select m from RugbyMatch m
+			join fetch m.homeTeam
+			join fetch m.awayTeam
+			join fetch m.competition
+			where m.status = :status
+			  and m.kickoffAt >= :from
+			  and m.kickoffAt < :to
+			order by m.kickoffAt asc
+			""")
+	List<RugbyMatch> findByStatusAndKickoffBetween(
+			@Param("status") MatchStatus status,
+			@Param("from") LocalDateTime from,
+			@Param("to") LocalDateTime to);
 }

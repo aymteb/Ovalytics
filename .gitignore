@@ -65,7 +65,6 @@ backend.zip
 *.zip
 !docs/**/*.zip
 
-# --- Misc ---
-.output/
-*.bak
-*.tmp
+# --- Dump DB locaux (miroir Railway) ---
+data/backups/
+*.dump

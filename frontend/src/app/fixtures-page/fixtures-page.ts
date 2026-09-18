@@ -78,7 +78,7 @@ export class FixturesPage implements OnInit {
     this.errorMessage.set('');
     this.api.getAllMatches('SCHEDULED').subscribe({
       next: (matches) => {
-        this.allMatches.set(matches);
+        this.allMatches.set(this.onlyUpcoming(matches));
         this.loadCompetitionMatches(this.selectedCode());
       },
       error: () => {
@@ -92,7 +92,7 @@ export class FixturesPage implements OnInit {
     this.api.getMatches('SCHEDULED', code).subscribe({
       next: (matches) => {
         this.competitionMatches.set(
-          [...matches].sort((a, b) => {
+          this.onlyUpcoming([...matches]).sort((a, b) => {
             if (a.matchday !== b.matchday) {
               return a.matchday - b.matchday;
             }
@@ -106,6 +106,11 @@ export class FixturesPage implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  private onlyUpcoming(matches: Match[]): Match[] {
+    const now = Date.now();
+    return matches.filter((match) => Date.parse(match.kickoffAt) >= now);
   }
 
   private buildHubGroups(matches: Match[]): DateGroup[] {

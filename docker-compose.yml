@@ -14,27 +14,21 @@ services:
       retries: 10
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ovalytics
-      SPRING_DATASOURCE_USERNAME: ovalytics
-      SPRING_DATASOURCE_PASSWORD: ovalytics
-      OVALYTICS_IMPORT_FILE: /import/top14-matches.csv
-      OVALYTICS_IMPORT_PROD2_FILE: /import/prod2-matches.csv
-      OVALYTICS_IMPORT_NEWS_FILE: /import/news.csv
-      OVALYTICS_IMPORT_TRANSFER_FILE: /import/transfers.csv
-      OVALYTICS_IMPORT_SQUAD_FILE: /import/squads.csv
-      OVALYTICS_IMPORT_PLAYER_PROFILE_FILE: /import/player-profiles.csv
-      OVALYTICS_LIVE_SCORES_ENABLED: "true"
-      OVALYTICS_TEAM_REFRESH_ENABLED: "true"
-      OVALYTICS_TEAM_REFRESH_SCRAPE_ENABLED: "false"
+      SPRING_PROFILES_ACTIVE: prod
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ovalytics
+      PGUSER: ovalytics
+      PGPASSWORD: ovalytics
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./data/import:/import
 
 volumes:
   pgdata:

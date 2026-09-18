@@ -9,10 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ovalytics.backend.domain.PendingTeamRefresh;
 import com.ovalytics.backend.repository.PendingTeamRefreshRepository;
+import com.ovalytics.backend.service.MatchAnalysisService;
 import com.ovalytics.backend.service.TeamRefreshScraperService;
 import com.ovalytics.backend.service.TeamRefreshScheduler;
 
@@ -32,6 +34,7 @@ public class JobController {
 	private final PendingTeamRefreshRepository pendingTeamRefreshRepository;
 	private final TeamRefreshScraperService teamRefreshScraperService;
 	private final TeamRefreshScheduler teamRefreshScheduler;
+	private final MatchAnalysisService matchAnalysisService;
 
 	public JobController(
 			JobOperator jobOperator,
@@ -45,7 +48,8 @@ public class JobController {
 			Job absenceImportJob,
 			PendingTeamRefreshRepository pendingTeamRefreshRepository,
 			TeamRefreshScraperService teamRefreshScraperService,
-			TeamRefreshScheduler teamRefreshScheduler) {
+			TeamRefreshScheduler teamRefreshScheduler,
+			MatchAnalysisService matchAnalysisService) {
 		this.jobOperator = jobOperator;
 		this.matchImportJob = matchImportJob;
 		this.prod2MatchImportJob = prod2MatchImportJob;
@@ -58,6 +62,7 @@ public class JobController {
 		this.pendingTeamRefreshRepository = pendingTeamRefreshRepository;
 		this.teamRefreshScraperService = teamRefreshScraperService;
 		this.teamRefreshScheduler = teamRefreshScheduler;
+		this.matchAnalysisService = matchAnalysisService;
 	}
 
 	@GetMapping("/pending-teams")
@@ -107,6 +112,17 @@ public class JobController {
 	@PostMapping("/absence-import")
 	public ResponseEntity<String> runAbsenceImport() throws Exception {
 		return startJob(absenceImportJob);
+	}
+
+	@PostMapping("/analysis-generate")
+	public ResponseEntity<String> runAnalysisGenerate(
+			@RequestParam(required = false) Long matchId) {
+		if (matchId != null) {
+			matchAnalysisService.generateForMatch(matchId);
+			return ResponseEntity.ok("Analyse generee pour match " + matchId);
+		}
+		int count = matchAnalysisService.generateForUpcomingWindow();
+		return ResponseEntity.ok(count + " analyse(s) generee(s)");
 	}
 
 	@PostMapping("/team-refresh")
