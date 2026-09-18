@@ -1,6 +1,9 @@
+server:
+  port: ${PORT:8080}
+
 spring:
   datasource:
-    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ovalytics}
+    url: jdbc:${DATABASE_URL:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ovalytics}}
     username: ${PGUSER:${SPRING_DATASOURCE_USERNAME:ovalytics}}
     password: ${PGPASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
 

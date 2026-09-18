@@ -196,8 +196,9 @@ Les CSV ne sont plus dans l’image backend (`/import` vide au boot). Les donné
 
 ### Variables à poser (le minimum)
 
-**Backend** — en liant le plugin Postgres, souvent **aucune** variable manuelle. Sinon les `PG*` du plugin suffisent.  
-Optionnel plus tard : `OVALYTICS_ANALYSIS_API_KEY` (polish LLM).
+**Backend** — en liant le plugin Postgres, Railway injecte `DATABASE_URL` / `PG*`.  
+Aucune variable manuelle obligatoire.  
+Si tu as posé `SPRING_DATASOURCE_URL`, elle doit commencer par `jdbc:` (sinon laisse vide / supprime-la : la config prod gère `jdbc:${DATABASE_URL}`).
 
 **Frontend** — une seule :
 
