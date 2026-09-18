@@ -47,3 +47,13 @@ ovalytics:
     repo-root: ..
     profiles-output: data/import/player-profiles.csv
     python-command: python3
+  analysis:
+    enabled: true
+    cron: "0 0 9 * * TUE"
+    window-days: 7
+    catch-up-on-startup: false
+    api-key: ${OVALYTICS_ANALYSIS_API_KEY:}
+    base-url: https://api.openai.com/v1
+    model: gpt-4o-mini
+  cors:
+    allowed-origins: http://localhost:4200

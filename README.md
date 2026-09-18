@@ -11,6 +11,7 @@ Compétitions en cours : **Top 14** et **Pro D2** (saison 2026-2027), alimentée
 ![Angular](https://img.shields.io/badge/Angular_21-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Railway](https://img.shields.io/badge/Railway-ready-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)
 
 ---
 
@@ -50,9 +51,10 @@ Chaque techno a un rôle dans le produit — pas une case cochée pour le CV.
 | **Spring Batch** | Imports CSV (matchs, news, transferts, effectifs, fiches joueur) |
 | **Hibernate / JPA + PostgreSQL** | Persistance compétitions, clubs, joueurs, matchs |
 | **Angular** | Interface fan |
-| **Docker Compose** | API + Postgres + volume `data/import` |
+| **Docker Compose** | API + Postgres (+ CSV embarqués dans l’image backend) |
 | **Python** | Scrapers LNR, All Rugby, Rugbyrama |
 | **Jenkins / kind / Terraform** | CI et déploiement local (présents dans le repo) |
+| **Railway** | Démo publique prévue (Postgres + backend + front) |
 
 ---
 
@@ -111,7 +113,7 @@ cd backend && ./mvnw test
 
 ## Données : scrap → CSV → Batch
 
-Les scrapers écrivent dans `data/import/`. Avec Docker, ce dossier est monté sur `/import` dans le backend.
+Les scrapers écrivent dans `data/import/`. En Docker / Railway, ces CSV sont **copiés dans l’image backend** (`/import`). Pour prendre en compte un nouveau scrap : rebuild l’image, ou ré-importer via les jobs une fois les fichiers mis à jour dans l’image / le volume.
 
 ### 1. Produire les CSV
 
@@ -173,18 +175,57 @@ Ordre recommandé : **effectifs** (`squads.csv`) puis **fiches** (`player-profil
 
 ### Variables Docker (déjà dans `docker-compose.yml`)
 
-| Variable | Fichier |
+| Variable | Rôle |
+|----------|------|
+| `PGHOST` / `PGPORT` / `PGDATABASE` / `PGUSER` / `PGPASSWORD` | Postgres (même schéma que Railway) |
+| `SPRING_PROFILES_ACTIVE=prod` | déjà dans l’image backend |
+
+---
+
+## Déploiement Railway (simple)
+
+**Principe :** le local est la source de vérité. Quand les données locales changent, on **miroir** la base vers Railway. Pas besoin de clé OpenAI en prod pour ça.
+
+### Services
+
+1. **PostgreSQL** (plugin) — à **lier** au service backend (Railway injecte alors `PGHOST`, `PGUSER`, etc.)
+2. **backend** — Dockerfile `backend/Dockerfile`, contexte = **racine** du repo  
+3. **frontend** — Dockerfile `frontend/Dockerfile`, contexte = dossier `frontend/`
+
+### Variables à poser (le minimum)
+
+**Backend** — en liant le plugin Postgres, souvent **aucune** variable manuelle. Sinon les `PG*` du plugin suffisent.  
+Optionnel plus tard : `OVALYTICS_ANALYSIS_API_KEY` (polish LLM).
+
+**Frontend** — une seule :
+
+| Variable | Exemple |
 |----------|---------|
-| `OVALYTICS_IMPORT_FILE` | `top14-matches.csv` |
-| `OVALYTICS_IMPORT_PROD2_FILE` | `prod2-matches.csv` |
-| `OVALYTICS_IMPORT_NEWS_FILE` | `news.csv` |
-| `OVALYTICS_IMPORT_TRANSFER_FILE` | `transfers.csv` |
-| `OVALYTICS_IMPORT_SQUAD_FILE` | `squads.csv` |
-| `OVALYTICS_IMPORT_PLAYER_PROFILE_FILE` | `player-profiles.csv` |
-| `OVALYTICS_TEAM_REFRESH_SCRAPE_ENABLED` | `false` (pas de Python dans l’image ; scraper sur l’hôte puis `player-profile-import`) |
+| `BACKEND_UPSTREAM` | `http://<nom-du-service-backend>.railway.internal:8080` |
+
+`SPRING_PROFILES_ACTIVE=prod` est déjà dans le Dockerfile.  
+Le front reverse-proxy `/api` → pas besoin de CORS à configurer.
+
+### Miroir local → Railway
+
+```bash
+# 1. Export de ta Postgres locale
+./scripts/mirror-db-to-railway.sh
+
+# 2. Restore sur Railway (URL Postgres du dashboard)
+export DATABASE_URL='postgresql://user:pass@host:port/railway'
+./scripts/mirror-db-to-railway.sh --restore-railway
+```
+
+Les dumps sont écrits dans `data/backups/` (ignoré par git).
+
+### Après le premier déploiement
+
+- Coller l’URL publique du site en haut de ce README.
+- Quand tu mets à jour le local (scrap, analyses) : relancer le miroir.
 
 ---
 
 ## Suite
 
-Prochain cap produit : **forme et fiches match** sur les calendriers importés (moins de seed démo), puis enrichissement des analyses avant-match.
+Mettre Ovalytics en ligne sur Railway, puis reprendre le produit (compos, etc.).

@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ovalytics}
+    username: ${PGUSER:${SPRING_DATASOURCE_USERNAME:ovalytics}}
+    password: ${PGPASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
+
+ovalytics:
+  import:
+    file: /import/top14-matches.csv
+    news:
+      file: /import/news.csv
+    transfer:
+      file: /import/transfers.csv
+    prod2:
+      file: /import/prod2-matches.csv
+    squad:
+      file: /import/squads.csv
+    player-profile:
+      file: /import/player-profiles.csv
+    player-appearance:
+      file: /import/player-appearances.csv
+    absence:
+      file: /import/absences.csv
+  live-scores:
+    enabled: true
+  team-refresh:
+    enabled: true
+    scrape-enabled: false
+  analysis:
+    enabled: true
+    catch-up-on-startup: false
+    api-key: ${OVALYTICS_ANALYSIS_API_KEY:}
+  cors:
+    allowed-origins: ${OVALYTICS_CORS_ORIGINS:*}

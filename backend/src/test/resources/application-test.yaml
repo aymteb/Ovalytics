@@ -36,3 +36,7 @@ ovalytics:
   team-refresh:
     enabled: false
     scrape-enabled: false
+  analysis:
+    enabled: false
+    catch-up-on-startup: false
+    api-key: ""

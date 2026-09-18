@@ -3,7 +3,7 @@ output "namespace" {
 }
 
 output "api_url" {
-  value = "http://localhost:8080/api/health"
+  value = "http://localhost:8082/api/health"
 }
 
 output "check_pods" {

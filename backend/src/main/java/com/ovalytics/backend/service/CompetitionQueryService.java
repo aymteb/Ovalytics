@@ -127,6 +127,12 @@ public class CompetitionQueryService {
 					.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
 					.toList();
 		}
+		if (status == MatchStatus.SCHEDULED) {
+			LocalDateTime now = LocalDateTime.now();
+			matches = matches.stream()
+					.filter(m -> !m.getKickoffAt().isBefore(now))
+					.toList();
+		}
 		return matches.stream()
 				.map(match -> toMatchResponse(match, List.of(), List.of(), null, null, null, null, List.of()))
 				.toList();

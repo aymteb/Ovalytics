@@ -73,7 +73,6 @@ public class Top14DataLoader implements ApplicationRunner {
 			top14.setOffensiveBonusRule(OffensiveBonusRule.TRY_DIFFERENCE);
 			top14.setOffensiveBonusThreshold(3);
 			removeObsoleteDemoMatches();
-			removeOverdueScheduledMatches();
 			dedupePlayersIfNeeded();
 			if (hasImportedSchedule(top14)) {
 				cleanupDemoData(top14);
@@ -208,21 +207,6 @@ public class Top14DataLoader implements ApplicationRunner {
 	private static boolean isDemoAnalysis(String analysis) {
 		return analysis.contains("Vannes accueille Bordeaux")
 				|| analysis.contains("Clermont-Toulouse");
-	}
-
-	private void removeOverdueScheduledMatches() {
-		LocalDateTime seasonStart = SEASON_START.atStartOfDay();
-		LocalDateTime now = LocalDateTime.now();
-		List<RugbyMatch> overdue = rugbyMatchRepository
-				.findByCompetitionCodeAndStatus("TOP14", MatchStatus.SCHEDULED)
-				.stream()
-				.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
-				.filter(m -> m.getKickoffAt().isBefore(now))
-				.toList();
-		for (RugbyMatch match : overdue) {
-			matchAppearanceRepository.deleteByMatchId(match.getId());
-			rugbyMatchRepository.delete(match);
-		}
 	}
 
 	private void removeObsoleteDemoMatches() {
