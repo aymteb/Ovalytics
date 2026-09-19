@@ -196,9 +196,10 @@ Les CSV ne sont plus dans l’image backend (`/import` vide au boot). Les donné
 
 ### Variables à poser (le minimum)
 
-**Backend** — en liant le plugin Postgres, Railway injecte `DATABASE_URL` / `PG*`.  
-Aucune variable manuelle obligatoire.  
-Si tu as posé `SPRING_DATASOURCE_URL`, elle doit commencer par `jdbc:` (sinon laisse vide / supprime-la : la config prod gère `jdbc:${DATABASE_URL}`).
+**Backend** — lier le plugin Postgres au service (Railway injecte `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`).  
+La config prod construit l’URL JDBC avec `sslmode=require`.  
+**Ne pas** poser `SPRING_DATASOURCE_URL` / `DATABASE_URL` à la main (ça écrase et casse souvent le démarrage).  
+Si tu en as déjà : les **supprimer**, Apply, redéployer.
 
 **Frontend** — une seule :
 
