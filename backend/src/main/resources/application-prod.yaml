@@ -3,9 +3,10 @@ server:
 
 spring:
   datasource:
-    url: jdbc:${DATABASE_URL:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ovalytics}}
-    username: ${PGUSER:${SPRING_DATASOURCE_USERNAME:ovalytics}}
-    password: ${PGPASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
+    url: jdbc:postgresql://${PGHOST}:${PGPORT:5432}/${PGDATABASE}?sslmode=require
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
+    driver-class-name: org.postgresql.Driver
 
 ovalytics:
   import:
