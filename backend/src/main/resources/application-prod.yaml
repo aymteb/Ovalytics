@@ -3,9 +3,6 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://${PGHOST}:${PGPORT:5432}/${PGDATABASE}
-    username: ${PGUSER}
-    password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
 
 ovalytics:
