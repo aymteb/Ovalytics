@@ -11,5 +11,5 @@ public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
 
 	Optional<NewsItem> findBySourceUrl(String sourceUrl);
 
-	List<NewsItem> findTop50ByOrderByPublishedAtDesc();
+	List<NewsItem> findTop100ByOrderByPublishedAtDesc();
 }

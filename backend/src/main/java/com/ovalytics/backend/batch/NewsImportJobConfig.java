@@ -8,6 +8,7 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.file.transform.FieldSet;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,14 +31,9 @@ public class NewsImportJobConfig {
 				.resource(MatchImportResource.resolve(properties.getFile(), resourceLoader, "data/news-import.csv"))
 				.linesToSkip(1)
 				.delimited()
-				.names("title", "summary", "sourceUrl", "publishedAt", "source", "competitionCode")
-				.fieldSetMapper(fields -> new NewsCsvRow(
-						fields.readString("title"),
-						fields.readString("summary"),
-						fields.readString("sourceUrl"),
-						fields.readString("publishedAt"),
-						fields.readString("source"),
-						fields.readString("competitionCode")))
+				.strict(false)
+				.names("title", "summary", "sourceUrl", "publishedAt", "source", "competitionCode", "imageUrl")
+				.fieldSetMapper(NewsImportJobConfig::toRow)
 				.build();
 	}
 
@@ -66,5 +62,29 @@ public class NewsImportJobConfig {
 		return new JobBuilder("newsImportJob", jobRepository)
 				.start(newsImportStep)
 				.build();
+	}
+
+	private static NewsCsvRow toRow(FieldSet fields) {
+		return new NewsCsvRow(
+				fields.readString("title"),
+				fields.readString("summary"),
+				fields.readString("sourceUrl"),
+				fields.readString("publishedAt"),
+				fields.readString("source"),
+				fields.readString("competitionCode"),
+				optional(fields, "imageUrl"));
+	}
+
+	private static String optional(FieldSet fields, String name) {
+		String[] names = fields.getNames();
+		if (names == null) {
+			return "";
+		}
+		for (String fieldName : names) {
+			if (name.equals(fieldName)) {
+				return fields.readString(name);
+			}
+		}
+		return "";
 	}
 }

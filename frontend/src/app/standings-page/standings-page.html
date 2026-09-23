@@ -1,57 +1,75 @@
-<h2>Classement</h2>
+<section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+  <h2
+    class="mb-8 border-l-4 border-primary pl-4 font-display text-3xl uppercase tracking-wide text-foreground"
+  >
+    Classement
+  </h2>
 
-@if (competitions().length > 0) {
-  <label class="competition-picker">
-    <span>Championnat</span>
-    <select
-      [value]="selectedCode()"
-      (change)="onCompetitionChange($any($event.target).value)"
-    >
-      @for (c of competitions(); track c.code) {
-        <option [value]="c.code">{{ c.name }} · {{ c.season }}</option>
-      }
-    </select>
-  </label>
-}
-
-@if (loading()) {
-  <p class="loading">Chargement...</p>
-} @else if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
-} @else {
-  @if (hasLiveMatches()) {
-    <p class="live-hint">Match(s) en cours — le classement se met à jour à la fin des rencontres.</p>
-  }
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Club</th>
-          <th>J</th>
-          <th>V</th>
-          <th>N</th>
-          <th>D</th>
-          <th>Bonus</th>
-          <th>Pts</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.teamId) {
-          <tr>
-            <td>{{ row.position }}</td>
-            <td class="club-cell">
-              <app-team-logo [shortName]="row.teamShortName" size="sm" />
-            </td>
-            <td>{{ row.played }}</td>
-            <td>{{ row.won }}</td>
-            <td>{{ row.drawn }}</td>
-            <td>{{ row.lost }}</td>
-            <td>{{ row.bonus }}</td>
-            <td>{{ row.points }}</td>
-          </tr>
+  @if (competitions().length > 0) {
+    <label class="mb-8 flex flex-wrap items-center gap-3 text-sm font-semibold">
+      <span class="uppercase tracking-[0.12em] text-muted-foreground">Championnat</span>
+      <select
+        class="min-h-10 cursor-pointer rounded border border-border bg-card px-3 font-semibold text-foreground"
+        [value]="selectedCode()"
+        (change)="onCompetitionChange($any($event.target).value)"
+      >
+        @for (c of competitions(); track c.code) {
+          <option [value]="c.code">{{ c.name }} · {{ c.season }}</option>
         }
-      </tbody>
-    </table>
-  </div>
-}
+      </select>
+    </label>
+  }
+
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else {
+    @if (hasLiveMatches()) {
+      <p class="mb-6 text-sm text-muted-foreground">
+        Match(s) en cours — le classement se met à jour à la fin des rencontres.
+      </p>
+    }
+
+    <div class="overflow-x-auto rounded-lg border border-border/70 bg-card/60">
+      <table class="w-full min-w-[36rem] border-collapse text-left text-sm">
+        <thead>
+          <tr
+            class="border-b border-border text-xs uppercase tracking-[0.1em] text-muted-foreground"
+          >
+            <th class="px-4 py-3 font-semibold">#</th>
+            <th class="px-4 py-3 font-semibold">Club</th>
+            <th class="px-3 py-3 font-semibold">J</th>
+            <th class="px-3 py-3 font-semibold">V</th>
+            <th class="px-3 py-3 font-semibold">N</th>
+            <th class="px-3 py-3 font-semibold">D</th>
+            <th class="px-3 py-3 font-semibold">Bonus</th>
+            <th class="px-4 py-3 font-semibold">Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.teamId) {
+            <tr class="border-b border-border/50 last:border-0 odd:bg-white/[0.02]">
+              <td class="px-4 py-3 text-muted-foreground tabular-nums">{{ row.position }}</td>
+              <td class="px-4 py-3">
+                <a
+                  [routerLink]="['/clubs', selectedCode(), row.teamShortName]"
+                  class="inline-flex items-center gap-3 text-foreground no-underline hover:text-primary"
+                >
+                  <app-team-logo [shortName]="row.teamShortName" size="sm" />
+                  <span class="font-medium">{{ row.teamName }}</span>
+                </a>
+              </td>
+              <td class="px-3 py-3 tabular-nums">{{ row.played }}</td>
+              <td class="px-3 py-3 tabular-nums">{{ row.won }}</td>
+              <td class="px-3 py-3 tabular-nums">{{ row.drawn }}</td>
+              <td class="px-3 py-3 tabular-nums">{{ row.lost }}</td>
+              <td class="px-3 py-3 tabular-nums">{{ row.bonus }}</td>
+              <td class="px-4 py-3 font-display text-lg tabular-nums">{{ row.points }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

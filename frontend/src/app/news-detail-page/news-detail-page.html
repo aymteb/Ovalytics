@@ -1,0 +1,90 @@
+<section class="mx-auto max-w-[1100px] px-6 py-10 lg:px-8">
+  <p class="mb-8">
+    <a
+      [routerLink]="backPath"
+      (click)="onBackClick()"
+      class="text-xs font-semibold uppercase tracking-wide text-muted-foreground no-underline transition duration-200 hover:text-foreground"
+      >{{ backLabel }}</a
+    >
+  </p>
+
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else if (item(); as n) {
+    <article>
+      <div class="mb-4 flex flex-wrap items-center gap-3">
+        @if (n.competitionCode) {
+          <span
+            class="rounded px-2.5 py-1 font-display text-xs uppercase tracking-wide"
+            [ngClass]="badgeClass(n.competitionCode)"
+            >{{ competitionLabel(n.competitionCode) }}</span
+          >
+        }
+        <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {{ n.source }} · {{ n.publishedAt | date: 'd MMM y' }}
+        </span>
+      </div>
+
+      <h1
+        class="m-0 max-w-4xl font-display text-3xl uppercase leading-tight tracking-wide text-foreground sm:text-5xl"
+      >
+        {{ n.title }}
+      </h1>
+
+      <div
+        class="mt-8 mb-10 h-56 w-full overflow-hidden rounded-lg border border-white/10 bg-muted sm:h-[450px]"
+      >
+        @if (n.imageUrl) {
+          <img
+            [src]="n.imageUrl"
+            [alt]="n.title"
+            class="h-full w-full object-cover"
+          />
+        }
+      </div>
+
+      @if (n.summary) {
+        <p class="max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl sm:leading-relaxed">
+          {{ n.summary }}
+        </p>
+      } @else {
+        <p class="text-sm text-muted-foreground">Pas de résumé disponible pour cette actu.</p>
+      }
+
+      @if (related().length > 0) {
+        <section class="mt-16 border-t border-white/10 pt-10">
+          <h2 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">
+            À lire aussi
+          </h2>
+          <ul class="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
+            @for (r of related(); track r.id) {
+              <li>
+                <a
+                  [routerLink]="['/news', r.id]"
+                  class="block rounded-md border border-white/10 bg-card p-4 no-underline transition duration-200 hover:border-muted-foreground"
+                >
+                  @if (r.competitionCode) {
+                    <span
+                      class="mb-2 inline-block text-[0.7rem] font-bold uppercase tracking-wide"
+                      [ngClass]="
+                        r.competitionCode === 'TOP14' ? 'text-primary' : 'text-muted-foreground'
+                      "
+                      >{{ competitionLabel(r.competitionCode) }}</span
+                    >
+                  }
+                  <h3
+                    class="m-0 font-display text-lg uppercase leading-snug tracking-wide text-foreground"
+                  >
+                    {{ r.title }}
+                  </h3>
+                </a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </article>
+  }
+</section>

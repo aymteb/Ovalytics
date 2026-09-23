@@ -21,11 +21,13 @@ public class NewsImportProcessor implements ItemProcessor<NewsCsvRow, NewsItem> 
 	public NewsItem process(NewsCsvRow row) {
 		LocalDateTime publishedAt = LocalDateTime.parse(row.publishedAt());
 		String competitionCode = blankToNull(row.competitionCode());
+		String imageUrl = blankToNull(row.imageUrl());
 
 		return newsItemRepository.findBySourceUrl(row.sourceUrl())
 				.map(existing -> {
 					existing.setTitle(row.title());
 					existing.setSummary(blankToNull(row.summary()));
+					existing.setImageUrl(imageUrl);
 					existing.setPublishedAt(publishedAt);
 					existing.setCompetitionCode(competitionCode);
 					return existing;
@@ -33,6 +35,7 @@ public class NewsImportProcessor implements ItemProcessor<NewsCsvRow, NewsItem> 
 				.orElseGet(() -> new NewsItem(
 						row.title(),
 						blankToNull(row.summary()),
+						imageUrl,
 						row.sourceUrl(),
 						publishedAt,
 						row.source(),

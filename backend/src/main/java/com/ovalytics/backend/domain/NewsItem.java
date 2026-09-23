@@ -23,6 +23,9 @@ public class NewsItem {
 	@Column(columnDefinition = "TEXT")
 	private String summary;
 
+	@Column(length = 500)
+	private String imageUrl;
+
 	@Column(nullable = false, unique = true, length = 500)
 	private String sourceUrl;
 
@@ -41,12 +44,14 @@ public class NewsItem {
 	public NewsItem(
 			String title,
 			String summary,
+			String imageUrl,
 			String sourceUrl,
 			LocalDateTime publishedAt,
 			String source,
 			String competitionCode) {
 		this.title = title;
 		this.summary = summary;
+		this.imageUrl = imageUrl;
 		this.sourceUrl = sourceUrl;
 		this.publishedAt = publishedAt;
 		this.source = source;
@@ -71,6 +76,14 @@ public class NewsItem {
 
 	public void setSummary(String summary) {
 		this.summary = summary;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public String getSourceUrl() {

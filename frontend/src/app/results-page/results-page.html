@@ -1,68 +1,99 @@
-<h2>Résultats</h2>
+<section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+  <h2
+    class="mb-8 border-l-4 border-primary pl-4 font-display text-3xl uppercase tracking-wide text-foreground"
+  >
+    Résultats
+  </h2>
 
-@if (competitions().length > 0) {
-  <label class="competition-picker">
-    <span>Championnat</span>
-    <select
-      [value]="selectedCode()"
-      (change)="onCompetitionChange($any($event.target).value)"
-    >
-      @for (c of competitions(); track c.code) {
-        <option [value]="c.code">{{ c.name }} · {{ c.season }}</option>
-      }
-    </select>
-  </label>
-}
-
-@if (loading()) {
-  <p class="loading">Chargement...</p>
-} @else if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
-} @else {
-  @if (liveMatches().length > 0) {
-    <section class="live-block" aria-labelledby="live-results-heading">
-      <h3 id="live-results-heading" class="live-title">En direct</h3>
-      <ul class="match-list live-list">
-        @for (match of liveMatches(); track match.id) {
-          <li>
-            <a [routerLink]="['/matches', match.id]" class="live-row">
-              <span class="live-badge">Live</span>
-              <span class="teams">
-                <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
-                <span class="score">{{ match.homeScore }} - {{ match.awayScore }}</span>
-                <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
-              </span>
-              <span class="date">J{{ match.matchday }} · {{ match.kickoffAt | date: 'dd/MM · HH:mm' }}</span>
-            </a>
-          </li>
+  @if (competitions().length > 0) {
+    <label class="mb-8 flex flex-wrap items-center gap-3 text-sm font-semibold">
+      <span class="uppercase tracking-[0.12em] text-muted-foreground">Championnat</span>
+      <select
+        class="min-h-10 cursor-pointer rounded border border-border bg-card px-3 font-semibold text-foreground"
+        [value]="selectedCode()"
+        (change)="onCompetitionChange($any($event.target).value)"
+      >
+        @for (c of competitions(); track c.code) {
+          <option [value]="c.code">{{ c.name }} · {{ c.season }}</option>
         }
-      </ul>
-    </section>
+      </select>
+    </label>
   }
 
-  @if (matchdayGroups().length === 0 && liveMatches().length === 0) {
-    <p>Aucun résultat pour ce championnat.</p>
-  } @else if (matchdayGroups().length > 0) {
-    <div class="matchday-groups">
-      @for (group of matchdayGroups(); track group.matchday) {
-        <section class="matchday-block">
-          <h3 class="matchday-title">Journée {{ group.matchday }}</h3>
-          <ul class="match-list">
-            @for (match of group.matches; track match.id) {
-              <li>
-                <a [routerLink]="['/matches', match.id]">
-                  <span class="teams">
-                    <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
-                    <span class="score">{{ match.homeScore }} - {{ match.awayScore }}</span>
-                    <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else {
+    @if (liveMatches().length > 0) {
+      <section class="mb-12" aria-labelledby="live-results-heading">
+        <h3
+          id="live-results-heading"
+          class="mb-4 font-display text-xl uppercase tracking-wide text-primary"
+        >
+          En direct
+        </h3>
+        <ul class="m-0 list-none space-y-2 p-0">
+          @for (match of liveMatches(); track match.id) {
+            <li>
+              <a
+                [routerLink]="['/matches', match.id]"
+                class="flex flex-wrap items-center gap-4 rounded-lg border border-primary/40 bg-card/90 px-4 py-3 text-foreground no-underline transition duration-200 hover:border-primary"
+              >
+                <span
+                  class="rounded bg-primary px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider text-on-primary"
+                  >Live</span
+                >
+                <span class="flex min-w-0 flex-1 items-center gap-2">
+                  <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+                  <span class="font-display text-xl tabular-nums">
+                    {{ match.homeScore }} – {{ match.awayScore }}
                   </span>
-                  <span class="date">{{ match.kickoffAt | date: 'dd/MM/yyyy' }}</span>
-                </a>
-              </li>
-            }
-          </ul>
-        </section>
-      }
-    </div>
+                  <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+                </span>
+                <span class="text-xs text-muted-foreground">
+                  J{{ match.matchday }} · {{ match.kickoffAt | date: 'dd/MM · HH:mm' }}
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (matchdayGroups().length === 0 && liveMatches().length === 0) {
+      <p class="text-muted-foreground">Aucun résultat pour ce championnat.</p>
+    } @else if (matchdayGroups().length > 0) {
+      <div class="flex flex-col gap-10">
+        @for (group of matchdayGroups(); track group.matchday) {
+          <section>
+            <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">
+              Journée {{ group.matchday }}
+            </h3>
+            <ul class="m-0 list-none space-y-2 p-0">
+              @for (match of group.matches; track match.id) {
+                <li>
+                  <a
+                    [routerLink]="['/matches', match.id]"
+                    class="flex flex-wrap items-center gap-4 rounded-lg border border-border/70 bg-card/80 px-4 py-3 text-foreground no-underline transition duration-200 hover:border-primary/50"
+                  >
+                    <span class="flex min-w-0 flex-1 items-center gap-2">
+                      <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+                      <span class="font-display text-xl tabular-nums">
+                        {{ match.homeScore }} – {{ match.awayScore }}
+                      </span>
+                      <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+                    </span>
+                    <span class="text-sm text-muted-foreground">
+                      {{ match.kickoffAt | date: 'dd/MM/yyyy' }}
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    }
   }
-}
+</section>
