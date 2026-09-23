@@ -7,15 +7,9 @@ import { TeamLogo } from '../team-logo/team-logo';
 
 type FixturesView = 'hub' | 'competition';
 
-interface LeagueGroup {
-  code: string;
-  name: string;
-  matches: Match[];
-}
-
 interface DateGroup {
   dateKey: string;
-  leagues: LeagueGroup[];
+  matches: Match[];
 }
 
 interface MatchdayGroup {
@@ -73,6 +67,10 @@ export class FixturesPage implements OnInit {
     this.loadCompetitionMatches(code);
   }
 
+  roundLabel(match: Match): string {
+    return `${match.competitionName} · J${match.matchday}`;
+  }
+
   private loadMatches(): void {
     this.loading.set(true);
     this.errorMessage.set('');
@@ -114,35 +112,28 @@ export class FixturesPage implements OnInit {
   }
 
   private buildHubGroups(matches: Match[]): DateGroup[] {
-    const byDate = new Map<string, Map<string, LeagueGroup>>();
+    const byDate = new Map<string, Match[]>();
     for (const match of matches) {
       const dateKey = match.kickoffAt.slice(0, 10);
-      if (!byDate.has(dateKey)) {
-        byDate.set(dateKey, new Map());
-      }
-      const leagues = byDate.get(dateKey)!;
-      if (!leagues.has(match.competitionCode)) {
-        leagues.set(match.competitionCode, {
-          code: match.competitionCode,
-          name: match.competitionName,
-          matches: [],
-        });
-      }
-      leagues.get(match.competitionCode)!.matches.push(match);
+      const list = byDate.get(dateKey) ?? [];
+      list.push(match);
+      byDate.set(dateKey, list);
     }
 
     return [...byDate.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([dateKey, leagues]) => ({
+      .map(([dateKey, dayMatches]) => ({
         dateKey,
-        leagues: [...leagues.values()]
-          .sort((a, b) => this.competitionOrder(a.code) - this.competitionOrder(b.code))
-          .map((league) => ({
-            ...league,
-            matches: [...league.matches].sort((a, b) =>
-              a.kickoffAt.localeCompare(b.kickoffAt),
-            ),
-          })),
+        matches: [...dayMatches].sort((a, b) => {
+          const byTime = a.kickoffAt.localeCompare(b.kickoffAt);
+          if (byTime !== 0) {
+            return byTime;
+          }
+          return (
+            this.competitionOrder(a.competitionCode) -
+            this.competitionOrder(b.competitionCode)
+          );
+        }),
       }));
   }
 

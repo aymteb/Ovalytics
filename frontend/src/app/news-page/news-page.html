@@ -1,0 +1,73 @@
+<section class="mx-auto max-w-[850px] px-6 py-10 lg:px-8">
+  <header class="mb-12">
+    <h2
+      class="mb-3 border-l-4 border-primary pl-4 font-display text-4xl uppercase tracking-wide text-foreground"
+    >
+      Actu
+    </h2>
+    <p class="ml-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+      Toutes les actualités importées, de la plus récente à la plus ancienne.
+    </p>
+  </header>
+
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else if (news().length === 0) {
+    <p class="text-muted-foreground">Pas encore d’actualités en base.</p>
+  } @else {
+    <ul class="m-0 flex list-none flex-col gap-10 p-0">
+      @for (item of news(); track item.id) {
+        <li class="border-b border-white/10 pb-10 last:border-0 last:pb-0">
+          <a
+            [routerLink]="['/news', item.id]"
+            (click)="openArticle()"
+            class="group flex flex-col gap-4 no-underline transition duration-200 hover:translate-x-2 sm:flex-row sm:gap-6"
+          >
+            <div
+              class="h-48 w-full shrink-0 overflow-hidden rounded-md border border-white/10 bg-muted sm:h-[130px] sm:w-[200px]"
+            >
+              @if (item.imageUrl) {
+                <img
+                  [src]="item.imageUrl"
+                  [alt]="item.title"
+                  class="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              }
+            </div>
+            <div class="flex min-w-0 flex-1 flex-col justify-center">
+              <div class="mb-3 flex flex-wrap items-center gap-3">
+                @if (item.competitionCode) {
+                  <span
+                    class="rounded px-2.5 py-1 font-display text-xs uppercase tracking-wide"
+                    [ngClass]="badgeClass(item.competitionCode)"
+                    >{{ competitionLabel(item.competitionCode) }}</span
+                  >
+                }
+                <span
+                  class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                >
+                  {{ item.source }} · {{ item.publishedAt | date: 'd MMM y' }}
+                </span>
+              </div>
+              <h3
+                class="m-0 font-display text-xl uppercase leading-snug tracking-wide text-foreground transition-colors group-hover:text-primary sm:text-2xl"
+              >
+                {{ item.title }}
+              </h3>
+              @if (item.summary) {
+                <p
+                  class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-300"
+                >
+                  {{ item.summary }}
+                </p>
+              }
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>

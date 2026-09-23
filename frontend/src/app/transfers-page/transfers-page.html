@@ -1,195 +1,258 @@
-<h2>Transferts</h2>
-<p class="intro">
-  Mercato de la saison suivante (annonces déjà connues). Les fins de contrat sont sur la fiche de chaque club.
-</p>
-
-<div class="tabs" role="tablist" aria-label="Vue des transferts">
-  <button
-    type="button"
-    role="tab"
-    class="tab"
-    [class.active]="tab() === 'journal'"
-    [attr.aria-selected]="tab() === 'journal'"
-    (click)="setTab('journal')"
+<section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+  <h2
+    class="mb-3 border-l-4 border-primary pl-4 font-display text-3xl uppercase tracking-wide text-foreground"
   >
-    Journal
-  </button>
-  <button
-    type="button"
-    role="tab"
-    class="tab"
-    [class.active]="tab() === 'clubs'"
-    [attr.aria-selected]="tab() === 'clubs'"
-    (click)="setTab('clubs')"
-  >
-    Par club
-  </button>
-</div>
+    Transferts
+  </h2>
+  <p class="mb-8 max-w-xl text-sm leading-relaxed text-muted-foreground">
+    Mercato de la saison suivante (annonces déjà connues). Les fins de contrat sont sur la fiche de
+    chaque club.
+  </p>
 
-@if (tab() === 'clubs' && competitions().length > 0) {
-  <label class="competition-picker">
-    <span>Championnat</span>
-    <select
-      [value]="selectedCode()"
-      (change)="onCompetitionChange($any($event.target).value)"
+  <div class="mb-8 flex flex-wrap gap-2" role="tablist" aria-label="Vue des transferts">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="tab() === 'journal'"
+      (click)="setTab('journal')"
+      class="min-h-10 cursor-pointer rounded border px-4 text-sm font-semibold uppercase tracking-wide transition duration-200"
+      [class.border-primary]="tab() === 'journal'"
+      [class.bg-primary]="tab() === 'journal'"
+      [class.text-on-primary]="tab() === 'journal'"
+      [class.border-border]="tab() !== 'journal'"
+      [class.bg-card]="tab() !== 'journal'"
+      [class.text-muted-foreground]="tab() !== 'journal'"
     >
-      @for (c of competitions(); track c.code) {
-        <option [value]="c.code" [selected]="c.code === selectedCode()">
-          {{ c.name }} ({{ c.season }})
-        </option>
-      }
-    </select>
-  </label>
-}
+      Journal
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="tab() === 'clubs'"
+      (click)="setTab('clubs')"
+      class="min-h-10 cursor-pointer rounded border px-4 text-sm font-semibold uppercase tracking-wide transition duration-200"
+      [class.border-primary]="tab() === 'clubs'"
+      [class.bg-primary]="tab() === 'clubs'"
+      [class.text-on-primary]="tab() === 'clubs'"
+      [class.border-border]="tab() !== 'clubs'"
+      [class.bg-card]="tab() !== 'clubs'"
+      [class.text-muted-foreground]="tab() !== 'clubs'"
+    >
+      Par club
+    </button>
+  </div>
 
-@if (loading()) {
-  <p class="loading">Chargement...</p>
-} @else if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
-} @else if (tab() === 'journal') {
-  @if (journalTransfers().length === 0) {
-    <p>Aucun transfert en base.</p>
-  } @else {
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Championnat</th>
-            <th>Joueur</th>
-            <th>Mouvement</th>
-            @if (showDurationColumn()) {
-              <th>Durée</th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @for (t of journalTransfers(); track t.id) {
-            <tr>
-              <td>{{ t.transferDate | date: 'dd/MM/yyyy' }}</td>
-              <td>{{ t.competitionName }}</td>
-              <td class="player">
-                @if (playerLink(t); as link) {
-                  <a [routerLink]="link">{{ t.playerName }}</a>
-                } @else {
-                  {{ t.playerName }}
-                }
-              </td>
-              <td>
-                <div class="movement">
-                  <div class="club-chip">
-                    @if (clubShort(t, 'from'); as fromShort) {
-                      <app-team-logo [shortName]="fromShort" size="sm" />
-                    } @else {
-                      <span class="club-fallback">{{ clubFallback(t, 'from') }}</span>
-                    }
-                  </div>
-                  <span class="arrow" aria-hidden="true">→</span>
-                  <div class="club-chip">
-                    @if (clubShort(t, 'to'); as toShort) {
-                      <app-team-logo [shortName]="toShort" size="sm" />
-                    } @else {
-                      <span class="club-fallback">{{ clubFallback(t, 'to') }}</span>
-                    }
-                  </div>
-                  <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
-                </div>
-              </td>
+  @if (tab() === 'clubs' && competitions().length > 0) {
+    <label class="mb-8 flex flex-wrap items-center gap-3 text-sm font-semibold">
+      <span class="uppercase tracking-[0.12em] text-muted-foreground">Championnat</span>
+      <select
+        class="min-h-10 cursor-pointer rounded border border-border bg-card px-3 font-semibold text-foreground"
+        [value]="selectedCode()"
+        (change)="onCompetitionChange($any($event.target).value)"
+      >
+        @for (c of competitions(); track c.code) {
+          <option [value]="c.code">{{ c.name }} · {{ c.season }}</option>
+        }
+      </select>
+    </label>
+  }
+
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else if (tab() === 'journal') {
+    @if (journalTransfers().length === 0) {
+      <p class="text-muted-foreground">Aucun transfert en base.</p>
+    } @else {
+      <div class="overflow-x-auto rounded-lg border border-border/70 bg-card/60">
+        <table class="w-full min-w-[40rem] border-collapse text-left text-sm">
+          <thead>
+            <tr
+              class="border-b border-border text-xs uppercase tracking-[0.1em] text-muted-foreground"
+            >
+              <th class="px-4 py-3 font-semibold">Date</th>
+              <th class="px-4 py-3 font-semibold">Championnat</th>
+              <th class="px-4 py-3 font-semibold">Joueur</th>
+              <th class="px-4 py-3 font-semibold">Mouvement</th>
               @if (showDurationColumn()) {
-                <td class="duration">{{ t.contractLength }}</td>
+                <th class="px-4 py-3 font-semibold">Durée</th>
               }
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-} @else if (tab() === 'clubs') {
-  @if (teams().length === 0) {
-    <p>Aucun club pour ce championnat.</p>
-  } @else {
-  <nav class="club-jump" aria-label="Aller à un club">
-    @for (board of clubBoards(); track board.team.id) {
-      <a [routerLink]="clubLink(board.team)" class="club-jump-link">
-        <app-team-logo [shortName]="board.team.shortName" size="md" />
-      </a>
-    }
-  </nav>
-
-  @for (board of clubBoards(); track board.team.id) {
-    <section class="club-block">
-      <h3>
-        <a [routerLink]="clubLink(board.team)">{{ board.team.name }}</a>
-      </h3>
-
-      <div class="club-columns">
-        <div>
-          <h4>Arrivées</h4>
-          @if (board.arrivals.length === 0) {
-            <p class="empty">Aucune pour l’instant</p>
-          } @else {
-            <ul>
-              @for (t of board.arrivals; track t.id) {
-                <li>
+          </thead>
+          <tbody>
+            @for (t of journalTransfers(); track t.id) {
+              <tr class="border-b border-border/50 last:border-0 odd:bg-white/[0.02]">
+                <td class="px-4 py-3 text-muted-foreground tabular-nums">
+                  {{ t.transferDate | date: 'dd/MM/yyyy' }}
+                </td>
+                <td class="px-4 py-3 text-muted-foreground">{{ t.competitionName }}</td>
+                <td class="px-4 py-3 font-medium">
                   @if (playerLink(t); as link) {
-                    <a [routerLink]="link" class="player">{{ t.playerName }}</a>
+                    <a [routerLink]="link" class="text-foreground no-underline hover:text-primary">{{
+                      t.playerName
+                    }}</a>
                   } @else {
-                    <span class="player">{{ t.playerName }}</span>
+                    {{ t.playerName }}
                   }
-                  <span class="meta">depuis {{ t.fromClub }}</span>
-                  @if (t.contractLength) {
-                    <span class="duration">{{ t.contractLength }}</span>
-                  }
-                </li>
-              }
-            </ul>
-          }
-        </div>
-        <div>
-          <h4>Départs</h4>
-          @if (board.departures.length === 0) {
-            <p class="empty">Aucun pour l’instant</p>
-          } @else {
-            <ul>
-              @for (t of board.departures; track t.id) {
-                <li>
-                  @if (playerLink(t); as link) {
-                    <a [routerLink]="link" class="player">{{ t.playerName }}</a>
-                  } @else {
-                    <span class="player">{{ t.playerName }}</span>
-                  }
-                  <span class="meta">vers {{ t.toClub }}</span>
-                  @if (t.contractLength) {
-                    <span class="duration">{{ t.contractLength }}</span>
-                  }
-                </li>
-              }
-            </ul>
-          }
-        </div>
-        <div>
-          <h4>Prolongations</h4>
-          @if (board.extensions.length === 0) {
-            <p class="empty">Aucune pour l’instant</p>
-          } @else {
-            <ul>
-              @for (t of board.extensions; track t.id) {
-                <li>
-                  @if (playerLink(t); as link) {
-                    <a [routerLink]="link" class="player">{{ t.playerName }}</a>
-                  } @else {
-                    <span class="player">{{ t.playerName }}</span>
-                  }
-                  @if (t.contractLength) {
-                    <span class="duration">{{ t.contractLength }}</span>
-                  }
-                </li>
-              }
-            </ul>
-          }
-        </div>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center gap-1">
+                      @if (clubShort(t, 'from'); as fromShort) {
+                        <app-team-logo [shortName]="fromShort" size="sm" />
+                      } @else {
+                        <span class="text-xs text-muted-foreground">{{
+                          clubFallback(t, 'from')
+                        }}</span>
+                      }
+                    </span>
+                    <span class="text-muted-foreground" aria-hidden="true">→</span>
+                    <span class="inline-flex items-center gap-1">
+                      @if (clubShort(t, 'to'); as toShort) {
+                        <app-team-logo [shortName]="toShort" size="sm" />
+                      } @else {
+                        <span class="text-xs text-muted-foreground">{{
+                          clubFallback(t, 'to')
+                        }}</span>
+                      }
+                    </span>
+                    <span
+                      class="rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                      [attr.data-type]="t.type"
+                      >{{ typeLabel(t.type) }}</span
+                    >
+                  </div>
+                </td>
+                @if (showDurationColumn()) {
+                  <td class="px-4 py-3 text-muted-foreground">{{ t.contractLength }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-    </section>
+    }
+  } @else if (tab() === 'clubs') {
+    @if (teams().length === 0) {
+      <p class="text-muted-foreground">Aucun club pour ce championnat.</p>
+    } @else {
+      <nav class="mb-10 flex flex-wrap gap-3" aria-label="Aller à un club">
+        @for (board of clubBoards(); track board.team.id) {
+          <a
+            [routerLink]="clubLink(board.team)"
+            class="rounded-lg border border-border/70 bg-card/80 p-2 transition duration-200 hover:border-primary/50"
+          >
+            <app-team-logo [shortName]="board.team.shortName" size="md" />
+          </a>
+        }
+      </nav>
+
+      <div class="flex flex-col gap-12">
+        @for (board of clubBoards(); track board.team.id) {
+          <section>
+            <h3 class="mb-6 font-display text-2xl uppercase tracking-wide">
+              <a
+                [routerLink]="clubLink(board.team)"
+                class="text-foreground no-underline hover:text-primary"
+                >{{ board.team.name }}</a
+              >
+            </h3>
+
+            <div class="grid gap-8 md:grid-cols-3">
+              <div>
+                <h4
+                  class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                >
+                  Arrivées
+                </h4>
+                @if (board.arrivals.length === 0) {
+                  <p class="text-sm text-muted-foreground">Aucune pour l’instant</p>
+                } @else {
+                  <ul class="m-0 list-none space-y-3 p-0">
+                    @for (t of board.arrivals; track t.id) {
+                      <li class="border-b border-border/40 pb-3 last:border-0">
+                        @if (playerLink(t); as link) {
+                          <a
+                            [routerLink]="link"
+                            class="font-medium text-foreground no-underline hover:text-primary"
+                            >{{ t.playerName }}</a
+                          >
+                        } @else {
+                          <span class="font-medium">{{ t.playerName }}</span>
+                        }
+                        <p class="m-0 mt-1 text-xs text-muted-foreground">depuis {{ t.fromClub }}</p>
+                        @if (t.contractLength) {
+                          <p class="m-0 text-xs text-muted-foreground">{{ t.contractLength }}</p>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+              <div>
+                <h4
+                  class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                >
+                  Départs
+                </h4>
+                @if (board.departures.length === 0) {
+                  <p class="text-sm text-muted-foreground">Aucun pour l’instant</p>
+                } @else {
+                  <ul class="m-0 list-none space-y-3 p-0">
+                    @for (t of board.departures; track t.id) {
+                      <li class="border-b border-border/40 pb-3 last:border-0">
+                        @if (playerLink(t); as link) {
+                          <a
+                            [routerLink]="link"
+                            class="font-medium text-foreground no-underline hover:text-primary"
+                            >{{ t.playerName }}</a
+                          >
+                        } @else {
+                          <span class="font-medium">{{ t.playerName }}</span>
+                        }
+                        <p class="m-0 mt-1 text-xs text-muted-foreground">vers {{ t.toClub }}</p>
+                        @if (t.contractLength) {
+                          <p class="m-0 text-xs text-muted-foreground">{{ t.contractLength }}</p>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+              <div>
+                <h4
+                  class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                >
+                  Prolongations
+                </h4>
+                @if (board.extensions.length === 0) {
+                  <p class="text-sm text-muted-foreground">Aucune pour l’instant</p>
+                } @else {
+                  <ul class="m-0 list-none space-y-3 p-0">
+                    @for (t of board.extensions; track t.id) {
+                      <li class="border-b border-border/40 pb-3 last:border-0">
+                        @if (playerLink(t); as link) {
+                          <a
+                            [routerLink]="link"
+                            class="font-medium text-foreground no-underline hover:text-primary"
+                            >{{ t.playerName }}</a
+                          >
+                        } @else {
+                          <span class="font-medium">{{ t.playerName }}</span>
+                        }
+                        @if (t.contractLength) {
+                          <p class="m-0 mt-1 text-xs text-muted-foreground">{{ t.contractLength }}</p>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+    }
   }
-  }
-}
+</section>

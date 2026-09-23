@@ -1,19 +1,60 @@
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 
-<header class="site-header">
-  <div class="brand-block">
-    <a routerLink="/" class="brand-link">
-      <p class="brand-kicker">Hub rugby</p>
-      <h1>Ovalytics</h1>
+<header
+  class="sticky top-0 z-50 border-b border-white/5 bg-background/80 backdrop-blur-md"
+>
+  <div
+    class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-6 px-6 py-5 lg:px-8"
+  >
+    <a
+      routerLink="/"
+      class="font-display text-3xl tracking-wide text-foreground no-underline transition-colors duration-200 hover:text-primary"
+    >
+      OVALY<span class="text-primary">TICS</span>
     </a>
+    <nav
+      class="flex flex-wrap gap-x-8 gap-y-2 text-xs font-semibold uppercase tracking-[0.14em]"
+      aria-label="Navigation principale"
+    >
+      <a
+        routerLink="/"
+        routerLinkActive="text-foreground border-b-2 border-primary"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="border-b-2 border-transparent pb-1 text-muted-foreground no-underline transition-colors duration-200 hover:text-foreground"
+        >Accueil</a
+      >
+      <a
+        routerLink="/news"
+        routerLinkActive="text-foreground border-b-2 border-primary"
+        class="border-b-2 border-transparent pb-1 text-muted-foreground no-underline transition-colors duration-200 hover:text-foreground"
+        >Actu</a
+      >
+      <a
+        routerLink="/fixtures"
+        routerLinkActive="text-foreground border-b-2 border-primary"
+        class="border-b-2 border-transparent pb-1 text-muted-foreground no-underline transition-colors duration-200 hover:text-foreground"
+        >Matchs</a
+      >
+      <a
+        routerLink="/results"
+        routerLinkActive="text-foreground border-b-2 border-primary"
+        class="border-b-2 border-transparent pb-1 text-muted-foreground no-underline transition-colors duration-200 hover:text-foreground"
+        >Résultats</a
+      >
+      <a
+        routerLink="/standings"
+        routerLinkActive="text-foreground border-b-2 border-primary"
+        class="border-b-2 border-transparent pb-1 text-muted-foreground no-underline transition-colors duration-200 hover:text-foreground"
+        >Classement</a
+      >
+      <a
+        routerLink="/transfers"
+        routerLinkActive="text-foreground border-b-2 border-primary"
+        class="border-b-2 border-transparent pb-1 text-muted-foreground no-underline transition-colors duration-200 hover:text-foreground"
+        >Transferts</a
+      >
+    </nav>
   </div>
-  <nav aria-label="Navigation principale">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
-    <a routerLink="/fixtures" routerLinkActive="active">Matchs à venir</a>
-    <a routerLink="/results" routerLinkActive="active">Résultats</a>
-    <a routerLink="/standings" routerLinkActive="active">Classement</a>
-    <a routerLink="/transfers" routerLinkActive="active">Transferts</a>
-  </nav>
 </header>
 
 <main id="contenu">

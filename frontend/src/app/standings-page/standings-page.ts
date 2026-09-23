@@ -1,4 +1,5 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
@@ -7,7 +8,7 @@ import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
   selector: 'app-standings-page',
-  imports: [TeamLogo],
+  imports: [RouterLink, TeamLogo],
   templateUrl: './standings-page.html',
   styleUrl: './standings-page.css',
 })

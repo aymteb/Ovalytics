@@ -1,153 +1,206 @@
-<p class="back">
-  <a routerLink="/transfers">← Transferts</a>
-</p>
+<section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+  <p class="mb-6">
+    <a
+      routerLink="/transfers"
+      class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
+      >← Transferts</a
+    >
+  </p>
 
-@if (loading()) {
-  <p class="loading">Chargement...</p>
-} @else if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
-} @else if (mercato(); as m) {
-  <header class="hero">
-    <app-team-logo [shortName]="m.team.shortName" size="lg" />
-    <div class="hero-text">
-      <p class="eyebrow">{{ m.competitionName }}</p>
-      <h2>{{ m.team.name }}</h2>
-      <p class="meta">{{ m.team.city }}</p>
-    </div>
-  </header>
-
-  <section class="block">
-    <h3>Arrivées</h3>
-    @if (m.arrivals.length === 0) {
-      <p class="empty">Aucune</p>
-    } @else {
-      <ul>
-        @for (t of m.arrivals; track t.id) {
-          <li>
-            @if (playerLink(t); as link) {
-              <a [routerLink]="link" class="player">{{ t.playerName }}</a>
-            } @else {
-              <span class="player">{{ t.playerName }}</span>
-            }
-            <span class="meta">depuis {{ t.fromClub }}</span>
-            <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
-            @if (t.contractLength) {
-              <span class="duration">{{ t.contractLength }}</span>
-            }
-          </li>
-        }
-      </ul>
-    }
-  </section>
-
-  <section class="block">
-    <h3>Départs</h3>
-    @if (m.departures.length === 0) {
-      <p class="empty">Aucun</p>
-    } @else {
-      <ul>
-        @for (t of m.departures; track t.id) {
-          <li>
-            @if (playerLink(t); as link) {
-              <a [routerLink]="link" class="player">{{ t.playerName }}</a>
-            } @else {
-              <span class="player">{{ t.playerName }}</span>
-            }
-            <span class="meta">vers {{ t.toClub }}</span>
-            <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
-            @if (t.contractLength) {
-              <span class="duration">{{ t.contractLength }}</span>
-            }
-          </li>
-        }
-      </ul>
-    }
-  </section>
-
-  <section class="block">
-    <h3>Prolongations</h3>
-    @if (m.extensions.length === 0) {
-      <p class="empty">Aucune</p>
-    } @else {
-      <ul>
-        @for (t of m.extensions; track t.id) {
-          <li>
-            @if (playerLink(t); as link) {
-              <a [routerLink]="link" class="player">{{ t.playerName }}</a>
-            } @else {
-              <span class="player">{{ t.playerName }}</span>
-            }
-            @if (t.contractLength) {
-              <span class="duration">{{ t.contractLength }}</span>
-            }
-          </li>
-        }
-      </ul>
-    }
-  </section>
-
-  <section class="block contract-end">
-    <h3>Fin de contrat ({{ m.contractEndWatchYear }})</h3>
-    <p class="intro-block">
-      Joueurs listés « En fin de contrat » sur All Rugby pour {{ m.contractEndWatchYear }}.
-    </p>
-    @if (m.contractEndsNextYear.length === 0) {
-      <p class="empty">Aucun joueur connu pour cette échéance.</p>
-    } @else {
-      <ul>
-        @for (p of m.contractEndsNextYear; track p.name) {
-          <li>
-            @if (p.id) {
-              <a [routerLink]="['/players', p.id]" class="player">{{ p.name }}</a>
-            } @else {
-              <span class="player">{{ p.name }}</span>
-            }
-            @if (p.position) {
-              <span class="meta">{{ p.position }}</span>
-            }
-            @if (p.contractEndDate) {
-              <span class="contract">{{ contractLabel(p.contractEndDate) }}</span>
-            }
-          </li>
-        }
-      </ul>
-    }
-  </section>
-
-  <section class="block squad">
-    <h3>Effectif projeté</h3>
-    <p class="squad-intro">
-      Effectif projeté. Couleurs = statut JIFF. Tri par âge dans chaque poste.
-    </p>
-    @if (squadGroups().length === 0) {
-      <p class="empty">Aucun joueur en base pour ce club.</p>
-    } @else {
-      <p class="legend">
-        <span class="status espoir">Espoirs</span>
-        <span class="status espoir-non-jiff">Espoirs non-JIFF</span>
-        <span class="status jiff">JIFF</span>
-        <span class="status non-jiff">NON-JIFF</span>
-      </p>
-      <div class="squad-grid">
-        @for (group of squadGroups(); track group.position) {
-          <div class="squad-column">
-            <h4>{{ group.position }}</h4>
-            <ol>
-              @for (player of group.players; track player.id) {
-                <li>
-                  <a
-                    [routerLink]="['/players', player.id]"
-                    [class]="'squad-player ' + playerStatusClass(player)"
-                  >{{ player.name }}</a>
-                  @if (player.age) {
-                    <span class="age">, {{ player.age }} ans</span>
-                  }
-                </li>
-              }
-            </ol>
-          </div>
-        }
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else if (mercato(); as m) {
+    <header
+      class="mb-10 flex flex-wrap items-center gap-5 rounded-lg border border-border/70 border-l-4 border-l-primary bg-card/80 p-6"
+    >
+      <app-team-logo [shortName]="m.team.shortName" size="lg" />
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {{ m.competitionName }}
+        </p>
+        <h2 class="m-0 font-display text-4xl uppercase tracking-wide text-foreground">
+          {{ m.team.name }}
+        </h2>
+        <p class="mt-2 m-0 text-sm text-muted-foreground">{{ m.team.city }}</p>
       </div>
-    }
-  </section>
-}
+    </header>
+
+    <section class="mb-10">
+      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Arrivées</h3>
+      @if (m.arrivals.length === 0) {
+        <p class="text-sm text-muted-foreground">Aucune</p>
+      } @else {
+        <ul
+          class="m-0 list-none divide-y divide-border/40 overflow-hidden rounded-lg border border-border/70 bg-card/60 p-0"
+        >
+          @for (t of m.arrivals; track t.id) {
+            <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3">
+              @if (playerLink(t); as link) {
+                <a
+                  [routerLink]="link"
+                  class="font-medium text-foreground no-underline hover:text-primary"
+                  >{{ t.playerName }}</a
+                >
+              } @else {
+                <span class="font-medium">{{ t.playerName }}</span>
+              }
+              <span class="text-sm text-muted-foreground">depuis {{ t.fromClub }}</span>
+              <span
+                class="rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                >{{ typeLabel(t.type) }}</span
+              >
+              @if (t.contractLength) {
+                <span class="text-sm text-muted-foreground">{{ t.contractLength }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="mb-10">
+      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Départs</h3>
+      @if (m.departures.length === 0) {
+        <p class="text-sm text-muted-foreground">Aucun</p>
+      } @else {
+        <ul
+          class="m-0 list-none divide-y divide-border/40 overflow-hidden rounded-lg border border-border/70 bg-card/60 p-0"
+        >
+          @for (t of m.departures; track t.id) {
+            <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3">
+              @if (playerLink(t); as link) {
+                <a
+                  [routerLink]="link"
+                  class="font-medium text-foreground no-underline hover:text-primary"
+                  >{{ t.playerName }}</a
+                >
+              } @else {
+                <span class="font-medium">{{ t.playerName }}</span>
+              }
+              <span class="text-sm text-muted-foreground">vers {{ t.toClub }}</span>
+              <span
+                class="rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                >{{ typeLabel(t.type) }}</span
+              >
+              @if (t.contractLength) {
+                <span class="text-sm text-muted-foreground">{{ t.contractLength }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="mb-10">
+      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">
+        Prolongations
+      </h3>
+      @if (m.extensions.length === 0) {
+        <p class="text-sm text-muted-foreground">Aucune</p>
+      } @else {
+        <ul
+          class="m-0 list-none divide-y divide-border/40 overflow-hidden rounded-lg border border-border/70 bg-card/60 p-0"
+        >
+          @for (t of m.extensions; track t.id) {
+            <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3">
+              @if (playerLink(t); as link) {
+                <a
+                  [routerLink]="link"
+                  class="font-medium text-foreground no-underline hover:text-primary"
+                  >{{ t.playerName }}</a
+                >
+              } @else {
+                <span class="font-medium">{{ t.playerName }}</span>
+              }
+              @if (t.contractLength) {
+                <span class="text-sm text-muted-foreground">{{ t.contractLength }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="mb-10">
+      <h3 class="mb-2 font-display text-2xl uppercase tracking-wide text-foreground">
+        Fin de contrat ({{ m.contractEndWatchYear }})
+      </h3>
+      <p class="mb-4 text-sm text-muted-foreground">
+        Joueurs listés « En fin de contrat » sur All Rugby pour {{ m.contractEndWatchYear }}.
+      </p>
+      @if (m.contractEndsNextYear.length === 0) {
+        <p class="text-sm text-muted-foreground">Aucun joueur connu pour cette échéance.</p>
+      } @else {
+        <ul
+          class="m-0 list-none divide-y divide-border/40 overflow-hidden rounded-lg border border-border/70 bg-card/60 p-0"
+        >
+          @for (p of m.contractEndsNextYear; track p.name) {
+            <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3">
+              @if (p.id) {
+                <a
+                  [routerLink]="['/players', p.id]"
+                  class="font-medium text-foreground no-underline hover:text-primary"
+                  >{{ p.name }}</a
+                >
+              } @else {
+                <span class="font-medium">{{ p.name }}</span>
+              }
+              @if (p.position) {
+                <span class="text-sm text-muted-foreground">{{ p.position }}</span>
+              }
+              @if (p.contractEndDate) {
+                <span class="text-sm text-primary">{{ contractLabel(p.contractEndDate) }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section>
+      <h3 class="mb-2 font-display text-2xl uppercase tracking-wide text-foreground">
+        Effectif projeté
+      </h3>
+      <p class="mb-4 text-sm text-muted-foreground">
+        Effectif projeté. Couleurs = statut JIFF. Tri par âge dans chaque poste.
+      </p>
+      @if (squadGroups().length === 0) {
+        <p class="text-sm text-muted-foreground">Aucun joueur en base pour ce club.</p>
+      } @else {
+        <p class="mb-6 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
+          <span class="status espoir">Espoirs</span>
+          <span class="status espoir-non-jiff">Espoirs non-JIFF</span>
+          <span class="status jiff">JIFF</span>
+          <span class="status non-jiff">NON-JIFF</span>
+        </p>
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          @for (group of squadGroups(); track group.position) {
+            <div>
+              <h4
+                class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+              >
+                {{ group.position }}
+              </h4>
+              <ol class="m-0 list-none space-y-2 p-0">
+                @for (player of group.players; track player.id) {
+                  <li class="text-sm">
+                    <a
+                      [routerLink]="['/players', player.id]"
+                      [class]="'squad-player ' + playerStatusClass(player)"
+                      >{{ player.name }}</a
+                    >
+                    @if (player.age) {
+                      <span class="text-muted-foreground">, {{ player.age }} ans</span>
+                    }
+                  </li>
+                }
+              </ol>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</section>

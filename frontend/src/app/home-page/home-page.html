@@ -1,100 +1,241 @@
-<section class="hero" aria-label="Ovalytics">
+<section class="relative min-h-[52vh] overflow-hidden" aria-hidden="true">
   <img
-    class="hero-media"
-    src="/hero-stadium.png"
+    class="absolute inset-0 h-full w-full scale-105 object-cover object-[center_35%]"
+    src="/hero-stadium.jpg"
     alt=""
     width="1920"
     height="1080"
     decoding="async"
     fetchpriority="high"
   />
-  <div class="hero-scrim" aria-hidden="true"></div>
-  <div class="hero-content">
-    <p class="brand">Ovalytics</p>
-    <h2 class="headline">Le rugby qu’on lit le week-end</h2>
-    <p class="lede">
-      Scores en direct, forme, absences — une vraie lecture avant et pendant le match.
-    </p>
-    <div class="cta-row">
-      <a routerLink="/fixtures" class="cta cta-primary">Matchs à venir</a>
-      <a routerLink="/transfers" class="cta cta-secondary">Transferts</a>
-    </div>
-  </div>
+  <div
+    class="absolute inset-0 bg-gradient-to-b from-transparent via-background/25 to-background"
+  ></div>
 </section>
 
-<section class="live-feed" aria-labelledby="live-heading">
-  <div class="live-head">
-    <h2 id="live-heading">En direct</h2>
-    <a routerLink="/results" class="see-all">Résultats</a>
-  </div>
+<section class="relative z-20 mx-auto -mt-16 mb-20 max-w-5xl px-6 lg:px-8">
+  <p
+    class="mb-6 font-display text-sm uppercase tracking-[0.22em] text-muted-foreground sm:text-base"
+  >
+    Prochains matchs
+  </p>
 
-  @if (liveLoading()) {
-    <p class="loading">Chargement...</p>
-  } @else if (liveErrorMessage()) {
-    <p class="error">{{ liveErrorMessage() }}</p>
-  } @else if (liveMatches().length === 0) {
-    <p class="empty">Aucun match en cours pour le moment.</p>
-  } @else {
-    <ul class="live-list">
-      @for (match of liveMatches(); track match.id) {
-        <li>
-          <a [routerLink]="['/matches', match.id]" class="live-card">
-            <span class="live-badge">Live</span>
-            <span class="live-meta">
-              {{ competitionLabel(match.competitionCode) }} · J{{ match.matchday }}
-            </span>
-            <span class="live-teams">
+  @if (liveMatches().length > 0) {
+    <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      @for (match of liveMatches().slice(0, 3); track match.id) {
+        <a
+          [routerLink]="['/matches', match.id]"
+          class="block rounded-lg border border-primary/40 bg-card/95 p-5 no-underline backdrop-blur transition duration-200 hover:border-primary"
+        >
+          <div
+            class="mb-4 flex items-center justify-between text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+          >
+            <span class="text-primary">Live</span>
+            <span>J{{ match.matchday }}</span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-2 font-display text-2xl tracking-wide text-foreground"
+          >
+            <span class="flex items-center gap-2">
               <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
-              <span class="live-score">{{ match.homeScore }} - {{ match.awayScore }}</span>
+              {{ match.homeTeam.shortName }}
+            </span>
+            <span class="text-lg text-muted-foreground tabular-nums">
+              {{ match.homeScore }} – {{ match.awayScore }}
+            </span>
+            <span class="flex items-center gap-2">
+              {{ match.awayTeam.shortName }}
               <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
             </span>
-            <time [attr.datetime]="match.kickoffAt">
-              {{ match.kickoffAt | date: 'EEE d MMM · HH:mm' }}
-            </time>
-          </a>
-        </li>
+          </div>
+        </a>
       }
-    </ul>
+    </div>
+  }
+
+  @if (fixturesLoading()) {
+    <p class="text-sm text-muted-foreground">Chargement des affiches…</p>
+  } @else if (weekendFixtures().length === 0 && liveMatches().length === 0) {
+    <p class="text-sm text-muted-foreground">
+      Aucune affiche à venir pour le moment.
+      <a routerLink="/fixtures" class="text-primary no-underline hover:underline">Voir le calendrier</a>
+    </p>
+  } @else if (weekendFixtures().length > 0) {
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      @for (match of weekendFixtures(); track match.id) {
+        <a
+          [routerLink]="['/matches', match.id]"
+          class="block rounded-lg border border-border/80 bg-card/95 p-5 no-underline backdrop-blur transition duration-200 hover:border-primary/50"
+        >
+          <div
+            class="mb-4 flex items-center justify-between text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+          >
+            <span>J{{ match.matchday }}</span>
+            <time [attr.datetime]="match.kickoffAt">
+              {{ match.kickoffAt | date: 'EEE HH:mm' }}
+            </time>
+          </div>
+          <div
+            class="flex items-center justify-between gap-2 font-display text-2xl tracking-wide text-foreground"
+          >
+            <span class="flex items-center gap-2">
+              <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+              {{ match.homeTeam.shortName }}
+            </span>
+            <span class="text-base text-muted-foreground">VS</span>
+            <span class="flex items-center gap-2">
+              {{ match.awayTeam.shortName }}
+              <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+            </span>
+          </div>
+        </a>
+      }
+    </div>
+    <div class="mt-4 text-right">
+      <a
+        routerLink="/fixtures"
+        class="text-xs font-semibold uppercase tracking-[0.14em] text-primary no-underline hover:underline"
+        >Tous les matchs</a
+      >
+    </div>
   }
 </section>
 
-<section class="news-feed" aria-labelledby="news-heading">
-  <div class="news-head">
-    <h2 id="news-heading">Actualités</h2>
-    <a routerLink="/fixtures" class="see-all">Calendrier</a>
-  </div>
+<section class="mx-auto max-w-5xl px-6 pb-24 lg:px-8">
+  <div class="grid gap-16 lg:grid-cols-[1.4fr_1fr] lg:gap-20">
+    <div>
+      <div class="mb-10 flex items-end justify-between gap-4">
+        <h2
+          class="m-0 border-l-4 border-primary pl-4 font-display text-3xl uppercase tracking-wide text-foreground"
+        >
+          À la une
+        </h2>
+        <a
+          routerLink="/news"
+          class="pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary no-underline hover:underline"
+          >Voir tout</a
+        >
+      </div>
 
-  @if (loading()) {
-    <p class="loading">Chargement...</p>
-  } @else if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
-  } @else if (news().length === 0) {
-    <p class="empty">Pas encore d’actualités en base. Lance l’import news après le scrap.</p>
-  } @else {
-    <ul class="news-list">
-      @for (item of news(); track item.id) {
-        <li>
-          <article class="news-card">
-            <div class="news-meta">
-              <span class="source">{{ item.source }}</span>
-              <time [attr.datetime]="item.publishedAt">
-                {{ item.publishedAt | date: 'EEE d MMM · HH:mm' }}
-              </time>
-              @if (item.competitionCode) {
-                <span class="tag">{{ competitionLabel(item.competitionCode) }}</span>
-              }
-            </div>
-            <h3>
-              <a [href]="item.sourceUrl" target="_blank" rel="noopener noreferrer">
-                {{ item.title }}
+      @if (loading()) {
+        <p class="text-muted-foreground">Chargement…</p>
+      } @else if (errorMessage()) {
+        <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+      } @else if (news().length === 0) {
+        <p class="text-muted-foreground">Pas encore d’actualités en base.</p>
+      } @else {
+        <ul class="m-0 flex list-none flex-col gap-8 p-0">
+          @for (item of news(); track item.id) {
+            <li class="border-b border-white/10 pb-8 last:border-0 last:pb-0">
+              <a
+                [routerLink]="['/news', item.id]"
+                (click)="openArticle()"
+                class="group flex flex-col gap-4 no-underline transition duration-200 hover:translate-x-1 sm:flex-row sm:gap-4"
+              >
+                <div
+                  class="h-36 w-full shrink-0 overflow-hidden rounded-md border border-white/10 bg-muted sm:h-24 sm:w-36"
+                >
+                  @if (item.imageUrl) {
+                    <img
+                      [src]="item.imageUrl"
+                      [alt]="item.title"
+                      class="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  }
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="mb-2 flex flex-wrap items-center gap-2">
+                    @if (item.competitionCode) {
+                      <span
+                        class="rounded px-2 py-0.5 font-display text-[0.65rem] uppercase tracking-wide"
+                        [ngClass]="badgeClass(item.competitionCode)"
+                        >{{ competitionLabel(item.competitionCode) }}</span
+                      >
+                    }
+                    <span
+                      class="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground"
+                    >
+                      {{ item.source }} · {{ item.publishedAt | date: 'd MMM' }}
+                    </span>
+                  </div>
+                  <h3
+                    class="m-0 font-display text-lg uppercase leading-snug tracking-wide text-foreground transition-colors group-hover:text-primary"
+                  >
+                    {{ item.title }}
+                  </h3>
+                  @if (item.summary) {
+                    <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-300">
+                      {{ item.summary }}
+                    </p>
+                  }
+                </div>
               </a>
-            </h3>
-            @if (item.summary) {
-              <p class="summary">{{ item.summary }}</p>
-            }
-          </article>
-        </li>
+            </li>
+          }
+        </ul>
       }
-    </ul>
-  }
+    </div>
+
+    <div>
+      <div class="mb-10 flex items-end justify-between gap-4">
+        <h2
+          class="m-0 border-l-4 border-primary pl-4 font-display text-3xl uppercase tracking-wide text-foreground"
+        >
+          Classement
+        </h2>
+        <a
+          routerLink="/standings"
+          class="pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary no-underline hover:underline"
+          >Voir tout</a
+        >
+      </div>
+
+      @if (standingsTop().length === 0) {
+        <p class="text-sm text-muted-foreground">Classement indisponible.</p>
+      } @else {
+        <ol class="m-0 list-none space-y-1 p-0">
+          @for (row of standingsTop(); track row.teamId) {
+            <li>
+              <a
+                [routerLink]="['/clubs', 'TOP14', row.teamShortName]"
+                class="flex items-center gap-4 rounded-md px-2 py-3 text-foreground no-underline transition-colors hover:bg-muted/60"
+              >
+                <span class="w-6 text-sm text-muted-foreground tabular-nums">{{
+                  row.position
+                }}</span>
+                <app-team-logo [shortName]="row.teamShortName" size="sm" />
+                <span class="min-w-0 flex-1 truncate font-medium">{{ row.teamName }}</span>
+                <span class="font-display text-xl tabular-nums">{{ row.points }}</span>
+              </a>
+            </li>
+          }
+
+          @if (standingsBottom().length > 0) {
+            <li
+              class="flex justify-center py-2 text-muted-foreground"
+              aria-hidden="true"
+            >
+              <span class="text-lg leading-none tracking-widest">···</span>
+            </li>
+            @for (row of standingsBottom(); track row.teamId) {
+              <li>
+                <a
+                  [routerLink]="['/clubs', 'TOP14', row.teamShortName]"
+                  class="flex items-center gap-4 rounded-md px-2 py-3 text-foreground no-underline transition-colors hover:bg-muted/60"
+                >
+                  <span class="w-6 text-sm text-muted-foreground tabular-nums">{{
+                    row.position
+                  }}</span>
+                  <app-team-logo [shortName]="row.teamShortName" size="sm" />
+                  <span class="min-w-0 flex-1 truncate font-medium">{{ row.teamName }}</span>
+                  <span class="font-display text-xl tabular-nums">{{ row.points }}</span>
+                </a>
+              </li>
+            }
+          }
+        </ol>
+      }
+    </div>
+  </div>
 </section>

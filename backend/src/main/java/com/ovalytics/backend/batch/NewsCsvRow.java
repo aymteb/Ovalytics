@@ -6,5 +6,6 @@ public record NewsCsvRow(
 		String sourceUrl,
 		String publishedAt,
 		String source,
-		String competitionCode) {
+		String competitionCode,
+		String imageUrl) {
 }

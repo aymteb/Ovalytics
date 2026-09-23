@@ -74,7 +74,13 @@ export class CompetitionApi {
     return this.http.get<PlayerDetail>(`/api/players/${id}`);
   }
 
-  getNews(limit = 20): Observable<NewsItem[]> {
-    return this.http.get<NewsItem[]>('/api/news', { params: { limit } });
+  getNews(limit = 50): Observable<NewsItem[]> {
+    return this.http.get<NewsItem[]>('/api/news', {
+      params: { limit: String(limit) },
+    });
+  }
+
+  getNewsItem(id: number): Observable<NewsItem> {
+    return this.http.get<NewsItem>(`/api/news/${id}`);
   }
 }

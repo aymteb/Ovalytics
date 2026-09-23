@@ -1,191 +1,263 @@
-<p class="back">
-  <a routerLink="/fixtures">← Retour</a>
-</p>
+<section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+  <p class="mb-6">
+    <a
+      routerLink="/fixtures"
+      class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
+      >← Retour</a
+    >
+  </p>
 
-@if (loading()) {
-  <p class="loading">Chargement...</p>
-} @else if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
-} @else if (match(); as m) {
-  <div class="hero">
-    <div class="hero-top">
-      <p class="matchday">Journée {{ m.matchday }} · {{ m.competitionName }}</p>
-      <p class="status" [attr.data-status]="m.status">
-        @if (m.status === 'FINISHED') {
-          Terminé
-        } @else if (m.status === 'LIVE') {
-          En direct
-        } @else {
-          À venir
-        }
-      </p>
-    </div>
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else if (match(); as m) {
+    <div
+      class="mb-10 rounded-lg border border-border/70 border-l-4 border-l-primary bg-card/80 p-6"
+    >
+      <div
+        class="mb-6 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+      >
+        <span>Journée {{ m.matchday }} · {{ m.competitionName }}</span>
+        <span
+          [class.text-primary]="m.status === 'LIVE' || m.status === 'FINISHED'"
+          [class.text-muted-foreground]="m.status !== 'LIVE' && m.status !== 'FINISHED'"
+        >
+          @if (m.status === 'FINISHED') {
+            Terminé
+          } @else if (m.status === 'LIVE') {
+            En direct
+          } @else {
+            À venir
+          }
+        </span>
+      </div>
 
-    <div class="hero-match">
-      <div class="side home">
-        <a [routerLink]="['/clubs', m.competitionCode, m.homeTeam.shortName]" class="club">
+      <div class="grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
+        <a
+          [routerLink]="['/clubs', m.competitionCode, m.homeTeam.shortName]"
+          class="flex flex-col items-center gap-2 text-center text-foreground no-underline transition duration-200 hover:text-primary sm:items-end sm:text-right"
+        >
           <app-team-logo [shortName]="m.homeTeam.shortName" size="lg" />
-          <span class="club-name">{{ m.homeTeam.name }}</span>
-          <span class="club-short">{{ m.homeTeam.shortName }}</span>
+          <span class="font-display text-2xl tracking-wide">{{ m.homeTeam.name }}</span>
+          <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
+            m.homeTeam.shortName
+          }}</span>
         </a>
-      </div>
 
-      <div class="center">
-        @if (m.status === 'FINISHED' || m.status === 'LIVE') {
-          <p class="score">
-            <span>{{ m.homeScore }}</span>
-            <span class="sep">-</span>
-            <span>{{ m.awayScore }}</span>
-          </p>
-        } @else {
-          <p class="kickoff">{{ m.kickoffAt | date: 'EEE d MMM' }}</p>
-          <p class="kickoff-time">{{ m.kickoffAt | date: 'HH:mm' }}</p>
-        }
-        @if (m.status === 'FINISHED' || m.status === 'LIVE') {
-          <p class="kickoff-sub">{{ m.kickoffAt | date: 'dd/MM/yyyy HH:mm' }}</p>
-        }
-      </div>
+        <div class="text-center">
+          @if (m.status === 'FINISHED' || m.status === 'LIVE') {
+            <p
+              class="m-0 font-display text-5xl tracking-wide text-foreground tabular-nums sm:text-6xl"
+            >
+              <span>{{ m.homeScore }}</span>
+              <span class="mx-2 text-muted-foreground">-</span>
+              <span>{{ m.awayScore }}</span>
+            </p>
+            <p class="mt-2 m-0 text-sm text-muted-foreground">
+              {{ m.kickoffAt | date: 'dd/MM/yyyy HH:mm' }}
+            </p>
+          } @else {
+            <p class="m-0 font-display text-2xl tracking-wide text-foreground">
+              {{ m.kickoffAt | date: 'EEE d MMM' }}
+            </p>
+            <p class="mt-1 m-0 font-display text-3xl tracking-wide text-primary">
+              {{ m.kickoffAt | date: 'HH:mm' }}
+            </p>
+          }
+        </div>
 
-      <div class="side away">
-        <a [routerLink]="['/clubs', m.competitionCode, m.awayTeam.shortName]" class="club">
+        <a
+          [routerLink]="['/clubs', m.competitionCode, m.awayTeam.shortName]"
+          class="flex flex-col items-center gap-2 text-center text-foreground no-underline transition duration-200 hover:text-primary sm:items-start sm:text-left"
+        >
           <app-team-logo [shortName]="m.awayTeam.shortName" size="lg" />
-          <span class="club-name">{{ m.awayTeam.name }}</span>
-          <span class="club-short">{{ m.awayTeam.shortName }}</span>
+          <span class="font-display text-2xl tracking-wide">{{ m.awayTeam.name }}</span>
+          <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
+            m.awayTeam.shortName
+          }}</span>
         </a>
       </div>
     </div>
-  </div>
 
-  @if (m.analysis) {
-    <section class="analysis">
-      <h3>Notre lecture</h3>
-      <p>{{ m.analysis }}</p>
-    </section>
-  } @else if (m.status !== 'FINISHED') {
-    <section class="analysis pending">
-      <h3>Notre lecture</h3>
-      <p class="empty">Pas encore de prono sur cette affiche — ça arrive.</p>
-    </section>
-  }
-
-  <section class="context">
-    <h3>Avant-match</h3>
-
-    <div class="context-grid">
-      <div class="form-block">
-        <div class="form-head">
-          <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
-          <h4>Forme {{ m.homeTeam.shortName }} · tous matchs</h4>
-        </div>
-        @if (m.homeForm && m.homeForm.played > 0) {
-          <p class="form-line">
-            @for (r of m.homeForm.results; track $index) {
-              <span
-                class="form-pill"
-                [class.form-V]="r === 'V'"
-                [class.form-N]="r === 'N'"
-                [class.form-D]="r === 'D'"
-              >{{ r }}</span>
-            }
-          </p>
-          <p class="muted">{{ recordLabel(m.homeForm) }}</p>
-          @if (formSeasonNote(m.homeForm)) {
-            <p class="muted">{{ formSeasonNote(m.homeForm) }}</p>
-          }
-        } @else {
-          <p class="empty">Pas encore de matchs joués cette saison</p>
-        }
-      </div>
-      <div class="form-block">
-        <div class="form-head">
-          <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
-          <h4>Forme {{ m.awayTeam.shortName }} · tous matchs</h4>
-        </div>
-        @if (m.awayForm && m.awayForm.played > 0) {
-          <p class="form-line">
-            @for (r of m.awayForm.results; track $index) {
-              <span
-                class="form-pill"
-                [class.form-V]="r === 'V'"
-                [class.form-N]="r === 'N'"
-                [class.form-D]="r === 'D'"
-              >{{ r }}</span>
-            }
-          </p>
-          <p class="muted">{{ recordLabel(m.awayForm) }}</p>
-          @if (formSeasonNote(m.awayForm)) {
-            <p class="muted">{{ formSeasonNote(m.awayForm) }}</p>
-          }
-        } @else {
-          <p class="empty">Pas encore de matchs joués cette saison</p>
-        }
-      </div>
-    </div>
-
-    <div class="h2h">
-      <h4>Confrontations récentes</h4>
-      @if (m.headToHead.length === 0) {
-        <p class="empty">
-          Pas de confrontation récente en base pour ces deux clubs (historique à enrichir).
+    @if (m.analysis) {
+      <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
+        <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
+          Notre lecture
+        </h3>
+        <p class="m-0 leading-relaxed text-muted-foreground">{{ m.analysis }}</p>
+      </section>
+    } @else if (m.status !== 'FINISHED') {
+      <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
+        <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
+          Notre lecture
+        </h3>
+        <p class="m-0 text-sm text-muted-foreground">
+          Pas encore de prono sur cette affiche — ça arrive.
         </p>
-      } @else {
-        <ul>
-          @for (h of m.headToHead; track h.id) {
-            <li>
-              <span class="h2h-date">{{ h.kickoffAt | date: 'dd/MM/yyyy' }}</span>
-              <span class="h2h-clubs">
-                <app-team-logo [shortName]="h.homeShortName" size="sm" />
-                <span class="h2h-score">{{ h.homeScore }} - {{ h.awayScore }}</span>
-                <app-team-logo [shortName]="h.awayShortName" size="sm" />
-              </span>
-            </li>
-          }
-        </ul>
-      }
-    </div>
-  </section>
+      </section>
+    }
 
-  @if (m.homeAbsences.length > 0 || m.awayAbsences.length > 0) {
-    <section class="absences">
-      <h3>Absents</h3>
-      <div class="absence-columns">
-        <div>
-          <h4>{{ m.homeTeam.shortName }}</h4>
-          @if (m.homeAbsences.length === 0) {
-            <p class="empty">Aucun signalé</p>
-          } @else {
-            <ul>
-              @for (absence of m.homeAbsences; track absence.playerName) {
-                <li>
-                  <span class="name">{{ absence.playerName }}</span>
-                  <span class="type">{{ absenceLabel(absence.type) }}</span>
-                  @if (absence.note) {
-                    <span class="note">{{ absence.note }}</span>
-                  }
-                </li>
+    <section class="mb-10">
+      <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">Avant-match</h3>
+
+      <div class="mb-8 grid gap-6 md:grid-cols-2">
+        <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+          <div class="mb-3 flex items-center gap-2">
+            <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
+            <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
+              Forme {{ m.homeTeam.shortName }} · tous matchs
+            </h4>
+          </div>
+          @if (m.homeForm && m.homeForm.played > 0) {
+            <p class="mb-2 flex flex-wrap gap-1.5">
+              @for (r of m.homeForm.results; track $index) {
+                <span
+                  class="inline-flex h-7 w-7 items-center justify-center rounded border text-xs font-bold"
+                  [class.border-win]="r === 'V'"
+                  [class.bg-win/15]="r === 'V'"
+                  [class.text-win]="r === 'V'"
+                  [class.border-border]="r === 'N'"
+                  [class.text-muted-foreground]="r === 'N'"
+                  [class.border-primary]="r === 'D'"
+                  [class.bg-primary/15]="r === 'D'"
+                  [class.text-primary]="r === 'D'"
+                  >{{ r }}</span
+                >
               }
-            </ul>
+            </p>
+            <p class="m-0 text-sm text-muted-foreground">{{ recordLabel(m.homeForm) }}</p>
+            @if (formSeasonNote(m.homeForm)) {
+              <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.homeForm) }}</p>
+            }
+          } @else {
+            <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
           }
         </div>
-        <div>
-          <h4>{{ m.awayTeam.shortName }}</h4>
-          @if (m.awayAbsences.length === 0) {
-            <p class="empty">Aucun signalé</p>
-          } @else {
-            <ul>
-              @for (absence of m.awayAbsences; track absence.playerName) {
-                <li>
-                  <span class="name">{{ absence.playerName }}</span>
-                  <span class="type">{{ absenceLabel(absence.type) }}</span>
-                  @if (absence.note) {
-                    <span class="note">{{ absence.note }}</span>
-                  }
-                </li>
+
+        <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+          <div class="mb-3 flex items-center gap-2">
+            <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
+            <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
+              Forme {{ m.awayTeam.shortName }} · tous matchs
+            </h4>
+          </div>
+          @if (m.awayForm && m.awayForm.played > 0) {
+            <p class="mb-2 flex flex-wrap gap-1.5">
+              @for (r of m.awayForm.results; track $index) {
+                <span
+                  class="inline-flex h-7 w-7 items-center justify-center rounded border text-xs font-bold"
+                  [class.border-win]="r === 'V'"
+                  [class.bg-win/15]="r === 'V'"
+                  [class.text-win]="r === 'V'"
+                  [class.border-border]="r === 'N'"
+                  [class.text-muted-foreground]="r === 'N'"
+                  [class.border-primary]="r === 'D'"
+                  [class.bg-primary/15]="r === 'D'"
+                  [class.text-primary]="r === 'D'"
+                  >{{ r }}</span
+                >
               }
-            </ul>
+            </p>
+            <p class="m-0 text-sm text-muted-foreground">{{ recordLabel(m.awayForm) }}</p>
+            @if (formSeasonNote(m.awayForm)) {
+              <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.awayForm) }}</p>
+            }
+          } @else {
+            <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
           }
         </div>
       </div>
+
+      <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+        <h4
+          class="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+        >
+          Confrontations récentes
+        </h4>
+        @if (m.headToHead.length === 0) {
+          <p class="m-0 text-sm text-muted-foreground">
+            Pas de confrontation récente en base pour ces deux clubs (historique à enrichir).
+          </p>
+        } @else {
+          <ul class="m-0 list-none divide-y divide-border/40 p-0">
+            @for (h of m.headToHead; track h.id) {
+              <li
+                class="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+              >
+                <span class="text-sm text-muted-foreground tabular-nums">{{
+                  h.kickoffAt | date: 'dd/MM/yyyy'
+                }}</span>
+                <span class="inline-flex items-center gap-2">
+                  <app-team-logo [shortName]="h.homeShortName" size="sm" />
+                  <span class="font-display text-xl tracking-wide tabular-nums"
+                    >{{ h.homeScore }} - {{ h.awayScore }}</span
+                  >
+                  <app-team-logo [shortName]="h.awayShortName" size="sm" />
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
     </section>
+
+    @if (m.homeAbsences.length > 0 || m.awayAbsences.length > 0) {
+      <section>
+        <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">Absents</h3>
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+            <h4
+              class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+            >
+              {{ m.homeTeam.shortName }}
+            </h4>
+            @if (m.homeAbsences.length === 0) {
+              <p class="m-0 text-sm text-muted-foreground">Aucun signalé</p>
+            } @else {
+              <ul class="m-0 list-none space-y-3 p-0">
+                @for (absence of m.homeAbsences; track absence.playerName) {
+                  <li class="border-b border-border/40 pb-3 last:border-0 last:pb-0">
+                    <span class="font-medium">{{ absence.playerName }}</span>
+                    <span
+                      class="ml-2 rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                      >{{ absenceLabel(absence.type) }}</span
+                    >
+                    @if (absence.note) {
+                      <p class="mt-1 m-0 text-sm text-muted-foreground">{{ absence.note }}</p>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+          <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+            <h4
+              class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+            >
+              {{ m.awayTeam.shortName }}
+            </h4>
+            @if (m.awayAbsences.length === 0) {
+              <p class="m-0 text-sm text-muted-foreground">Aucun signalé</p>
+            } @else {
+              <ul class="m-0 list-none space-y-3 p-0">
+                @for (absence of m.awayAbsences; track absence.playerName) {
+                  <li class="border-b border-border/40 pb-3 last:border-0 last:pb-0">
+                    <span class="font-medium">{{ absence.playerName }}</span>
+                    <span
+                      class="ml-2 rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                      >{{ absenceLabel(absence.type) }}</span
+                    >
+                    @if (absence.note) {
+                      <p class="mt-1 m-0 text-sm text-muted-foreground">{{ absence.note }}</p>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </div>
+      </section>
+    }
   }
-}
+</section>

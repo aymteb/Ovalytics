@@ -11,7 +11,15 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 RSS_URL = "https://www.rugbyrama.fr/rss.xml"
-CSV_HEADERS = ["title", "summary", "sourceUrl", "publishedAt", "source", "competitionCode"]
+CSV_HEADERS = [
+    "title",
+    "summary",
+    "sourceUrl",
+    "publishedAt",
+    "source",
+    "competitionCode",
+    "imageUrl",
+]
 
 
 def fetch(url: str) -> bytes:
@@ -26,6 +34,8 @@ def guess_competition(title: str) -> str:
         return "TOP14"
     if "pro d2" in lower or "prod2" in lower:
         return "PROD2"
+    if "seven" in lower or "supersevens" in lower:
+        return "SEVENS"
     return ""
 
 
@@ -34,6 +44,46 @@ def clean_html(text: str) -> str:
         return ""
     cleaned = re.sub(r"<[^>]+>", " ", text)
     return " ".join(cleaned.split())
+
+
+def local_name(tag: str) -> str:
+    if "}" in tag:
+        return tag.rsplit("}", 1)[-1]
+    return tag
+
+
+def looks_like_image_url(url: str) -> bool:
+    if not url.startswith("http"):
+        return False
+    return bool(re.search(r"\.(jpe?g|png|webp|gif)(\?|$)", url, re.I))
+
+
+def extract_image(item: ET.Element) -> str:
+    for enc in item.findall("enclosure"):
+        url = (enc.get("url") or "").strip()
+        typ = (enc.get("type") or "").lower()
+        if url and (typ.startswith("image") or looks_like_image_url(url)):
+            return url
+
+    for el in item.iter():
+        name = local_name(el.tag).lower()
+        if name not in ("content", "thumbnail", "image"):
+            continue
+        url = (el.get("url") or (el.text or "")).strip()
+        if looks_like_image_url(url) or (url.startswith("http") and name in ("thumbnail", "image")):
+            return url
+        if url.startswith("http") and "image" in (el.get("medium") or "").lower():
+            return url
+        if url.startswith("http") and name == "content" and "image" in (el.get("type") or "").lower():
+            return url
+
+    desc_el = item.find("description")
+    if desc_el is not None and desc_el.text:
+        match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', desc_el.text, re.I)
+        if match:
+            return match.group(1).strip()
+
+    return ""
 
 
 def scrape_rugbyrama(limit: int) -> list[dict]:
@@ -70,6 +120,7 @@ def scrape_rugbyrama(limit: int) -> list[dict]:
                 "publishedAt": published,
                 "source": "Rugbyrama",
                 "competitionCode": guess_competition(title),
+                "imageUrl": extract_image(item),
             }
         )
         if len(rows) >= limit:

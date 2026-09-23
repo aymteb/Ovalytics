@@ -1,163 +1,241 @@
-<p class="back">
-  <a routerLink="/transfers">← Transferts</a>
-</p>
+<section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+  <p class="mb-6">
+    <a
+      routerLink="/transfers"
+      class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
+      >← Transferts</a
+    >
+  </p>
 
-@if (loading()) {
-  <p class="loading">Chargement...</p>
-} @else if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
-} @else if (player(); as p) {
-  <header class="hero">
-    <p class="eyebrow">{{ p.competitionName }}</p>
-    <h2>{{ p.name }}</h2>
-    <p class="identity">
-      @if (p.position) {
-        <span>{{ p.position }}</span>
-      }
-      @if (p.age) {
-        <span>{{ p.age }} ans</span>
-      }
-      @if (p.nationality) {
-        <span>{{ p.nationality }}</span>
-      }
-      @if (p.heightCm && p.weightKg) {
-        <span>{{ p.heightCm }} cm · {{ p.weightKg }} kg</span>
-      }
-    </p>
-    <p class="meta">
-      Club actuel :
-      <a [routerLink]="['/clubs', p.competitionCode, p.team.shortName]">
-        {{ p.team.name }}
-      </a>
-      ({{ p.team.shortName }})
-    </p>
-  </header>
-
-  <section class="block">
-    <h3>Totaux</h3>
-    <ul class="totals">
-      <li><span class="label">Matchs</span><span class="value">{{ p.totals.matches }}</span></li>
-      <li><span class="label">Titulaire</span><span class="value">{{ p.totals.starts }}</span></li>
-      <li><span class="label">Minutes</span><span class="value">{{ p.totals.minutes }}'</span></li>
-      <li><span class="label">Essais</span><span class="value">{{ p.totals.tries }}</span></li>
-      <li><span class="label">Jaunes</span><span class="value">{{ p.totals.yellowCards }}</span></li>
-      <li><span class="label">Rouges</span><span class="value">{{ p.totals.redCards }}</span></li>
-    </ul>
-  </section>
-
-  <section class="block">
-    <h3>Feuilles de match</h3>
-    @if (p.appearances.length === 0) {
-      <p class="empty">Aucune feuille de match importée pour ce joueur.</p>
-    } @else {
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>J.</th>
-              <th>Adv.</th>
-              <th>Lieu</th>
-              <th>V/N/D</th>
-              <th>Score</th>
-              <th>N°</th>
-              <th>Min</th>
-              <th>E</th>
-              <th>CJ</th>
-              <th>CR</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (a of p.appearances; track a.matchId) {
-              <tr>
-                <td>{{ a.kickoffAt | date: 'dd/MM/yyyy' }}</td>
-                <td>{{ a.matchday }}</td>
-                <td>
-                  <a [routerLink]="['/matches', a.matchId]">{{ a.opponentShortName }}</a>
-                </td>
-                <td>{{ a.venue }}</td>
-                <td>{{ a.result }}</td>
-                <td>
-                  @if (a.homeScore != null && a.awayScore != null) {
-                    {{ a.homeScore }}-{{ a.awayScore }}
-                  } @else {
-                    —
-                  }
-                </td>
-                <td>{{ a.jerseyNumber }}{{ a.starter ? '' : ' (r)' }}</td>
-                <td>{{ a.minutesPlayed }}'</td>
-                <td>{{ a.tries || '—' }}</td>
-                <td>{{ a.yellowCards || '—' }}</td>
-                <td>{{ a.redCards || '—' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-  </section>
-
-  @if (careerEntries().length > 0) {
-    <section class="block">
-      <h3>Parcours</h3>
-      <ul class="career-list">
-        @for (entry of careerEntries(); track entry) {
-          <li>{{ entry }}</li>
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else if (player(); as p) {
+    <header
+      class="mb-10 rounded-lg border border-border/70 border-l-4 border-l-primary bg-card/80 p-6"
+    >
+      <p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        {{ p.competitionName }}
+      </p>
+      <h2 class="m-0 font-display text-4xl uppercase tracking-wide text-foreground">
+        {{ p.name }}
+      </h2>
+      <p class="mt-3 mb-0 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+        @if (p.position) {
+          <span>{{ p.position }}</span>
         }
+        @if (p.age) {
+          <span>{{ p.age }} ans</span>
+        }
+        @if (p.nationality) {
+          <span>{{ p.nationality }}</span>
+        }
+        @if (p.heightCm && p.weightKg) {
+          <span>{{ p.heightCm }} cm · {{ p.weightKg }} kg</span>
+        }
+      </p>
+      <p class="mt-3 mb-0 text-sm">
+        Club actuel :
+        <a
+          [routerLink]="['/clubs', p.competitionCode, p.team.shortName]"
+          class="font-medium text-foreground no-underline hover:text-primary"
+        >
+          {{ p.team.name }}
+        </a>
+        <span class="text-muted-foreground">({{ p.team.shortName }})</span>
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Totaux</h3>
+      <ul class="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        <li class="rounded-lg border border-border/70 bg-card/60 px-4 py-3">
+          <span class="block text-xs uppercase tracking-[0.12em] text-muted-foreground"
+            >Matchs</span
+          >
+          <span class="mt-1 block font-display text-3xl tracking-wide">{{ p.totals.matches }}</span>
+        </li>
+        <li class="rounded-lg border border-border/70 bg-card/60 px-4 py-3">
+          <span class="block text-xs uppercase tracking-[0.12em] text-muted-foreground"
+            >Titulaire</span
+          >
+          <span class="mt-1 block font-display text-3xl tracking-wide">{{ p.totals.starts }}</span>
+        </li>
+        <li class="rounded-lg border border-border/70 bg-card/60 px-4 py-3">
+          <span class="block text-xs uppercase tracking-[0.12em] text-muted-foreground"
+            >Minutes</span
+          >
+          <span class="mt-1 block font-display text-3xl tracking-wide"
+            >{{ p.totals.minutes }}'</span
+          >
+        </li>
+        <li class="rounded-lg border border-border/70 bg-card/60 px-4 py-3">
+          <span class="block text-xs uppercase tracking-[0.12em] text-muted-foreground"
+            >Essais</span
+          >
+          <span class="mt-1 block font-display text-3xl tracking-wide">{{ p.totals.tries }}</span>
+        </li>
+        <li class="rounded-lg border border-border/70 bg-card/60 px-4 py-3">
+          <span class="block text-xs uppercase tracking-[0.12em] text-muted-foreground"
+            >Jaunes</span
+          >
+          <span class="mt-1 block font-display text-3xl tracking-wide">{{
+            p.totals.yellowCards
+          }}</span>
+        </li>
+        <li class="rounded-lg border border-border/70 bg-card/60 px-4 py-3">
+          <span class="block text-xs uppercase tracking-[0.12em] text-muted-foreground"
+            >Rouges</span
+          >
+          <span class="mt-1 block font-display text-3xl tracking-wide text-primary">{{
+            p.totals.redCards
+          }}</span>
+        </li>
       </ul>
     </section>
-  }
 
-  <section class="block">
-    <h3>Transferts</h3>
-    @if (p.transfers.length === 0) {
-      <p class="empty">Aucun mouvement enregistré.</p>
-    } @else {
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Championnat</th>
-              <th>Mouvement</th>
-              @if (showTransferDuration()) {
-                <th>Durée</th>
+    <section class="mb-10">
+      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">
+        Feuilles de match
+      </h3>
+      @if (p.appearances.length === 0) {
+        <p class="text-sm text-muted-foreground">
+          Aucune feuille de match importée pour ce joueur.
+        </p>
+      } @else {
+        <div class="overflow-x-auto rounded-lg border border-border/70 bg-card/60">
+          <table class="w-full min-w-[44rem] border-collapse text-left text-sm">
+            <thead>
+              <tr
+                class="border-b border-border text-xs uppercase tracking-[0.1em] text-muted-foreground"
+              >
+                <th class="px-4 py-3 font-semibold">Date</th>
+                <th class="px-4 py-3 font-semibold">J.</th>
+                <th class="px-4 py-3 font-semibold">Adv.</th>
+                <th class="px-4 py-3 font-semibold">Lieu</th>
+                <th class="px-4 py-3 font-semibold">V/N/D</th>
+                <th class="px-4 py-3 font-semibold">Score</th>
+                <th class="px-4 py-3 font-semibold">N°</th>
+                <th class="px-4 py-3 font-semibold">Min</th>
+                <th class="px-4 py-3 font-semibold">E</th>
+                <th class="px-4 py-3 font-semibold">CJ</th>
+                <th class="px-4 py-3 font-semibold">CR</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of p.appearances; track a.matchId) {
+                <tr class="border-b border-border/50 last:border-0 odd:bg-white/[0.02]">
+                  <td class="px-4 py-3 text-muted-foreground tabular-nums">
+                    {{ a.kickoffAt | date: 'dd/MM/yyyy' }}
+                  </td>
+                  <td class="px-4 py-3 text-muted-foreground">{{ a.matchday }}</td>
+                  <td class="px-4 py-3">
+                    <a
+                      [routerLink]="['/matches', a.matchId]"
+                      class="font-medium text-foreground no-underline hover:text-primary"
+                      >{{ a.opponentShortName }}</a
+                    >
+                  </td>
+                  <td class="px-4 py-3 text-muted-foreground">{{ a.venue }}</td>
+                  <td class="px-4 py-3 font-semibold">{{ a.result }}</td>
+                  <td class="px-4 py-3 tabular-nums">
+                    @if (a.homeScore != null && a.awayScore != null) {
+                      {{ a.homeScore }}-{{ a.awayScore }}
+                    } @else {
+                      —
+                    }
+                  </td>
+                  <td class="px-4 py-3 text-muted-foreground">
+                    {{ a.jerseyNumber }}{{ a.starter ? '' : ' (r)' }}
+                  </td>
+                  <td class="px-4 py-3 text-muted-foreground">{{ a.minutesPlayed }}'</td>
+                  <td class="px-4 py-3">{{ a.tries || '—' }}</td>
+                  <td class="px-4 py-3">{{ a.yellowCards || '—' }}</td>
+                  <td class="px-4 py-3">{{ a.redCards || '—' }}</td>
+                </tr>
               }
-            </tr>
-          </thead>
-          <tbody>
-            @for (t of p.transfers; track t.id) {
-              <tr>
-                <td>{{ t.transferDate | date: 'dd/MM/yyyy' }}</td>
-                <td>{{ t.competitionName }}</td>
-                <td>
-                  <div class="movement">
-                    <div class="club-chip">
-                      @if (clubShort(t, 'from'); as fromShort) {
-                        <app-team-logo [shortName]="fromShort" size="sm" />
-                      } @else {
-                        <span class="club-fallback">{{ clubFallback(t, 'from') }}</span>
-                      }
-                    </div>
-                    <span class="arrow" aria-hidden="true">→</span>
-                    <div class="club-chip">
-                      @if (clubShort(t, 'to'); as toShort) {
-                        <app-team-logo [shortName]="toShort" size="sm" />
-                      } @else {
-                        <span class="club-fallback">{{ clubFallback(t, 'to') }}</span>
-                      }
-                    </div>
-                    <span class="type" [attr.data-type]="t.type">{{ typeLabel(t.type) }}</span>
-                  </div>
-                </td>
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    @if (careerEntries().length > 0) {
+      <section class="mb-10">
+        <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Parcours</h3>
+        <ul
+          class="m-0 list-none divide-y divide-border/40 overflow-hidden rounded-lg border border-border/70 bg-card/60 p-0"
+        >
+          @for (entry of careerEntries(); track entry) {
+            <li class="px-4 py-3 text-sm">{{ entry }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section>
+      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Transferts</h3>
+      @if (p.transfers.length === 0) {
+        <p class="text-sm text-muted-foreground">Aucun mouvement enregistré.</p>
+      } @else {
+        <div class="overflow-x-auto rounded-lg border border-border/70 bg-card/60">
+          <table class="w-full min-w-[36rem] border-collapse text-left text-sm">
+            <thead>
+              <tr
+                class="border-b border-border text-xs uppercase tracking-[0.1em] text-muted-foreground"
+              >
+                <th class="px-4 py-3 font-semibold">Date</th>
+                <th class="px-4 py-3 font-semibold">Championnat</th>
+                <th class="px-4 py-3 font-semibold">Mouvement</th>
                 @if (showTransferDuration()) {
-                  <td class="duration">{{ t.contractLength }}</td>
+                  <th class="px-4 py-3 font-semibold">Durée</th>
                 }
               </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-  </section>
-}
+            </thead>
+            <tbody>
+              @for (t of p.transfers; track t.id) {
+                <tr class="border-b border-border/50 last:border-0 odd:bg-white/[0.02]">
+                  <td class="px-4 py-3 text-muted-foreground tabular-nums">
+                    {{ t.transferDate | date: 'dd/MM/yyyy' }}
+                  </td>
+                  <td class="px-4 py-3 text-muted-foreground">{{ t.competitionName }}</td>
+                  <td class="px-4 py-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="inline-flex items-center gap-1">
+                        @if (clubShort(t, 'from'); as fromShort) {
+                          <app-team-logo [shortName]="fromShort" size="sm" />
+                        } @else {
+                          <span class="text-xs text-muted-foreground">{{
+                            clubFallback(t, 'from')
+                          }}</span>
+                        }
+                      </span>
+                      <span class="text-muted-foreground" aria-hidden="true">→</span>
+                      <span class="inline-flex items-center gap-1">
+                        @if (clubShort(t, 'to'); as toShort) {
+                          <app-team-logo [shortName]="toShort" size="sm" />
+                        } @else {
+                          <span class="text-xs text-muted-foreground">{{
+                            clubFallback(t, 'to')
+                          }}</span>
+                        }
+                      </span>
+                      <span
+                        class="rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                        >{{ typeLabel(t.type) }}</span
+                      >
+                    </div>
+                  </td>
+                  @if (showTransferDuration()) {
+                    <td class="px-4 py-3 text-muted-foreground">{{ t.contractLength }}</td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</section>
