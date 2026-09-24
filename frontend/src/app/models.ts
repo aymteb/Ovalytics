@@ -157,6 +157,7 @@ export interface NewsItem {
   id: number;
   title: string;
   summary: string | null;
+  body: string | null;
   imageUrl: string | null;
   sourceUrl: string;
   publishedAt: string;

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ovalytics.backend.domain.PendingTeamRefresh;
 import com.ovalytics.backend.repository.PendingTeamRefreshRepository;
+import com.ovalytics.backend.service.CalendarSyncScheduler;
 import com.ovalytics.backend.service.MatchAnalysisService;
+import com.ovalytics.backend.service.NewsSyncScheduler;
 import com.ovalytics.backend.service.TeamRefreshScraperService;
 import com.ovalytics.backend.service.TeamRefreshScheduler;
 
@@ -34,6 +36,8 @@ public class JobController {
 	private final PendingTeamRefreshRepository pendingTeamRefreshRepository;
 	private final TeamRefreshScraperService teamRefreshScraperService;
 	private final TeamRefreshScheduler teamRefreshScheduler;
+	private final CalendarSyncScheduler calendarSyncScheduler;
+	private final NewsSyncScheduler newsSyncScheduler;
 	private final MatchAnalysisService matchAnalysisService;
 
 	public JobController(
@@ -49,6 +53,8 @@ public class JobController {
 			PendingTeamRefreshRepository pendingTeamRefreshRepository,
 			TeamRefreshScraperService teamRefreshScraperService,
 			TeamRefreshScheduler teamRefreshScheduler,
+			CalendarSyncScheduler calendarSyncScheduler,
+			NewsSyncScheduler newsSyncScheduler,
 			MatchAnalysisService matchAnalysisService) {
 		this.jobOperator = jobOperator;
 		this.matchImportJob = matchImportJob;
@@ -62,6 +68,8 @@ public class JobController {
 		this.pendingTeamRefreshRepository = pendingTeamRefreshRepository;
 		this.teamRefreshScraperService = teamRefreshScraperService;
 		this.teamRefreshScheduler = teamRefreshScheduler;
+		this.calendarSyncScheduler = calendarSyncScheduler;
+		this.newsSyncScheduler = newsSyncScheduler;
 		this.matchAnalysisService = matchAnalysisService;
 	}
 
@@ -129,6 +137,18 @@ public class JobController {
 	public ResponseEntity<String> runTeamRefresh() {
 		teamRefreshScheduler.processPendingTeams();
 		return ResponseEntity.ok("Refresh equipes lance");
+	}
+
+	@PostMapping("/calendar-sync")
+	public ResponseEntity<String> runCalendarSync() {
+		calendarSyncScheduler.runSync();
+		return ResponseEntity.ok("Sync calendrier lance");
+	}
+
+	@PostMapping("/news-sync")
+	public ResponseEntity<String> runNewsSync() {
+		newsSyncScheduler.runSync();
+		return ResponseEntity.ok("Sync actu lance");
 	}
 
 	@PostMapping("/scrape-player-profiles")

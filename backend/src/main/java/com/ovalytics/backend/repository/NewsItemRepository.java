@@ -1,5 +1,6 @@
 package com.ovalytics.backend.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,6 @@ public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
 	Optional<NewsItem> findBySourceUrl(String sourceUrl);
 
 	List<NewsItem> findTop100ByOrderByPublishedAtDesc();
+
+	List<NewsItem> findByPublishedAtGreaterThanEqual(LocalDateTime since);
 }

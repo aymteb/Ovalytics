@@ -56,19 +56,12 @@ export class HomePage implements OnInit {
       },
     });
 
-    this.api.getMatches('SCHEDULED', 'TOP14').subscribe({
+    this.api.getAllMatches('SCHEDULED').subscribe({
       next: (matches) => {
         const sorted = [...matches].sort((a, b) =>
           a.kickoffAt.localeCompare(b.kickoffAt),
         );
-        if (sorted.length === 0) {
-          this.weekendFixtures.set([]);
-        } else {
-          const matchday = sorted[0].matchday;
-          this.weekendFixtures.set(
-            sorted.filter((m) => m.matchday === matchday).slice(0, 3),
-          );
-        }
+        this.weekendFixtures.set(sorted.slice(0, 3));
         this.fixturesLoading.set(false);
       },
       error: () => {

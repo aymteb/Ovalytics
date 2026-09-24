@@ -39,6 +39,7 @@ public class NewsQueryService {
 				item.getId(),
 				item.getTitle(),
 				item.getSummary(),
+				item.getBody(),
 				item.getImageUrl(),
 				item.getSourceUrl(),
 				item.getPublishedAt(),
