@@ -70,7 +70,7 @@
           <div
             class="mb-4 flex items-center justify-between text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
           >
-            <span>J{{ match.matchday }}</span>
+            <span>{{ competitionLabel(match.competitionCode) }} · J{{ match.matchday }}</span>
             <time [attr.datetime]="match.kickoffAt">
               {{ match.kickoffAt | date: 'EEE HH:mm' }}
             </time>

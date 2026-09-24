@@ -28,6 +28,21 @@ ovalytics:
   team-refresh:
     enabled: true
     scrape-enabled: false
+  calendar-sync:
+    enabled: true
+    scrape-enabled: true
+    cron: "0 30 6 * * *"
+    repo-root: /app
+    python-command: python3
+    top14-output: /import/top14-matches.csv
+    prod2-output: /import/prod2-matches.csv
+  news-sync:
+    enabled: true
+    scrape-enabled: true
+    cron: "0 0 */2 * * *"
+    repo-root: /app
+    python-command: python3
+    output: /import/news.csv
   analysis:
     enabled: true
     catch-up-on-startup: false

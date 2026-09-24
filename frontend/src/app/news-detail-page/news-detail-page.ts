@@ -30,6 +30,13 @@ export class NewsDetailPage implements OnInit {
     }
   }
 
+  bodyParagraphs(body: string): string[] {
+    return body
+      .split(/\n+/)
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+  }
+
   constructor(
     private route: ActivatedRoute,
     private api: CompetitionApi,

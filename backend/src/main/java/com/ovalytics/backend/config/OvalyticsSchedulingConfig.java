@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({
 		LiveScoreProperties.class,
 		TeamRefreshProperties.class,
+		CalendarSyncProperties.class,
+		NewsSyncProperties.class,
 		AnalysisProperties.class,
 		CorsProperties.class
 })

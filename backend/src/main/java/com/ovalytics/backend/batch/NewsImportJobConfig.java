@@ -32,7 +32,7 @@ public class NewsImportJobConfig {
 				.linesToSkip(1)
 				.delimited()
 				.strict(false)
-				.names("title", "summary", "sourceUrl", "publishedAt", "source", "competitionCode", "imageUrl")
+				.names("title", "summary", "body", "sourceUrl", "publishedAt", "source", "competitionCode", "imageUrl")
 				.fieldSetMapper(NewsImportJobConfig::toRow)
 				.build();
 	}
@@ -68,6 +68,7 @@ public class NewsImportJobConfig {
 		return new NewsCsvRow(
 				fields.readString("title"),
 				fields.readString("summary"),
+				fields.readString("body"),
 				fields.readString("sourceUrl"),
 				fields.readString("publishedAt"),
 				fields.readString("source"),

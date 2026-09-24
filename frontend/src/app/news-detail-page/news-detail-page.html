@@ -45,12 +45,18 @@
         }
       </div>
 
-      @if (n.summary) {
-        <p class="max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl sm:leading-relaxed">
+      @if (n.body) {
+        <div class="mt-8 max-w-3xl space-y-5 text-lg leading-relaxed text-slate-300 sm:text-xl sm:leading-relaxed">
+          @for (paragraph of bodyParagraphs(n.body); track $index) {
+            <p class="m-0">{{ paragraph }}</p>
+          }
+        </div>
+      } @else if (n.summary) {
+        <p class="mt-8 max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl sm:leading-relaxed">
           {{ n.summary }}
         </p>
       } @else {
-        <p class="text-sm text-muted-foreground">Pas de résumé disponible pour cette actu.</p>
+        <p class="mt-8 text-sm text-muted-foreground">Contenu indisponible pour cette actu.</p>
       }
 
       @if (related().length > 0) {

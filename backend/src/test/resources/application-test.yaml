@@ -36,6 +36,12 @@ ovalytics:
   team-refresh:
     enabled: false
     scrape-enabled: false
+  calendar-sync:
+    enabled: false
+    scrape-enabled: false
+  news-sync:
+    enabled: false
+    scrape-enabled: false
   analysis:
     enabled: false
     catch-up-on-startup: false

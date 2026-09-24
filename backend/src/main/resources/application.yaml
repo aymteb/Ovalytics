@@ -47,6 +47,21 @@ ovalytics:
     repo-root: ..
     profiles-output: data/import/player-profiles.csv
     python-command: python3
+  calendar-sync:
+    enabled: false
+    cron: "0 30 6 * * *"
+    scrape-enabled: true
+    repo-root: ..
+    python-command: python3
+    top14-output: data/import/top14-matches.csv
+    prod2-output: data/import/prod2-matches.csv
+  news-sync:
+    enabled: false
+    cron: "0 0 */2 * * *"
+    scrape-enabled: true
+    repo-root: ..
+    python-command: python3
+    output: data/import/news.csv
   analysis:
     enabled: true
     cron: "0 0 9 * * TUE"
