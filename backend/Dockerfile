@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
-# Contexte = racine du repo (Railway: Root Directory vide, Dockerfile path = backend/Dockerfile)
+# Contexte = dossier backend/ (Root Directory Railway = backend)
 
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
-COPY backend/mvnw .
-COPY backend/.mvn .mvn
-COPY backend/pom.xml .
-COPY backend/src src
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
 RUN chmod +x mvnw && ./mvnw -q -DskipTests package
 
 FROM eclipse-temurin:21-jre
