@@ -60,6 +60,11 @@ override.tf
 .terraformrc
 terraform.rc
 
+# --- Python ---
+**/__pycache__/
+*.py[cod]
+*$py.class
+
 # --- Artefacts générés / téléchargés ---
 backend.zip
 *.zip

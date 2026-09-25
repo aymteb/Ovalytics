@@ -34,25 +34,37 @@
       </h1>
 
       <div
-        class="mt-8 mb-10 h-56 w-full overflow-hidden rounded-lg border border-white/10 bg-muted sm:h-[450px]"
+        class="mt-8 mb-10 aspect-video w-full max-h-[26rem] overflow-hidden rounded-lg border border-white/10 bg-muted"
       >
         @if (n.imageUrl) {
           <img
             [src]="n.imageUrl"
             [alt]="n.title"
-            class="h-full w-full object-cover"
+            class="h-full w-full object-cover object-center"
           />
         }
       </div>
 
       @if (n.body) {
-        <div class="mt-8 max-w-3xl space-y-5 text-lg leading-relaxed text-slate-300 sm:text-xl sm:leading-relaxed">
+        <div
+          class="mt-8 max-w-3xl space-y-6 text-base leading-8 text-slate-200 sm:text-lg sm:leading-8"
+        >
           @for (paragraph of bodyParagraphs(n.body); track $index) {
-            <p class="m-0">{{ paragraph }}</p>
+            <p
+              class="m-0 text-justify"
+              [class.text-xl]=" $index === 0 "
+              [class.sm:text-2xl]=" $index === 0 "
+              [class.leading-9]=" $index === 0 "
+              [class.text-slate-100]=" $index === 0 "
+            >
+              {{ paragraph }}
+            </p>
           }
         </div>
       } @else if (n.summary) {
-        <p class="mt-8 max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl sm:leading-relaxed">
+        <p
+          class="mt-8 max-w-3xl text-justify text-lg leading-8 text-slate-200 sm:text-xl sm:leading-8"
+        >
           {{ n.summary }}
         </p>
       } @else {
