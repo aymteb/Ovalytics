@@ -44,6 +44,8 @@ class MatchAnalysisDraftWriterTest {
 				null,
 				null,
 				null,
+				null,
+				null,
 				List.of(
 						new AbsenceResponse("Herman Coetzee", "INJURED", null),
 						new AbsenceResponse("Rati Zazadze", "INJURED", null),
@@ -59,7 +61,9 @@ class MatchAnalysisDraftWriterTest {
 						"BIA",
 						"NEV",
 						38,
-						41)));
+						41)),
+				List.of(),
+				List.of());
 
 		MatchAnalysisContext context = new MatchAnalysisContext(
 				new StandingRowResponse(15, 18L, "USON Nevers", "NEV", 3, 0, 0, 3, 67, 74, -7, 3, 3),
@@ -98,6 +102,8 @@ class MatchAnalysisDraftWriterTest {
 				null,
 				null,
 				null,
+				null,
+				null,
 				List.of(new AbsenceResponse("Maël Castel", "INJURED", null)),
 				List.of(),
 				new TeamFormResponse(List.of("V", "V", "D"), 3, 2, 0, 1, 0),
@@ -110,7 +116,9 @@ class MatchAnalysisDraftWriterTest {
 						"MTB",
 						"BEZ",
 						42,
-						17)));
+						17)),
+				List.of(),
+				List.of());
 
 		MatchAnalysisContext context = new MatchAnalysisContext(
 				new StandingRowResponse(8, 28L, "US Montauban", "MTB", 3, 2, 0, 1, 70, 55, 15, 1, 9),

@@ -16,6 +16,7 @@ import com.ovalytics.backend.domain.PendingTeamRefresh;
 import com.ovalytics.backend.repository.PendingTeamRefreshRepository;
 import com.ovalytics.backend.service.CalendarSyncScheduler;
 import com.ovalytics.backend.service.MatchAnalysisService;
+import com.ovalytics.backend.service.MatchSheetSyncService;
 import com.ovalytics.backend.service.NewsSyncScheduler;
 import com.ovalytics.backend.service.TeamRefreshScraperService;
 import com.ovalytics.backend.service.TeamRefreshScheduler;
@@ -39,6 +40,7 @@ public class JobController {
 	private final CalendarSyncScheduler calendarSyncScheduler;
 	private final NewsSyncScheduler newsSyncScheduler;
 	private final MatchAnalysisService matchAnalysisService;
+	private final MatchSheetSyncService matchSheetSyncService;
 
 	public JobController(
 			JobOperator jobOperator,
@@ -55,7 +57,8 @@ public class JobController {
 			TeamRefreshScheduler teamRefreshScheduler,
 			CalendarSyncScheduler calendarSyncScheduler,
 			NewsSyncScheduler newsSyncScheduler,
-			MatchAnalysisService matchAnalysisService) {
+			MatchAnalysisService matchAnalysisService,
+			MatchSheetSyncService matchSheetSyncService) {
 		this.jobOperator = jobOperator;
 		this.matchImportJob = matchImportJob;
 		this.prod2MatchImportJob = prod2MatchImportJob;
@@ -71,6 +74,7 @@ public class JobController {
 		this.calendarSyncScheduler = calendarSyncScheduler;
 		this.newsSyncScheduler = newsSyncScheduler;
 		this.matchAnalysisService = matchAnalysisService;
+		this.matchSheetSyncService = matchSheetSyncService;
 	}
 
 	@GetMapping("/pending-teams")
@@ -149,6 +153,12 @@ public class JobController {
 	public ResponseEntity<String> runNewsSync() {
 		newsSyncScheduler.runSync();
 		return ResponseEntity.ok("Sync actu lance");
+	}
+
+	@PostMapping("/match-sheet-sync")
+	public ResponseEntity<String> runMatchSheetSync() {
+		int synced = matchSheetSyncService.catchUp();
+		return ResponseEntity.ok("Feuilles synchronisees: " + synced);
 	}
 
 	@PostMapping("/scrape-player-profiles")

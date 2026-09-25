@@ -1,3 +1,550 @@
 :host {
   display: block;
 }
+
+.match-sheet-summary {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .match-sheet-summary {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+  }
+}
+
+.tries-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--color-card) 80%, transparent);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground);
+}
+
+.tries-chip strong {
+  color: var(--color-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.scorers-panel {
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--color-card) 80%, transparent);
+  padding: 1rem 1.15rem;
+}
+
+.scorers-panel h4 {
+  margin: 0 0 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+.scorers-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+@media (min-width: 640px) {
+  .scorers-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.scorer-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.scorer-meta {
+  color: var(--color-muted-foreground);
+  font-size: 0.75rem;
+}
+
+.timeline {
+  position: relative;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: color-mix(in oklab, var(--color-border) 85%, transparent);
+}
+
+.timeline-row {
+  display: grid;
+  grid-template-columns: 1fr 3.75rem 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 2.85rem;
+  padding: 0.4rem 0;
+}
+
+.timeline-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.timeline-minute {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-background) 92%, transparent);
+  padding: 0.2rem 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+}
+
+.timeline-score {
+  font-size: 0.65rem;
+  color: var(--color-muted-foreground);
+}
+
+.timeline-side {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.timeline-side.is-home {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.timeline-side.is-away {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.timeline-side.is-empty {
+  visibility: hidden;
+}
+
+.timeline-side.is-home.is-child {
+  padding-right: 0.85rem;
+}
+
+.timeline-side.is-away.is-child {
+  padding-left: 0.85rem;
+}
+
+.timeline-player {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-foreground);
+}
+
+.timeline-side.is-home .timeline-player {
+  flex-direction: row-reverse;
+}
+
+.points-pill {
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-muted) 80%, transparent);
+  padding: 0.05rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-muted-foreground);
+}
+
+.event-icon {
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--color-muted-foreground);
+}
+
+.event-icon.is-try {
+  color: var(--color-foreground);
+}
+
+.event-icon.is-conversion,
+.event-icon.is-penalty,
+.event-icon.is-drop {
+  color: var(--color-primary);
+}
+
+.card-pill {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.95rem;
+  border-radius: 0.12rem;
+}
+
+.card-pill.is-yellow {
+  background: #eab308;
+}
+
+.card-pill.is-red {
+  background: var(--color-primary);
+}
+
+.event-dot {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--color-muted-foreground);
+}
+
+.timeline-halftime {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0.65rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  background: color-mix(in oklab, var(--color-background) 70%, transparent);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+.timeline-halftime strong {
+  letter-spacing: 0;
+  color: var(--color-foreground);
+}
+
+.timeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.25rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+}
+
+.timeline-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.timeline-legend .event-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.sheet-tabs {
+  display: flex;
+  gap: 0.15rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-border) 80%, transparent);
+}
+
+.sheet-tab {
+  appearance: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--color-muted-foreground);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: -1px;
+  padding: 0.7rem 1rem;
+  text-transform: uppercase;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.sheet-tab:hover:not(:disabled) {
+  color: var(--color-foreground);
+}
+
+.sheet-tab.is-active {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-foreground);
+}
+
+.sheet-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.compositions-view {
+  display: grid;
+  gap: 1rem;
+}
+
+.pitch {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 20rem;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 0.4rem;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #1a5c38 0,
+      #1a5c38 12.4%,
+      #1f6840 12.4%,
+      #1f6840 25%
+    );
+}
+
+@media (min-width: 700px) {
+  .pitch {
+    min-height: 26rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .pitch {
+    min-height: 30rem;
+  }
+}
+
+.pitch-lines {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.pitch .line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.pitch .line.half-way {
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.pitch .line.line-10 {
+  width: 0;
+  background-color: transparent;
+  border-left: 2px dashed rgba(255, 255, 255, 0.42);
+}
+
+.pitch .line.line-10.left {
+  left: 40%;
+}
+
+.pitch .line.line-10.right {
+  right: 40%;
+}
+
+.pitch .line.line-22.left {
+  left: 22%;
+}
+
+.pitch .line.line-22.right {
+  right: 22%;
+}
+
+.pitch .line.in-goal.left {
+  left: 5%;
+}
+
+.pitch .line.in-goal.right {
+  right: 5%;
+}
+
+.pitch-team-bar {
+  position: absolute;
+  top: 0.45rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 42%;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 0.28rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f3f7f4;
+}
+
+.pitch-team-bar.is-home {
+  left: 0.55rem;
+}
+
+.pitch-team-bar.is-away {
+  right: 0.55rem;
+}
+
+.pitch-player {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  transform: translate(-50%, -50%);
+}
+
+.pitch-name {
+  white-space: nowrap;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  padding: 0.12rem 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  color: #fff;
+}
+
+@media (max-width: 699px) {
+  .pitch-name {
+    font-size: 0.52rem;
+    padding: 0.08rem 0.32rem;
+  }
+
+  .pitch-dot {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.58rem;
+  }
+}
+
+.pitch-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.pitch-player.is-home .pitch-dot {
+  background: #f4f7f5;
+  color: #152319;
+}
+
+.pitch-player.is-away .pitch-dot {
+  background: #152319;
+  color: #f4f7f5;
+  border: 1px solid rgba(244, 247, 245, 0.55);
+}
+
+.bench-board {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .bench-board {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.bench-col {
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--color-card) 80%, transparent);
+  padding: 0.85rem 1rem;
+}
+
+.bench-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bench-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bench-list li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.35rem 0.1rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-border) 40%, transparent);
+  font-size: 0.86rem;
+}
+
+.bench-list li:last-child {
+  border-bottom: 0;
+}
+
+.bench-list .jersey {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.3rem;
+  border: 1px solid color-mix(in oklab, var(--color-border) 80%, transparent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted-foreground);
+}
+
+.bench-empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-muted-foreground);
+}

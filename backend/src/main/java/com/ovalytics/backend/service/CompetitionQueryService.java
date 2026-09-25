@@ -27,6 +27,8 @@ import com.ovalytics.backend.domain.TransferType;
 import com.ovalytics.backend.repository.AbsenceRepository;
 import com.ovalytics.backend.repository.CompetitionRepository;
 import com.ovalytics.backend.repository.MatchAppearanceRepository;
+import com.ovalytics.backend.repository.MatchEventRepository;
+import com.ovalytics.backend.repository.MatchLineupRepository;
 import com.ovalytics.backend.repository.PlayerRepository;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
 import com.ovalytics.backend.repository.TeamRepository;
@@ -36,6 +38,8 @@ import com.ovalytics.backend.web.dto.ClubJiffSummaryResponse;
 import com.ovalytics.backend.web.dto.ClubMercatoResponse;
 import com.ovalytics.backend.web.dto.CompetitionResponse;
 import com.ovalytics.backend.web.dto.HeadToHeadMatchResponse;
+import com.ovalytics.backend.web.dto.MatchEventResponse;
+import com.ovalytics.backend.web.dto.MatchLineupResponse;
 import com.ovalytics.backend.web.dto.MatchResponse;
 import com.ovalytics.backend.web.dto.PlayerAppearanceResponse;
 import com.ovalytics.backend.web.dto.PlayerDetailResponse;
@@ -60,6 +64,8 @@ public class CompetitionQueryService {
 	private final TransferRepository transferRepository;
 	private final PlayerRepository playerRepository;
 	private final MatchAppearanceRepository matchAppearanceRepository;
+	private final MatchEventRepository matchEventRepository;
+	private final MatchLineupRepository matchLineupRepository;
 
 	public CompetitionQueryService(
 			CompetitionRepository competitionRepository,
@@ -68,7 +74,9 @@ public class CompetitionQueryService {
 			AbsenceRepository absenceRepository,
 			TransferRepository transferRepository,
 			PlayerRepository playerRepository,
-			MatchAppearanceRepository matchAppearanceRepository) {
+			MatchAppearanceRepository matchAppearanceRepository,
+			MatchEventRepository matchEventRepository,
+			MatchLineupRepository matchLineupRepository) {
 		this.competitionRepository = competitionRepository;
 		this.teamRepository = teamRepository;
 		this.rugbyMatchRepository = rugbyMatchRepository;
@@ -76,6 +84,8 @@ public class CompetitionQueryService {
 		this.transferRepository = transferRepository;
 		this.playerRepository = playerRepository;
 		this.matchAppearanceRepository = matchAppearanceRepository;
+		this.matchEventRepository = matchEventRepository;
+		this.matchLineupRepository = matchLineupRepository;
 	}
 
 	public List<CompetitionResponse> listCompetitions() {
@@ -134,7 +144,8 @@ public class CompetitionQueryService {
 					.toList();
 		}
 		return matches.stream()
-				.map(match -> toMatchResponse(match, List.of(), List.of(), null, null, null, null, List.of()))
+				.map(match -> toMatchResponse(
+						match, List.of(), List.of(), null, null, null, null, List.of(), List.of(), List.of()))
 				.toList();
 	}
 
@@ -160,7 +171,9 @@ public class CompetitionQueryService {
 				buildForm(finished, awayId, before, seasonStart),
 				buildVenueRecord(finished, homeId, true, before),
 				buildVenueRecord(finished, awayId, false, before),
-				buildHeadToHead(finished, homeId, awayId, before));
+				buildHeadToHead(finished, homeId, awayId, before),
+				toEventResponses(match.getId()),
+				toLineupResponses(match.getId()));
 	}
 
 	public List<TransferResponse> listTransfers(String competitionCode) {
@@ -782,7 +795,9 @@ public class CompetitionQueryService {
 			TeamFormResponse awayForm,
 			VenueRecordResponse homeHomeRecord,
 			VenueRecordResponse awayAwayRecord,
-			List<HeadToHeadMatchResponse> headToHead) {
+			List<HeadToHeadMatchResponse> headToHead,
+			List<MatchEventResponse> events,
+			List<MatchLineupResponse> lineups) {
 		return new MatchResponse(
 				match.getId(),
 				match.getCompetition().getCode(),
@@ -794,6 +809,8 @@ public class CompetitionQueryService {
 				toTeamResponse(match.getAwayTeam()),
 				match.getHomeScore(),
 				match.getAwayScore(),
+				match.getHomeTries(),
+				match.getAwayTries(),
 				match.getAnalysis(),
 				homeAbsences,
 				awayAbsences,
@@ -801,7 +818,34 @@ public class CompetitionQueryService {
 				awayForm,
 				homeHomeRecord,
 				awayAwayRecord,
-				headToHead);
+				headToHead,
+				events,
+				lineups);
+	}
+
+	private List<MatchEventResponse> toEventResponses(Long matchId) {
+		return matchEventRepository.findByMatchIdOrderBySortOrderAsc(matchId).stream()
+				.map(event -> new MatchEventResponse(
+						event.getPeriodLabel(),
+						event.getMinuteLabel(),
+						event.getTeamSide(),
+						event.getEventType().name(),
+						event.getPlayerName()))
+				.toList();
+	}
+
+	private List<MatchLineupResponse> toLineupResponses(Long matchId) {
+		return matchLineupRepository
+				.findByMatchIdOrderByTeamSideAscStarterDescJerseyNumberAsc(matchId)
+				.stream()
+				.map(row -> new MatchLineupResponse(
+						row.getTeamSide(),
+						row.getJerseyNumber(),
+						row.getPosition(),
+						row.getPlayerName(),
+						row.isStarter(),
+						row.isCaptain()))
+				.toList();
 	}
 
 	private List<AbsenceResponse> toAbsenceResponses(List<Absence> absences) {

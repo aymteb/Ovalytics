@@ -28,16 +28,19 @@ public class LiveScoreSyncService {
 	private final FlashscoreClient flashscoreClient;
 	private final RugbyMatchRepository rugbyMatchRepository;
 	private final PendingTeamRefreshService pendingTeamRefreshService;
+	private final MatchSheetSyncService matchSheetSyncService;
 
 	public LiveScoreSyncService(
 			LiveScoreProperties properties,
 			FlashscoreClient flashscoreClient,
 			RugbyMatchRepository rugbyMatchRepository,
-			PendingTeamRefreshService pendingTeamRefreshService) {
+			PendingTeamRefreshService pendingTeamRefreshService,
+			MatchSheetSyncService matchSheetSyncService) {
 		this.properties = properties;
 		this.flashscoreClient = flashscoreClient;
 		this.rugbyMatchRepository = rugbyMatchRepository;
 		this.pendingTeamRefreshService = pendingTeamRefreshService;
+		this.matchSheetSyncService = matchSheetSyncService;
 	}
 
 	@Scheduled(fixedDelayString = "${ovalytics.live-scores.poll-interval-ms:60000}")
@@ -60,8 +63,16 @@ public class LiveScoreSyncService {
 
 		int applied = 0;
 		for (FlashscoreMatchUpdate update : updates) {
-			if (applyUpdate(update)) {
-				applied++;
+			Optional<RugbyMatch> match = findMatch(update);
+			boolean changed = false;
+			if (match.isPresent()) {
+				changed = applyUpdate(match.get(), update);
+				if (changed) {
+					applied++;
+				}
+				if (update.status() == MatchStatus.LIVE || update.status() == MatchStatus.FINISHED) {
+					matchSheetSyncService.syncSheet(match.get());
+				}
 			}
 		}
 		if (applied > 0) {
@@ -80,13 +91,7 @@ public class LiveScoreSyncService {
 				windowEnd);
 	}
 
-	private boolean applyUpdate(FlashscoreMatchUpdate update) {
-		Optional<RugbyMatch> match = findMatch(update);
-		if (match.isEmpty()) {
-			return false;
-		}
-
-		RugbyMatch existing = match.get();
+	private boolean applyUpdate(RugbyMatch existing, FlashscoreMatchUpdate update) {
 		MatchStatus previousStatus = existing.getStatus();
 		boolean changed = false;
 

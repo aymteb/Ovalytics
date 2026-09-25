@@ -1,4 +1,4 @@
-<section class="mx-auto max-w-[1100px] px-6 py-10 lg:px-8">
+<section class="mx-auto max-w-[1100px] overflow-x-hidden px-6 py-10 lg:px-8">
   <p class="mb-8">
     <a
       [routerLink]="backPath"
@@ -34,7 +34,7 @@
       </h1>
 
       <div
-        class="mt-8 mb-10 aspect-video w-full max-h-[26rem] overflow-hidden rounded-lg border border-white/10 bg-muted"
+        class="mt-8 mb-12 aspect-video w-[110%] max-w-none -ml-[5%] max-h-[28rem] overflow-hidden rounded-xl border border-white/10 bg-muted"
       >
         @if (n.imageUrl) {
           <img
@@ -46,16 +46,11 @@
       </div>
 
       @if (n.body) {
-        <div
-          class="mt-8 max-w-3xl space-y-6 text-base leading-8 text-slate-200 sm:text-lg sm:leading-8"
-        >
+        <div class="article-content mx-auto mt-2 max-w-[700px] text-lg leading-[1.7] text-[#cbd5e1]">
           @for (paragraph of bodyParagraphs(n.body); track $index) {
             <p
-              class="m-0 text-justify"
-              [class.text-xl]=" $index === 0 "
-              [class.sm:text-2xl]=" $index === 0 "
-              [class.leading-9]=" $index === 0 "
-              [class.text-slate-100]=" $index === 0 "
+              class="text-pretty text-justify"
+              [class.is-chapeau]=" $index === 0 "
             >
               {{ paragraph }}
             </p>
@@ -63,12 +58,14 @@
         </div>
       } @else if (n.summary) {
         <p
-          class="mt-8 max-w-3xl text-justify text-lg leading-8 text-slate-200 sm:text-xl sm:leading-8"
+          class="article-content mx-auto mt-2 max-w-[700px] text-pretty text-justify text-lg font-semibold leading-[1.55] text-slate-100"
         >
           {{ n.summary }}
         </p>
       } @else {
-        <p class="mt-8 text-sm text-muted-foreground">Contenu indisponible pour cette actu.</p>
+        <p class="mx-auto mt-8 max-w-[700px] text-sm text-muted-foreground">
+          Contenu indisponible pour cette actu.
+        </p>
       }
 
       @if (related().length > 0) {
