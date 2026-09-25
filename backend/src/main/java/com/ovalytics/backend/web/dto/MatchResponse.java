@@ -14,6 +14,8 @@ public record MatchResponse(
 		TeamResponse awayTeam,
 		Integer homeScore,
 		Integer awayScore,
+		Integer homeTries,
+		Integer awayTries,
 		String analysis,
 		List<AbsenceResponse> homeAbsences,
 		List<AbsenceResponse> awayAbsences,
@@ -21,5 +23,7 @@ public record MatchResponse(
 		TeamFormResponse awayForm,
 		VenueRecordResponse homeHomeRecord,
 		VenueRecordResponse awayAwayRecord,
-		List<HeadToHeadMatchResponse> headToHead) {
+		List<HeadToHeadMatchResponse> headToHead,
+		List<MatchEventResponse> events,
+		List<MatchLineupResponse> lineups) {
 }

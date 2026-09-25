@@ -19,6 +19,9 @@ public class FlashscoreClient {
 
 	private static final String FEED_BASE = "https://global.flashscore.ninja/2/x/feed";
 	private static final String HUB_URL = "https://www.flashscore.fr/rugby/france/top-14/";
+	private static final List<String> RESULTS_URLS = List.of(
+			"https://www.flashscore.fr/rugby/france/top-14/resultats/",
+			"https://www.flashscore.fr/rugby/france/pro-d2/resultats/");
 	private static final Pattern FEED_SIGN_PATTERN = Pattern.compile("\"feed_sign\":\"([^\"]+)\"");
 
 	private final RestClient restClient;
@@ -63,10 +66,60 @@ public class FlashscoreClient {
 			}
 		}
 
-		return toUpdates(merged.values());
+		return toUpdates(merged.values(), false);
 	}
 
-	private List<FlashscoreMatchUpdate> toUpdates(Iterable<Map<String, String>> events) {
+	public List<FlashscoreMatchUpdate> fetchRecentFinishedUpdates(int daysBack) {
+		String sign = fetchFeedSign();
+		Map<String, Map<String, String>> merged = new LinkedHashMap<>();
+		int from = Math.max(1, daysBack);
+		for (int day = -from; day <= 0; day++) {
+			String raw = fetchFeed("f_8_" + day + "_3_fr_1", sign);
+			mergeFinished(merged, FlashscoreEventParser.parseFeed(raw));
+		}
+		for (String resultsUrl : RESULTS_URLS) {
+			String page = fetchPage(resultsUrl);
+			mergeFinished(merged, FlashscoreEventParser.parseFeed(page));
+		}
+		return toUpdates(merged.values(), true);
+	}
+
+	private void mergeFinished(
+			Map<String, Map<String, String>> merged,
+			List<Map<String, String>> events) {
+		for (Map<String, String> fields : events) {
+			if (!isFinished(fields)) {
+				continue;
+			}
+			String eventId = fields.get("AA");
+			if (eventId == null || eventId.isBlank()) {
+				continue;
+			}
+			merged.put(eventId, fields);
+		}
+	}
+
+	public List<FlashscoreSummaryParser.SummaryEvent> fetchMatchSummary(String eventId) {
+		if (eventId == null || eventId.isBlank()) {
+			return List.of();
+		}
+		String sign = fetchFeedSign();
+		String raw = fetchFeed("df_sui_1_" + eventId, sign);
+		return FlashscoreSummaryParser.parse(raw);
+	}
+
+	public List<FlashscoreLineupParser.LineupPlayer> fetchMatchLineups(String eventId) {
+		if (eventId == null || eventId.isBlank()) {
+			return List.of();
+		}
+		String sign = fetchFeedSign();
+		String raw = fetchFeed("df_li_1_" + eventId, sign);
+		return FlashscoreLineupParser.parse(raw);
+	}
+
+	private List<FlashscoreMatchUpdate> toUpdates(
+			Iterable<Map<String, String>> events,
+			boolean includeFinishedOnly) {
 		List<FlashscoreMatchUpdate> updates = new ArrayList<>();
 		for (Map<String, String> fields : events) {
 			String homeName = fields.get("AE");
@@ -81,7 +134,16 @@ public class FlashscoreClient {
 					teams.competitionCode(),
 					teams.homeShortName(),
 					teams.awayShortName());
-			if (update != null && update.status() != MatchStatus.SCHEDULED) {
+			if (update == null) {
+				continue;
+			}
+			if (includeFinishedOnly) {
+				if (update.status() == MatchStatus.FINISHED) {
+					updates.add(update);
+				}
+				continue;
+			}
+			if (update.status() != MatchStatus.SCHEDULED) {
 				updates.add(update);
 			}
 		}
@@ -98,11 +160,8 @@ public class FlashscoreClient {
 	}
 
 	private String fetchFeedSign() {
-		String page = restClient.get()
-				.uri(HUB_URL)
-				.retrieve()
-				.body(String.class);
-		if (page == null) {
+		String page = fetchPage(HUB_URL);
+		if (page == null || page.isBlank()) {
 			throw new IllegalStateException("Flashscore hub vide");
 		}
 		Matcher matcher = FEED_SIGN_PATTERN.matcher(page);
@@ -112,13 +171,26 @@ public class FlashscoreClient {
 		return matcher.group(1);
 	}
 
+	private String fetchPage(String url) {
+		try {
+			String body = restClient.get()
+					.uri(URI.create(url))
+					.retrieve()
+					.body(String.class);
+			return body == null ? "" : body;
+		} catch (RuntimeException ex) {
+			return "";
+		}
+	}
+
 	private String fetchFeed(String feedId, String sign) {
 		try {
-			return restClient.get()
+			String body = restClient.get()
 					.uri(URI.create(FEED_BASE + "/" + feedId))
 					.header("x-fsign", sign)
 					.retrieve()
 					.body(String.class);
+			return body == null ? "" : body;
 		} catch (RuntimeException ex) {
 			return "";
 		}

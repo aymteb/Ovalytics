@@ -96,6 +96,8 @@ class CompetitionControllerTest {
 				null,
 				null,
 				null,
+				null,
+				null,
 				List.of(),
 				List.of(),
 				new TeamFormResponse(List.of("V", "D"), 2, 1, 0, 1, 1),
@@ -108,7 +110,9 @@ class CompetitionControllerTest {
 						"UBB",
 						"VAN",
 						42,
-						7)));
+						7)),
+				List.of(),
+				List.of());
 
 		when(competitionQueryService.getMatch("TOP14", 8L)).thenReturn(match);
 
@@ -163,6 +167,8 @@ class CompetitionControllerTest {
 				away,
 				null,
 				null,
+				null,
+				null,
 				analysis,
 				homeAbsences,
 				awayAbsences,
@@ -170,6 +176,8 @@ class CompetitionControllerTest {
 				null,
 				null,
 				null,
+				List.of(),
+				List.of(),
 				List.of());
 	}
 }

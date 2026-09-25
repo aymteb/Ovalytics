@@ -98,166 +98,603 @@
       </section>
     }
 
-    <section class="mb-10">
-      <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">Avant-match</h3>
-
-      <div class="mb-8 grid gap-6 md:grid-cols-2">
-        <div class="rounded-lg border border-border/70 bg-card/60 p-5">
-          <div class="mb-3 flex items-center gap-2">
-            <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
-            <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
-              Forme {{ m.homeTeam.shortName }} · tous matchs
-            </h4>
-          </div>
-          @if (m.homeForm && m.homeForm.played > 0) {
-            <p class="mb-2 flex flex-wrap gap-1.5">
-              @for (r of m.homeForm.results; track $index) {
-                <span
-                  class="inline-flex h-7 w-7 items-center justify-center rounded border text-xs font-bold"
-                  [class.border-win]="r === 'V'"
-                  [class.bg-win/15]="r === 'V'"
-                  [class.text-win]="r === 'V'"
-                  [class.border-border]="r === 'N'"
-                  [class.text-muted-foreground]="r === 'N'"
-                  [class.border-primary]="r === 'D'"
-                  [class.bg-primary/15]="r === 'D'"
-                  [class.text-primary]="r === 'D'"
-                  >{{ r }}</span
-                >
-              }
-            </p>
-            <p class="m-0 text-sm text-muted-foreground">{{ recordLabel(m.homeForm) }}</p>
-            @if (formSeasonNote(m.homeForm)) {
-              <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.homeForm) }}</p>
-            }
-          } @else {
-            <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
-          }
+    @if (isLiveOrFinished(m.status)) {
+      <section class="mb-10">
+        <div class="sheet-tabs" role="tablist" aria-label="Feuille de match">
+          <button
+            type="button"
+            role="tab"
+            class="sheet-tab"
+            [class.is-active]="sheetTab() === 'resume'"
+            [attr.aria-selected]="sheetTab() === 'resume'"
+            (click)="selectSheetTab('resume')"
+          >
+            Résumé
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="sheet-tab"
+            [class.is-active]="sheetTab() === 'compositions'"
+            [attr.aria-selected]="sheetTab() === 'compositions'"
+            [disabled]="!hasLineups(m)"
+            (click)="selectSheetTab('compositions')"
+          >
+            Compositions
+          </button>
         </div>
 
-        <div class="rounded-lg border border-border/70 bg-card/60 p-5">
-          <div class="mb-3 flex items-center gap-2">
-            <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
-            <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
-              Forme {{ m.awayTeam.shortName }} · tous matchs
-            </h4>
-          </div>
-          @if (m.awayForm && m.awayForm.played > 0) {
-            <p class="mb-2 flex flex-wrap gap-1.5">
-              @for (r of m.awayForm.results; track $index) {
-                <span
-                  class="inline-flex h-7 w-7 items-center justify-center rounded border text-xs font-bold"
-                  [class.border-win]="r === 'V'"
-                  [class.bg-win/15]="r === 'V'"
-                  [class.text-win]="r === 'V'"
-                  [class.border-border]="r === 'N'"
-                  [class.text-muted-foreground]="r === 'N'"
-                  [class.border-primary]="r === 'D'"
-                  [class.bg-primary/15]="r === 'D'"
-                  [class.text-primary]="r === 'D'"
-                  >{{ r }}</span
-                >
-              }
-            </p>
-            <p class="m-0 text-sm text-muted-foreground">{{ recordLabel(m.awayForm) }}</p>
-            @if (formSeasonNote(m.awayForm)) {
-              <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.awayForm) }}</p>
+        @if (sheetTab() === 'resume') {
+        @if (hasResume(m)) {
+          @let scorers = topScorers(m.events);
+          <div class="match-sheet-summary">
+            @if (m.homeTries != null || m.awayTries != null) {
+              <div class="tries-chip">
+                Essais
+                <strong>{{ m.homeTries ?? 0 }} - {{ m.awayTries ?? 0 }}</strong>
+              </div>
             }
-          } @else {
-            <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
-          }
-        </div>
-      </div>
 
-      <div class="rounded-lg border border-border/70 bg-card/60 p-5">
-        <h4
-          class="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
-        >
-          Confrontations récentes
-        </h4>
-        @if (m.headToHead.length === 0) {
-          <p class="m-0 text-sm text-muted-foreground">
-            Pas de confrontation récente en base pour ces deux clubs (historique à enrichir).
-          </p>
-        } @else {
-          <ul class="m-0 list-none divide-y divide-border/40 p-0">
-            @for (h of m.headToHead; track h.id) {
-              <li
-                class="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
-              >
-                <span class="text-sm text-muted-foreground tabular-nums">{{
-                  h.kickoffAt | date: 'dd/MM/yyyy'
-                }}</span>
-                <span class="inline-flex items-center gap-2">
-                  <app-team-logo [shortName]="h.homeShortName" size="sm" />
-                  <span class="font-display text-xl tracking-wide tabular-nums"
-                    >{{ h.homeScore }} - {{ h.awayScore }}</span
-                  >
-                  <app-team-logo [shortName]="h.awayShortName" size="sm" />
-                </span>
-              </li>
+            @if (scorers.length > 0) {
+              <div class="scorers-panel">
+                <h4>Meilleurs réalisateurs</h4>
+                <ul class="scorers-list">
+                  @for (scorer of scorers; track scorer.playerName + scorer.teamSide) {
+                    <li class="scorer-row">
+                      <span>
+                        <span class="font-medium text-foreground">{{ scorer.playerName }}</span>
+                        <span class="scorer-meta">
+                          ·
+                          {{
+                            scorer.teamSide === 'HOME'
+                              ? m.homeTeam.shortName
+                              : m.awayTeam.shortName
+                          }}
+                        </span>
+                      </span>
+                      <strong class="tabular-nums text-foreground">{{ scorer.points }} pts</strong>
+                    </li>
+                  }
+                </ul>
+              </div>
             }
-          </ul>
+          </div>
         }
-      </div>
-    </section>
 
-    @if (m.homeAbsences.length > 0 || m.awayAbsences.length > 0) {
-      <section>
-        <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">Absents</h3>
-        <div class="grid gap-6 md:grid-cols-2">
+        @if (m.events && m.events.length > 0) {
+          @let rows = timelineRows(m.events);
           <div class="rounded-lg border border-border/70 bg-card/60 p-5">
-            <h4
-              class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+            <div
+              class="mb-5 grid grid-cols-[1fr_3.75rem_1fr] items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
             >
-              {{ m.homeTeam.shortName }}
-            </h4>
-            @if (m.homeAbsences.length === 0) {
-              <p class="m-0 text-sm text-muted-foreground">Aucun signalé</p>
-            } @else {
-              <ul class="m-0 list-none space-y-3 p-0">
-                @for (absence of m.homeAbsences; track absence.playerName) {
-                  <li class="border-b border-border/40 pb-3 last:border-0 last:pb-0">
-                    <span class="font-medium">{{ absence.playerName }}</span>
-                    <span
-                      class="ml-2 rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
-                      >{{ absenceLabel(absence.type) }}</span
+              <span class="flex items-center justify-end gap-2 text-right">
+                <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
+                {{ m.homeTeam.shortName }}
+              </span>
+              <span class="text-center">Min</span>
+              <span class="flex items-center justify-start gap-2">
+                <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
+                {{ m.awayTeam.shortName }}
+              </span>
+            </div>
+
+            <ul class="timeline">
+              @for (row of rows; track $index) {
+                @if (row.kind === 'halftime') {
+                  <li class="timeline-halftime">
+                    <span>Mi-temps</span>
+                    <strong class="tabular-nums"
+                      >{{ row.homeScore }} - {{ row.awayScore }}</strong
                     >
-                    @if (absence.note) {
-                      <p class="mt-1 m-0 text-sm text-muted-foreground">{{ absence.note }}</p>
-                    }
+                  </li>
+                } @else {
+                  <li class="timeline-row" [class.is-indented]="row.indented">
+                    <div
+                      class="timeline-side is-home"
+                      [class.is-empty]="row.event.teamSide !== 'HOME'"
+                      [class.is-child]="row.indented"
+                    >
+                      @if (row.event.teamSide === 'HOME') {
+                        <span class="timeline-player" [title]="row.event.playerName">
+                          {{ row.event.playerName }}
+                          @if (pointsLabel(row.event.eventType)) {
+                            <span class="points-pill">{{
+                              pointsLabel(row.event.eventType)
+                            }}</span>
+                          }
+                        </span>
+                        <span
+                          class="event-icon"
+                          [class.is-try]="row.event.eventType === 'TRY'"
+                          [class.is-conversion]="row.event.eventType === 'CONVERSION'"
+                          [class.is-penalty]="row.event.eventType === 'PENALTY'"
+                          [class.is-drop]="row.event.eventType === 'DROP'"
+                          [class.is-card]="
+                            row.event.eventType === 'YELLOW' || row.event.eventType === 'RED'
+                          "
+                          [attr.aria-label]="eventTypeLabel(row.event.eventType)"
+                          [attr.title]="eventTypeLabel(row.event.eventType)"
+                        >
+                          @switch (row.event.eventType) {
+                            @case ('TRY') {
+                              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <ellipse cx="12" cy="12" rx="8" ry="5.5" />
+                                <path
+                                  d="M7 12h10M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"
+                                  stroke="var(--color-background)"
+                                  stroke-width="1.4"
+                                  fill="none"
+                                />
+                              </svg>
+                            }
+                            @case ('CONVERSION') {
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                  d="M7 20V8M17 20V8M7 8h10"
+                                  stroke="currentColor"
+                                  stroke-width="1.8"
+                                  stroke-linecap="round"
+                                />
+                                <ellipse cx="12" cy="5.5" rx="3.2" ry="2.2" fill="currentColor" />
+                              </svg>
+                            }
+                            @case ('PENALTY') {
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                  d="M8 20l3.5-9.5L18 7l-2 7.5L8 20z"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linejoin="round"
+                                />
+                                <path
+                                  d="M11.5 10.5L14 4"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linecap="round"
+                                />
+                              </svg>
+                            }
+                            @case ('DROP') {
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                  d="M5 16l5-2 3 4 2-7"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                />
+                                <ellipse cx="16.5" cy="8" rx="3" ry="2" fill="currentColor" />
+                              </svg>
+                            }
+                            @case ('YELLOW') {
+                              <span class="card-pill is-yellow"></span>
+                            }
+                            @case ('RED') {
+                              <span class="card-pill is-red"></span>
+                            }
+                            @default {
+                              <span class="event-dot"></span>
+                            }
+                          }
+                        </span>
+                      }
+                    </div>
+
+                    <div class="timeline-center">
+                      <span class="timeline-minute">{{ row.event.minuteLabel }}</span>
+                      <span class="timeline-score tabular-nums"
+                        >{{ row.homeScore }} - {{ row.awayScore }}</span
+                      >
+                    </div>
+
+                    <div
+                      class="timeline-side is-away"
+                      [class.is-empty]="row.event.teamSide !== 'AWAY'"
+                      [class.is-child]="row.indented"
+                    >
+                      @if (row.event.teamSide === 'AWAY') {
+                        <span
+                          class="event-icon"
+                          [class.is-try]="row.event.eventType === 'TRY'"
+                          [class.is-conversion]="row.event.eventType === 'CONVERSION'"
+                          [class.is-penalty]="row.event.eventType === 'PENALTY'"
+                          [class.is-drop]="row.event.eventType === 'DROP'"
+                          [class.is-card]="
+                            row.event.eventType === 'YELLOW' || row.event.eventType === 'RED'
+                          "
+                          [attr.aria-label]="eventTypeLabel(row.event.eventType)"
+                          [attr.title]="eventTypeLabel(row.event.eventType)"
+                        >
+                          @switch (row.event.eventType) {
+                            @case ('TRY') {
+                              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <ellipse cx="12" cy="12" rx="8" ry="5.5" />
+                                <path
+                                  d="M7 12h10M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"
+                                  stroke="var(--color-background)"
+                                  stroke-width="1.4"
+                                  fill="none"
+                                />
+                              </svg>
+                            }
+                            @case ('CONVERSION') {
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                  d="M7 20V8M17 20V8M7 8h10"
+                                  stroke="currentColor"
+                                  stroke-width="1.8"
+                                  stroke-linecap="round"
+                                />
+                                <ellipse cx="12" cy="5.5" rx="3.2" ry="2.2" fill="currentColor" />
+                              </svg>
+                            }
+                            @case ('PENALTY') {
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                  d="M8 20l3.5-9.5L18 7l-2 7.5L8 20z"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linejoin="round"
+                                />
+                                <path
+                                  d="M11.5 10.5L14 4"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linecap="round"
+                                />
+                              </svg>
+                            }
+                            @case ('DROP') {
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                  d="M5 16l5-2 3 4 2-7"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                />
+                                <ellipse cx="16.5" cy="8" rx="3" ry="2" fill="currentColor" />
+                              </svg>
+                            }
+                            @case ('YELLOW') {
+                              <span class="card-pill is-yellow"></span>
+                            }
+                            @case ('RED') {
+                              <span class="card-pill is-red"></span>
+                            }
+                            @default {
+                              <span class="event-dot"></span>
+                            }
+                          }
+                        </span>
+                        <span class="timeline-player" [title]="row.event.playerName">
+                          {{ row.event.playerName }}
+                          @if (pointsLabel(row.event.eventType)) {
+                            <span class="points-pill">{{
+                              pointsLabel(row.event.eventType)
+                            }}</span>
+                          }
+                        </span>
+                      }
+                    </div>
                   </li>
                 }
-              </ul>
-            }
+              }
+            </ul>
+
+            <ul class="timeline-legend">
+              <li>
+                <span class="event-icon is-try" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <ellipse cx="12" cy="12" rx="8" ry="5.5" />
+                  </svg>
+                </span>
+                Essai (+5)
+              </li>
+              <li>
+                <span class="event-icon is-conversion" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M7 20V8M17 20V8M7 8h10"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+                Transformation (+2)
+              </li>
+              <li>
+                <span class="event-icon is-penalty" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M8 20l3.5-9.5L18 7l-2 7.5L8 20z"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                Pénalité (+3)
+              </li>
+              <li>
+                <span class="event-icon is-drop" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M5 16l5-2 3 4 2-7"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+                Drop (+3)
+              </li>
+              <li>
+                <span class="event-icon is-card" aria-hidden="true">
+                  <span class="card-pill is-yellow"></span>
+                </span>
+                Carton jaune
+              </li>
+              <li>
+                <span class="event-icon is-card" aria-hidden="true">
+                  <span class="card-pill is-red"></span>
+                </span>
+                Carton rouge
+              </li>
+            </ul>
           </div>
+        } @else {
           <div class="rounded-lg border border-border/70 bg-card/60 p-5">
-            <h4
-              class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
-            >
-              {{ m.awayTeam.shortName }}
-            </h4>
-            @if (m.awayAbsences.length === 0) {
-              <p class="m-0 text-sm text-muted-foreground">Aucun signalé</p>
-            } @else {
-              <ul class="m-0 list-none space-y-3 p-0">
-                @for (absence of m.awayAbsences; track absence.playerName) {
-                  <li class="border-b border-border/40 pb-3 last:border-0 last:pb-0">
-                    <span class="font-medium">{{ absence.playerName }}</span>
-                    <span
-                      class="ml-2 rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
-                      >{{ absenceLabel(absence.type) }}</span
-                    >
-                    @if (absence.note) {
-                      <p class="mt-1 m-0 text-sm text-muted-foreground">{{ absence.note }}</p>
-                    }
-                  </li>
+            <p class="m-0 text-sm text-muted-foreground">
+              Détail du match en cours de collecte — la chronologie arrive après synchronisation.
+            </p>
+          </div>
+        }
+        }
+
+        @if (sheetTab() === 'compositions' && hasLineups(m)) {
+          <div class="compositions-view">
+            <div class="pitch" aria-label="XV de départ sur le terrain">
+              <div class="pitch-team-bar is-home">
+                <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
+                <span>{{ m.homeTeam.shortName }}</span>
+              </div>
+              <div class="pitch-team-bar is-away">
+                <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
+                <span>{{ m.awayTeam.shortName }}</span>
+              </div>
+
+              <div class="pitch-lines" aria-hidden="true">
+                <div class="line half-way"></div>
+                <div class="line line-10 left"></div>
+                <div class="line line-10 right"></div>
+                <div class="line line-22 left"></div>
+                <div class="line line-22 right"></div>
+                <div class="line in-goal left"></div>
+                <div class="line in-goal right"></div>
+              </div>
+
+              @for (n of pitchNumbers; track n) {
+                @if (pitchPlayer('HOME', n, m); as player) {
+                  <div
+                    class="pitch-player is-home"
+                    [ngStyle]="pitchStyle(n, 'HOME')"
+                    [title]="player.playerName"
+                  >
+                    <span class="pitch-dot">{{ n }}</span>
+                    <span class="pitch-name">{{ player.playerName }}</span>
+                  </div>
                 }
-              </ul>
+                @if (pitchPlayer('AWAY', n, m); as player) {
+                  <div
+                    class="pitch-player is-away"
+                    [ngStyle]="pitchStyle(n, 'AWAY')"
+                    [title]="player.playerName"
+                  >
+                    <span class="pitch-dot">{{ n }}</span>
+                    <span class="pitch-name">{{ player.playerName }}</span>
+                  </div>
+                }
+              }
+            </div>
+
+            <div class="bench-board">
+              @for (side of ['HOME', 'AWAY']; track side) {
+                <div class="bench-col">
+                  <h4 class="bench-title">
+                    <app-team-logo
+                      [shortName]="side === 'HOME' ? m.homeTeam.shortName : m.awayTeam.shortName"
+                      size="sm"
+                    />
+                    Remplaçants
+                    {{ side === 'HOME' ? m.homeTeam.shortName : m.awayTeam.shortName }}
+                  </h4>
+                  @if (bench(side, m).length > 0) {
+                    <ul class="bench-list">
+                      @for (
+                        player of bench(side, m);
+                        track player.jerseyNumber + player.playerName
+                      ) {
+                        <li>
+                          <span class="jersey">{{ player.jerseyNumber }}</span>
+                          <span>{{ player.playerName }}</span>
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <p class="bench-empty">Pas de banc synchronisé</p>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </section>
+    }
+
+    @if (!isFinished(m.status)) {
+      <section class="mb-10">
+        <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">Avant-match</h3>
+
+        <div class="mb-8 grid gap-6 md:grid-cols-2">
+          <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+            <div class="mb-3 flex items-center gap-2">
+              <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
+              <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
+                Forme {{ m.homeTeam.shortName }} · tous matchs
+              </h4>
+            </div>
+            @if (m.homeForm && m.homeForm.played > 0) {
+              <p class="mb-2 flex flex-wrap gap-1.5">
+                @for (r of m.homeForm.results; track $index) {
+                  <span
+                    class="inline-flex h-7 w-7 items-center justify-center rounded border text-xs font-bold"
+                    [class.border-win]="r === 'V'"
+                    [class.bg-win/15]="r === 'V'"
+                    [class.text-win]="r === 'V'"
+                    [class.border-border]="r === 'N'"
+                    [class.text-muted-foreground]="r === 'N'"
+                    [class.border-primary]="r === 'D'"
+                    [class.bg-primary/15]="r === 'D'"
+                    [class.text-primary]="r === 'D'"
+                    >{{ r }}</span
+                  >
+                }
+              </p>
+              <p class="m-0 text-sm text-muted-foreground">{{ recordLabel(m.homeForm) }}</p>
+              @if (formSeasonNote(m.homeForm)) {
+                <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.homeForm) }}</p>
+              }
+            } @else {
+              <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
             }
           </div>
+
+          <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+            <div class="mb-3 flex items-center gap-2">
+              <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
+              <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
+                Forme {{ m.awayTeam.shortName }} · tous matchs
+              </h4>
+            </div>
+            @if (m.awayForm && m.awayForm.played > 0) {
+              <p class="mb-2 flex flex-wrap gap-1.5">
+                @for (r of m.awayForm.results; track $index) {
+                  <span
+                    class="inline-flex h-7 w-7 items-center justify-center rounded border text-xs font-bold"
+                    [class.border-win]="r === 'V'"
+                    [class.bg-win/15]="r === 'V'"
+                    [class.text-win]="r === 'V'"
+                    [class.border-border]="r === 'N'"
+                    [class.text-muted-foreground]="r === 'N'"
+                    [class.border-primary]="r === 'D'"
+                    [class.bg-primary/15]="r === 'D'"
+                    [class.text-primary]="r === 'D'"
+                    >{{ r }}</span
+                  >
+                }
+              </p>
+              <p class="m-0 text-sm text-muted-foreground">{{ recordLabel(m.awayForm) }}</p>
+              @if (formSeasonNote(m.awayForm)) {
+                <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.awayForm) }}</p>
+              }
+            } @else {
+              <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
+            }
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+          <h4
+            class="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+          >
+            Confrontations récentes
+          </h4>
+          @if (m.headToHead.length === 0) {
+            <p class="m-0 text-sm text-muted-foreground">
+              Pas de confrontation récente en base pour ces deux clubs (historique à enrichir).
+            </p>
+          } @else {
+            <ul class="m-0 list-none divide-y divide-border/40 p-0">
+              @for (h of m.headToHead; track h.id) {
+                <li
+                  class="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                >
+                  <span class="text-sm text-muted-foreground tabular-nums">{{
+                    h.kickoffAt | date: 'dd/MM/yyyy'
+                  }}</span>
+                  <span class="inline-flex items-center gap-2">
+                    <app-team-logo [shortName]="h.homeShortName" size="sm" />
+                    <span class="font-display text-xl tracking-wide tabular-nums"
+                      >{{ h.homeScore }} - {{ h.awayScore }}</span
+                    >
+                    <app-team-logo [shortName]="h.awayShortName" size="sm" />
+                  </span>
+                </li>
+              }
+            </ul>
+          }
         </div>
       </section>
+
+      @if (m.homeAbsences.length > 0 || m.awayAbsences.length > 0) {
+        <section>
+          <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">Absents</h3>
+          <div class="grid gap-6 md:grid-cols-2">
+            <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+              <h4
+                class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+              >
+                {{ m.homeTeam.shortName }}
+              </h4>
+              @if (m.homeAbsences.length === 0) {
+                <p class="m-0 text-sm text-muted-foreground">Aucun signalé</p>
+              } @else {
+                <ul class="m-0 list-none space-y-3 p-0">
+                  @for (absence of m.homeAbsences; track absence.playerName) {
+                    <li class="border-b border-border/40 pb-3 last:border-0 last:pb-0">
+                      <span class="font-medium">{{ absence.playerName }}</span>
+                      <span
+                        class="ml-2 rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                        >{{ absenceLabel(absence.type) }}</span
+                      >
+                      @if (absence.note) {
+                        <p class="mt-1 m-0 text-sm text-muted-foreground">{{ absence.note }}</p>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+            <div class="rounded-lg border border-border/70 bg-card/60 p-5">
+              <h4
+                class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+              >
+                {{ m.awayTeam.shortName }}
+              </h4>
+              @if (m.awayAbsences.length === 0) {
+                <p class="m-0 text-sm text-muted-foreground">Aucun signalé</p>
+              } @else {
+                <ul class="m-0 list-none space-y-3 p-0">
+                  @for (absence of m.awayAbsences; track absence.playerName) {
+                    <li class="border-b border-border/40 pb-3 last:border-0 last:pb-0">
+                      <span class="font-medium">{{ absence.playerName }}</span>
+                      <span
+                        class="ml-2 rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+                        >{{ absenceLabel(absence.type) }}</span
+                      >
+                      @if (absence.note) {
+                        <p class="mt-1 m-0 text-sm text-muted-foreground">{{ absence.note }}</p>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </div>
+        </section>
+      }
     }
   }
 </section>

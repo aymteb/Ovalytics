@@ -43,6 +43,23 @@ export interface HeadToHeadMatch {
   awayScore: number;
 }
 
+export interface MatchEvent {
+  periodLabel: string;
+  minuteLabel: string;
+  teamSide: string;
+  eventType: string;
+  playerName: string;
+}
+
+export interface MatchLineupPlayer {
+  teamSide: string;
+  jerseyNumber: number;
+  position: number | null;
+  playerName: string;
+  starter: boolean;
+  captain: boolean;
+}
+
 export interface Match {
   id: number;
   competitionCode: string;
@@ -54,6 +71,8 @@ export interface Match {
   awayTeam: Team;
   homeScore: number | null;
   awayScore: number | null;
+  homeTries: number | null;
+  awayTries: number | null;
   analysis: string | null;
   homeAbsences: Absence[];
   awayAbsences: Absence[];
@@ -62,6 +81,8 @@ export interface Match {
   homeHomeRecord: VenueRecord | null;
   awayAwayRecord: VenueRecord | null;
   headToHead: HeadToHeadMatch[];
+  events: MatchEvent[];
+  lineups: MatchLineupPlayer[];
 }
 
 export interface StandingRow {

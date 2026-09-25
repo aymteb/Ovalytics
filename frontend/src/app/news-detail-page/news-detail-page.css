@@ -1,3 +1,25 @@
 :host {
   display: block;
 }
+
+.article-content p {
+  margin: 0 0 1.5rem;
+}
+
+.article-content p:last-child {
+  margin-bottom: 0;
+}
+
+.article-content p.is-chapeau {
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: #f1f5f9;
+}
+
+@media (min-width: 640px) {
+  .article-content p.is-chapeau {
+    font-size: 1.5rem;
+  }
+}

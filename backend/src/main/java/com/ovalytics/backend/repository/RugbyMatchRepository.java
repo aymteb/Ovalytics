@@ -41,6 +41,16 @@ public interface RugbyMatchRepository extends JpaRepository<RugbyMatch, Long> {
 			join fetch m.homeTeam
 			join fetch m.awayTeam
 			join fetch m.competition
+			where m.status = :status
+			order by m.kickoffAt desc
+			""")
+	List<RugbyMatch> findByStatus(@Param("status") MatchStatus status);
+
+	@Query("""
+			select m from RugbyMatch m
+			join fetch m.homeTeam
+			join fetch m.awayTeam
+			join fetch m.competition
 			where m.competition.code = :code
 			  and m.id = :id
 			""")
@@ -98,6 +108,13 @@ public interface RugbyMatchRepository extends JpaRepository<RugbyMatch, Long> {
 			@Param("since") LocalDateTime since);
 
 	Optional<RugbyMatch> findByFlashscoreEventId(String flashscoreEventId);
+
+	@Query("""
+			select m from RugbyMatch m
+			where m.flashscoreEventId = :eventId
+			order by m.id asc
+			""")
+	List<RugbyMatch> findAllByFlashscoreEventId(@Param("eventId") String flashscoreEventId);
 
 	@Query("""
 			select m from RugbyMatch m
