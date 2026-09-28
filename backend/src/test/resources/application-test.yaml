@@ -42,6 +42,9 @@ ovalytics:
   news-sync:
     enabled: false
     scrape-enabled: false
+  absence-sync:
+    enabled: false
+    scrape-enabled: false
   analysis:
     enabled: false
     catch-up-on-startup: false

@@ -6,12 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AnalysisProperties {
 
 	private boolean enabled = true;
-	private String cron = "0 0 9 * * TUE";
-	private int windowDays = 7;
+	private String cron = "0 0 9 * * *";
 	private boolean catchUpOnStartup = false;
 	private String apiKey = "";
-	private String baseUrl = "https://api.openai.com/v1";
-	private String model = "gpt-4o-mini";
 
 	public boolean isEnabled() {
 		return enabled;
@@ -27,14 +24,6 @@ public class AnalysisProperties {
 
 	public void setCron(String cron) {
 		this.cron = cron;
-	}
-
-	public int getWindowDays() {
-		return windowDays;
-	}
-
-	public void setWindowDays(int windowDays) {
-		this.windowDays = windowDays;
 	}
 
 	public boolean isCatchUpOnStartup() {
@@ -55,21 +44,5 @@ public class AnalysisProperties {
 
 	public boolean hasApiKey() {
 		return apiKey != null && !apiKey.isBlank();
-	}
-
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-
-	public String getModel() {
-		return model;
-	}
-
-	public void setModel(String model) {
-		this.model = model;
 	}
 }

@@ -2,6 +2,27 @@
   display: block;
 }
 
+.news-hero-media {
+  display: flex;
+  justify-content: center;
+}
+
+.news-hero-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 22rem;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .news-hero-image {
+    max-height: 26rem;
+  }
+}
+
 .article-content p {
   margin: 0 0 1.5rem;
 }

@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
@@ -30,20 +30,35 @@ export class ResultsPage implements OnInit {
 
   matchdayGroups = computed(() => this.buildMatchdayGroups(this.matches()));
 
-  constructor(private api: CompetitionApi) {}
+  constructor(
+    private api: CompetitionApi,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.api.getCompetitions().subscribe({
       next: (competitions) => {
         const ordered = this.orderCompetitions(competitions);
         this.competitions.set(ordered);
-        const preferred =
-          ordered.find((c) => c.code === 'TOP14') ?? ordered[0];
-        if (preferred) {
+        this.startPolling();
+        this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+          const fromQuery = params.get('competition');
+          const preferred =
+            ordered.find((c) => c.code === fromQuery) ??
+            ordered.find((c) => c.code === 'TOP14') ??
+            ordered[0];
+          if (!preferred) {
+            return;
+          }
+          if (this.selectedCode() === preferred.code && this.matches().length > 0) {
+            return;
+          }
           this.selectedCode.set(preferred.code);
-          this.startPolling();
+          this.loading.set(true);
+          this.errorMessage.set('');
           this.loadResults(preferred.code);
-        }
+        });
       },
       error: () => {
         this.errorMessage.set('Impossible de charger les compétitions.');
@@ -56,6 +71,11 @@ export class ResultsPage implements OnInit {
     this.selectedCode.set(code);
     this.loading.set(true);
     this.errorMessage.set('');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { competition: code },
+      replaceUrl: true,
+    });
     this.loadResults(code);
   }
 

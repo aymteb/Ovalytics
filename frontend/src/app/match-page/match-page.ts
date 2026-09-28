@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { DatePipe, NgStyle } from '@angular/common';
+import { DatePipe, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { Match, MatchEvent, TeamForm, VenueRecord } from '../models';
@@ -50,7 +50,7 @@ const PITCH_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 @Component({
   selector: 'app-match-page',
-  imports: [DatePipe, NgStyle, RouterLink, TeamLogo],
+  imports: [DatePipe, NgStyle, NgTemplateOutlet, RouterLink, TeamLogo],
   templateUrl: './match-page.html',
   styleUrl: './match-page.css',
 })
@@ -94,6 +94,13 @@ export class MatchPage implements OnInit {
 
   selectSheetTab(tab: 'resume' | 'compositions'): void {
     this.sheetTab.set(tab);
+  }
+
+  backPath(match: Match): string {
+    if (match.status === 'FINISHED' || match.status === 'LIVE') {
+      return '/results';
+    }
+    return '/fixtures';
   }
 
   hasLineups(match: Match): boolean {

@@ -33,17 +33,15 @@
         {{ n.title }}
       </h1>
 
-      <div
-        class="mt-8 mb-12 aspect-video w-[110%] max-w-none -ml-[5%] max-h-[28rem] overflow-hidden rounded-xl border border-white/10 bg-muted"
-      >
-        @if (n.imageUrl) {
+      @if (n.imageUrl) {
+        <div class="news-hero-media mt-8 mb-12">
           <img
             [src]="n.imageUrl"
             [alt]="n.title"
-            class="h-full w-full object-cover object-center"
+            class="news-hero-image"
           />
-        }
-      </div>
+        </div>
+      }
 
       @if (n.body) {
         <div class="article-content mx-auto mt-2 max-w-[700px] text-lg leading-[1.7] text-[#cbd5e1]">

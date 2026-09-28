@@ -30,7 +30,7 @@ public class MatchAnalysisCatchUpRunner implements ApplicationRunner {
 		if (!properties.isEnabled() || !properties.isCatchUpOnStartup()) {
 			return;
 		}
-		int count = matchAnalysisService.generateForUpcomingWindow();
+		int count = matchAnalysisService.generateForMatchDay();
 		log.info("Rattrapage analyses au demarrage: {} match(s)", count);
 	}
 }

@@ -10,11 +10,12 @@
       <span class="uppercase tracking-[0.12em] text-muted-foreground">Championnat</span>
       <select
         class="min-h-10 cursor-pointer rounded border border-border bg-card px-3 font-semibold text-foreground"
-        [value]="selectedCode()"
         (change)="onCompetitionChange($any($event.target).value)"
       >
         @for (c of competitions(); track c.code) {
-          <option [value]="c.code">{{ c.name }} · {{ c.season }}</option>
+          <option [value]="c.code" [selected]="c.code === selectedCode()">
+            {{ c.name }} · {{ c.season }}
+          </option>
         }
       </select>
     </label>
