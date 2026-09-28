@@ -18,6 +18,16 @@ spring:
       initialize-schema: always
     job:
       enabled: false
+  ai:
+    model:
+      chat: google-genai
+    google:
+      genai:
+        api-key: ${OVALYTICS_ANALYSIS_API_KEY:${GEMINI_API_KEY:}}
+        chat:
+          options:
+            model: ${OVALYTICS_ANALYSIS_MODEL:gemini-3.1-flash-lite}
+            temperature: 0.2
 
 ovalytics:
   import:
@@ -62,13 +72,17 @@ ovalytics:
     repo-root: ..
     python-command: python3
     output: data/import/news.csv
+  absence-sync:
+    enabled: false
+    cron: "0 0 8,18 * * *"
+    scrape-enabled: true
+    repo-root: ..
+    python-command: python3
+    output: data/import/absences.csv
   analysis:
     enabled: true
-    cron: "0 0 9 * * TUE"
-    window-days: 7
+    cron: "0 0 9 * * *"
     catch-up-on-startup: false
-    api-key: ${OVALYTICS_ANALYSIS_API_KEY:}
-    base-url: https://api.openai.com/v1
-    model: gpt-4o-mini
+    api-key: ${OVALYTICS_ANALYSIS_API_KEY:${GEMINI_API_KEY:}}
   cors:
     allowed-origins: http://localhost:4200

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ovalytics.backend.domain.PendingTeamRefresh;
 import com.ovalytics.backend.repository.PendingTeamRefreshRepository;
+import com.ovalytics.backend.service.AbsenceSyncScheduler;
 import com.ovalytics.backend.service.CalendarSyncScheduler;
+import com.ovalytics.backend.service.MatchAnalysisLlmClient;
 import com.ovalytics.backend.service.MatchAnalysisService;
 import com.ovalytics.backend.service.MatchSheetSyncService;
 import com.ovalytics.backend.service.NewsSyncScheduler;
@@ -39,7 +41,9 @@ public class JobController {
 	private final TeamRefreshScheduler teamRefreshScheduler;
 	private final CalendarSyncScheduler calendarSyncScheduler;
 	private final NewsSyncScheduler newsSyncScheduler;
+	private final AbsenceSyncScheduler absenceSyncScheduler;
 	private final MatchAnalysisService matchAnalysisService;
+	private final MatchAnalysisLlmClient matchAnalysisLlmClient;
 	private final MatchSheetSyncService matchSheetSyncService;
 
 	public JobController(
@@ -57,7 +61,9 @@ public class JobController {
 			TeamRefreshScheduler teamRefreshScheduler,
 			CalendarSyncScheduler calendarSyncScheduler,
 			NewsSyncScheduler newsSyncScheduler,
+			AbsenceSyncScheduler absenceSyncScheduler,
 			MatchAnalysisService matchAnalysisService,
+			MatchAnalysisLlmClient matchAnalysisLlmClient,
 			MatchSheetSyncService matchSheetSyncService) {
 		this.jobOperator = jobOperator;
 		this.matchImportJob = matchImportJob;
@@ -73,7 +79,9 @@ public class JobController {
 		this.teamRefreshScheduler = teamRefreshScheduler;
 		this.calendarSyncScheduler = calendarSyncScheduler;
 		this.newsSyncScheduler = newsSyncScheduler;
+		this.absenceSyncScheduler = absenceSyncScheduler;
 		this.matchAnalysisService = matchAnalysisService;
+		this.matchAnalysisLlmClient = matchAnalysisLlmClient;
 		this.matchSheetSyncService = matchSheetSyncService;
 	}
 
@@ -133,8 +141,13 @@ public class JobController {
 			matchAnalysisService.generateForMatch(matchId);
 			return ResponseEntity.ok("Analyse generee pour match " + matchId);
 		}
-		int count = matchAnalysisService.generateForUpcomingWindow();
-		return ResponseEntity.ok(count + " analyse(s) generee(s)");
+		int count = matchAnalysisService.generateForMatchDay();
+		return ResponseEntity.ok(count + " analyse(s) jour de match generee(s)");
+	}
+
+	@GetMapping("/analysis-ping")
+	public ResponseEntity<MatchAnalysisLlmClient.PingResult> pingAnalysisLlm() {
+		return ResponseEntity.ok(matchAnalysisLlmClient.ping());
 	}
 
 	@PostMapping("/team-refresh")
@@ -153,6 +166,12 @@ public class JobController {
 	public ResponseEntity<String> runNewsSync() {
 		newsSyncScheduler.runSync();
 		return ResponseEntity.ok("Sync actu lance");
+	}
+
+	@PostMapping("/absence-sync")
+	public ResponseEntity<String> runAbsenceSync() {
+		absenceSyncScheduler.runSync();
+		return ResponseEntity.ok("Sync absences lance");
 	}
 
 	@PostMapping("/match-sheet-sync")

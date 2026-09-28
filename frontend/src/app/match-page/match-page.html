@@ -1,10 +1,19 @@
 <section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
   <p class="mb-6">
-    <a
-      routerLink="/fixtures"
-      class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
-      >← Retour</a
-    >
+    @if (match(); as m) {
+      <a
+        [routerLink]="backPath(m)"
+        [queryParams]="{ competition: m.competitionCode }"
+        class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
+        >← Retour</a
+      >
+    } @else {
+      <a
+        routerLink="/fixtures"
+        class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
+        >← Retour</a
+      >
+    }
   </p>
 
   @if (loading()) {
@@ -80,22 +89,33 @@
       </div>
     </div>
 
-    @if (m.analysis) {
-      <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
-        <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
-          Notre lecture
-        </h3>
-        <p class="m-0 leading-relaxed text-muted-foreground">{{ m.analysis }}</p>
-      </section>
-    } @else if (m.status !== 'FINISHED') {
-      <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
-        <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
-          Notre lecture
-        </h3>
-        <p class="m-0 text-sm text-muted-foreground">
-          Pas encore de prono sur cette affiche — ça arrive.
-        </p>
-      </section>
+    @if (m.status === 'SCHEDULED') {
+      @if (m.analysis) {
+        <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
+          <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
+            Notre lecture
+          </h3>
+          <p class="m-0 leading-relaxed text-muted-foreground">{{ m.analysis }}</p>
+        </section>
+      } @else {
+        <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
+          <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
+            Notre lecture
+          </h3>
+          <p class="m-0 text-sm text-muted-foreground">
+            Pas encore de prono sur cette affiche — ça arrive.
+          </p>
+        </section>
+      }
+
+      @if (hasLineups(m)) {
+        <section class="mb-10">
+          <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">
+            Compositions
+          </h3>
+          <ng-container *ngTemplateOutlet="compositionsPitch; context: { $implicit: m }" />
+        </section>
+      }
     }
 
     @if (isLiveOrFinished(m.status)) {
@@ -454,84 +474,88 @@
         }
 
         @if (sheetTab() === 'compositions' && hasLineups(m)) {
-          <div class="compositions-view">
-            <div class="pitch" aria-label="XV de départ sur le terrain">
-              <div class="pitch-team-bar is-home">
-                <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
-                <span>{{ m.homeTeam.shortName }}</span>
-              </div>
-              <div class="pitch-team-bar is-away">
-                <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
-                <span>{{ m.awayTeam.shortName }}</span>
-              </div>
-
-              <div class="pitch-lines" aria-hidden="true">
-                <div class="line half-way"></div>
-                <div class="line line-10 left"></div>
-                <div class="line line-10 right"></div>
-                <div class="line line-22 left"></div>
-                <div class="line line-22 right"></div>
-                <div class="line in-goal left"></div>
-                <div class="line in-goal right"></div>
-              </div>
-
-              @for (n of pitchNumbers; track n) {
-                @if (pitchPlayer('HOME', n, m); as player) {
-                  <div
-                    class="pitch-player is-home"
-                    [ngStyle]="pitchStyle(n, 'HOME')"
-                    [title]="player.playerName"
-                  >
-                    <span class="pitch-dot">{{ n }}</span>
-                    <span class="pitch-name">{{ player.playerName }}</span>
-                  </div>
-                }
-                @if (pitchPlayer('AWAY', n, m); as player) {
-                  <div
-                    class="pitch-player is-away"
-                    [ngStyle]="pitchStyle(n, 'AWAY')"
-                    [title]="player.playerName"
-                  >
-                    <span class="pitch-dot">{{ n }}</span>
-                    <span class="pitch-name">{{ player.playerName }}</span>
-                  </div>
-                }
-              }
-            </div>
-
-            <div class="bench-board">
-              @for (side of ['HOME', 'AWAY']; track side) {
-                <div class="bench-col">
-                  <h4 class="bench-title">
-                    <app-team-logo
-                      [shortName]="side === 'HOME' ? m.homeTeam.shortName : m.awayTeam.shortName"
-                      size="sm"
-                    />
-                    Remplaçants
-                    {{ side === 'HOME' ? m.homeTeam.shortName : m.awayTeam.shortName }}
-                  </h4>
-                  @if (bench(side, m).length > 0) {
-                    <ul class="bench-list">
-                      @for (
-                        player of bench(side, m);
-                        track player.jerseyNumber + player.playerName
-                      ) {
-                        <li>
-                          <span class="jersey">{{ player.jerseyNumber }}</span>
-                          <span>{{ player.playerName }}</span>
-                        </li>
-                      }
-                    </ul>
-                  } @else {
-                    <p class="bench-empty">Pas de banc synchronisé</p>
-                  }
-                </div>
-              }
-            </div>
-          </div>
+          <ng-container *ngTemplateOutlet="compositionsPitch; context: { $implicit: m }" />
         }
       </section>
     }
+
+    <ng-template #compositionsPitch let-m>
+      <div class="compositions-view">
+        <div class="pitch" aria-label="XV de départ sur le terrain">
+          <div class="pitch-team-bar is-home">
+            <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
+            <span>{{ m.homeTeam.shortName }}</span>
+          </div>
+          <div class="pitch-team-bar is-away">
+            <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
+            <span>{{ m.awayTeam.shortName }}</span>
+          </div>
+
+          <div class="pitch-lines" aria-hidden="true">
+            <div class="line half-way"></div>
+            <div class="line line-10 left"></div>
+            <div class="line line-10 right"></div>
+            <div class="line line-22 left"></div>
+            <div class="line line-22 right"></div>
+            <div class="line in-goal left"></div>
+            <div class="line in-goal right"></div>
+          </div>
+
+          @for (n of pitchNumbers; track n) {
+            @if (pitchPlayer('HOME', n, m); as player) {
+              <div
+                class="pitch-player is-home"
+                [ngStyle]="pitchStyle(n, 'HOME')"
+                [title]="player.playerName"
+              >
+                <span class="pitch-dot">{{ n }}</span>
+                <span class="pitch-name">{{ player.playerName }}</span>
+              </div>
+            }
+            @if (pitchPlayer('AWAY', n, m); as player) {
+              <div
+                class="pitch-player is-away"
+                [ngStyle]="pitchStyle(n, 'AWAY')"
+                [title]="player.playerName"
+              >
+                <span class="pitch-dot">{{ n }}</span>
+                <span class="pitch-name">{{ player.playerName }}</span>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="bench-board">
+          @for (side of ['HOME', 'AWAY']; track side) {
+            <div class="bench-col">
+              <h4 class="bench-title">
+                <app-team-logo
+                  [shortName]="side === 'HOME' ? m.homeTeam.shortName : m.awayTeam.shortName"
+                  size="sm"
+                />
+                Remplaçants
+                {{ side === 'HOME' ? m.homeTeam.shortName : m.awayTeam.shortName }}
+              </h4>
+              @if (bench(side, m).length > 0) {
+                <ul class="bench-list">
+                  @for (
+                    player of bench(side, m);
+                    track player.jerseyNumber + player.playerName
+                  ) {
+                    <li>
+                      <span class="jersey">{{ player.jerseyNumber }}</span>
+                      <span>{{ player.playerName }}</span>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="bench-empty">Pas de banc synchronisé</p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </ng-template>
 
     @if (!isFinished(m.status)) {
       <section class="mb-10">

@@ -22,12 +22,12 @@ public class MatchAnalysisScheduler {
 		this.matchAnalysisService = matchAnalysisService;
 	}
 
-	@Scheduled(cron = "${ovalytics.analysis.cron:0 0 9 * * TUE}", zone = "Europe/Paris")
-	public void runWeeklyWindow() {
+	@Scheduled(cron = "${ovalytics.analysis.cron:0 0 9 * * *}", zone = "Europe/Paris")
+	public void runMatchDay() {
 		if (!properties.isEnabled()) {
 			return;
 		}
-		int count = matchAnalysisService.generateForUpcomingWindow();
-		log.info("Job analyse mardi: {} match(s)", count);
+		int count = matchAnalysisService.generateForMatchDay();
+		log.info("Job analyse jour de match: {} match(s)", count);
 	}
 }

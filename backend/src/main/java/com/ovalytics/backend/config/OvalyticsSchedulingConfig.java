@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 		TeamRefreshProperties.class,
 		CalendarSyncProperties.class,
 		NewsSyncProperties.class,
+		AbsenceSyncProperties.class,
 		AnalysisProperties.class,
 		CorsProperties.class
 })

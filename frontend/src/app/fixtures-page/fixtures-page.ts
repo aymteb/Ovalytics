@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match } from '../models';
 import { TeamLogo } from '../team-logo/team-logo';
@@ -37,17 +37,26 @@ export class FixturesPage implements OnInit {
     this.buildMatchdayGroups(this.competitionMatches()),
   );
 
-  constructor(private api: CompetitionApi) {}
+  constructor(
+    private api: CompetitionApi,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
     this.api.getCompetitions().subscribe({
       next: (competitions) => {
         const ordered = this.orderCompetitions(competitions);
         this.competitions.set(ordered);
+        const fromQuery = this.route.snapshot.queryParamMap.get('competition');
         const preferred =
-          ordered.find((c) => c.code === 'TOP14') ?? ordered[0];
+          ordered.find((c) => c.code === fromQuery) ??
+          ordered.find((c) => c.code === 'TOP14') ??
+          ordered[0];
         if (preferred) {
           this.selectedCode.set(preferred.code);
+          if (fromQuery && ordered.some((c) => c.code === fromQuery)) {
+            this.view.set('competition');
+          }
         }
         this.loadMatches();
       },

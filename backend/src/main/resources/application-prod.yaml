@@ -5,6 +5,16 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
+  ai:
+    model:
+      chat: google-genai
+    google:
+      genai:
+        api-key: ${OVALYTICS_ANALYSIS_API_KEY:${GEMINI_API_KEY:}}
+        chat:
+          options:
+            model: ${OVALYTICS_ANALYSIS_MODEL:gemini-3.1-flash-lite}
+            temperature: 0.2
 
 ovalytics:
   import:
@@ -43,9 +53,16 @@ ovalytics:
     repo-root: /app
     python-command: python3
     output: /import/news.csv
+  absence-sync:
+    enabled: true
+    scrape-enabled: true
+    cron: "0 0 8,18 * * *"
+    repo-root: /app
+    python-command: python3
+    output: /import/absences.csv
   analysis:
     enabled: true
     catch-up-on-startup: false
-    api-key: ${OVALYTICS_ANALYSIS_API_KEY:}
+    api-key: ${OVALYTICS_ANALYSIS_API_KEY:${GEMINI_API_KEY:}}
   cors:
     allowed-origins: ${OVALYTICS_CORS_ORIGINS:*}
