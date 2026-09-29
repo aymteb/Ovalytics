@@ -37,6 +37,7 @@ import com.ovalytics.backend.web.dto.AbsenceResponse;
 import com.ovalytics.backend.web.dto.ClubJiffSummaryResponse;
 import com.ovalytics.backend.web.dto.ClubMercatoResponse;
 import com.ovalytics.backend.web.dto.CompetitionResponse;
+import com.ovalytics.backend.web.dto.FormMatchResponse;
 import com.ovalytics.backend.web.dto.HeadToHeadMatchResponse;
 import com.ovalytics.backend.web.dto.MatchEventResponse;
 import com.ovalytics.backend.web.dto.MatchLineupResponse;
@@ -55,7 +56,7 @@ import com.ovalytics.backend.web.dto.VenueRecordResponse;
 public class CompetitionQueryService {
 
 	private static final int FORM_SIZE = 5;
-	private static final int HEAD_TO_HEAD_SIZE = 10;
+	private static final int HEAD_TO_HEAD_SIZE = 5;
 
 	private final CompetitionRepository competitionRepository;
 	private final TeamRepository teamRepository;
@@ -169,8 +170,8 @@ public class CompetitionQueryService {
 				toAbsenceResponses(absenceRepository.findByTeamId(awayId)),
 				buildForm(finished, homeId, before, seasonStart),
 				buildForm(finished, awayId, before, seasonStart),
-				buildVenueRecord(finished, homeId, true, before),
-				buildVenueRecord(finished, awayId, false, before),
+				buildVenueRecord(finished, homeId, true, before, seasonStart),
+				buildVenueRecord(finished, awayId, false, before, seasonStart),
 				buildHeadToHead(finished, homeId, awayId, before),
 				toEventResponses(match.getId()),
 				toLineupResponses(match.getId()));
@@ -426,12 +427,21 @@ public class CompetitionQueryService {
 		teamMatches.addAll(previousSeason);
 
 		List<String> results = new ArrayList<>();
+		List<FormMatchResponse> matches = new ArrayList<>();
 		int won = 0;
 		int drawn = 0;
 		int lost = 0;
 		for (RugbyMatch m : teamMatches) {
 			String result = resultForTeam(m, teamId);
 			results.add(result);
+			matches.add(new FormMatchResponse(
+					m.getId(),
+					m.getKickoffAt(),
+					m.getHomeTeam().getShortName(),
+					m.getAwayTeam().getShortName(),
+					m.getHomeScore(),
+					m.getAwayScore(),
+					result));
 			if ("V".equals(result)) {
 				won++;
 			} else if ("N".equals(result)) {
@@ -446,16 +456,19 @@ public class CompetitionQueryService {
 				won,
 				drawn,
 				lost,
-				previousSeason.size());
+				previousSeason.size(),
+				matches);
 	}
 
 	private VenueRecordResponse buildVenueRecord(
 			List<RugbyMatch> finished,
 			Long teamId,
 			boolean atHome,
-			LocalDateTime before) {
+			LocalDateTime before,
+			LocalDateTime seasonStart) {
 		List<RugbyMatch> venueMatches = finished.stream()
 				.filter(m -> m.getKickoffAt().isBefore(before))
+				.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
 				.filter(m -> atHome
 						? m.getHomeTeam().getId().equals(teamId)
 						: m.getAwayTeam().getId().equals(teamId))

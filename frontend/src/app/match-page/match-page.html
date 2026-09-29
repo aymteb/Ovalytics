@@ -90,23 +90,19 @@
     </div>
 
     @if (m.status === 'SCHEDULED') {
-      @if (m.analysis) {
-        <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
-          <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
-            Notre lecture
-          </h3>
+      <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
+        <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
+          Avant-match
+        </h3>
+        @if (showAnalysisText(m)) {
           <p class="m-0 leading-relaxed text-muted-foreground">{{ m.analysis }}</p>
-        </section>
-      } @else {
-        <section class="mb-10 rounded-lg border border-border/70 bg-card/60 p-6">
-          <h3 class="mb-3 font-display text-2xl uppercase tracking-wide text-foreground">
-            Notre lecture
-          </h3>
-          <p class="m-0 text-sm text-muted-foreground">
-            Pas encore de prono sur cette affiche — ça arrive.
+        } @else {
+          <p class="m-0 text-sm leading-relaxed text-muted-foreground">
+            On attend le jour du match et les compositions. C’est à ce moment-là qu’on se
+            mouille : favori et scénario de la rencontre.
           </p>
-        </section>
-      }
+        }
+      </section>
 
       @if (hasLineups(m)) {
         <section class="mb-10">
@@ -559,14 +555,14 @@
 
     @if (!isFinished(m.status)) {
       <section class="mb-10">
-        <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">Avant-match</h3>
+        <h3 class="mb-6 font-display text-2xl uppercase tracking-wide text-foreground">État de forme</h3>
 
         <div class="mb-8 grid gap-6 md:grid-cols-2">
           <div class="rounded-lg border border-border/70 bg-card/60 p-5">
             <div class="mb-3 flex items-center gap-2">
               <app-team-logo [shortName]="m.homeTeam.shortName" size="sm" />
               <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
-                Forme {{ m.homeTeam.shortName }} · tous matchs
+                Forme {{ m.homeTeam.shortName }}
               </h4>
             </div>
             @if (m.homeForm && m.homeForm.played > 0) {
@@ -590,6 +586,26 @@
               @if (formSeasonNote(m.homeForm)) {
                 <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.homeForm) }}</p>
               }
+              @if (m.homeForm.matches.length) {
+                <ul class="mt-4 mb-0 list-none divide-y divide-border/40 p-0">
+                  @for (row of m.homeForm.matches; track row.id) {
+                    <li
+                      class="flex flex-wrap items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                    >
+                      <span class="text-sm text-muted-foreground tabular-nums">{{
+                        row.kickoffAt | date: 'dd/MM/yyyy'
+                      }}</span>
+                      <span class="inline-flex items-center gap-2">
+                        <app-team-logo [shortName]="row.homeShortName" size="sm" />
+                        <span class="font-display text-lg tracking-wide tabular-nums"
+                          >{{ row.homeScore }} - {{ row.awayScore }}</span
+                        >
+                        <app-team-logo [shortName]="row.awayShortName" size="sm" />
+                      </span>
+                    </li>
+                  }
+                </ul>
+              }
             } @else {
               <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
             }
@@ -599,7 +615,7 @@
             <div class="mb-3 flex items-center gap-2">
               <app-team-logo [shortName]="m.awayTeam.shortName" size="sm" />
               <h4 class="m-0 text-sm font-semibold uppercase tracking-wide">
-                Forme {{ m.awayTeam.shortName }} · tous matchs
+                Forme {{ m.awayTeam.shortName }}
               </h4>
             </div>
             @if (m.awayForm && m.awayForm.played > 0) {
@@ -623,6 +639,26 @@
               @if (formSeasonNote(m.awayForm)) {
                 <p class="mt-1 m-0 text-sm text-muted-foreground">{{ formSeasonNote(m.awayForm) }}</p>
               }
+              @if (m.awayForm.matches.length) {
+                <ul class="mt-4 mb-0 list-none divide-y divide-border/40 p-0">
+                  @for (row of m.awayForm.matches; track row.id) {
+                    <li
+                      class="flex flex-wrap items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                    >
+                      <span class="text-sm text-muted-foreground tabular-nums">{{
+                        row.kickoffAt | date: 'dd/MM/yyyy'
+                      }}</span>
+                      <span class="inline-flex items-center gap-2">
+                        <app-team-logo [shortName]="row.homeShortName" size="sm" />
+                        <span class="font-display text-lg tracking-wide tabular-nums"
+                          >{{ row.homeScore }} - {{ row.awayScore }}</span
+                        >
+                        <app-team-logo [shortName]="row.awayShortName" size="sm" />
+                      </span>
+                    </li>
+                  }
+                </ul>
+              }
             } @else {
               <p class="m-0 text-sm text-muted-foreground">Pas encore de matchs joués cette saison</p>
             }
@@ -633,11 +669,11 @@
           <h4
             class="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
           >
-            Confrontations récentes
+            Confrontations directes
           </h4>
           @if (m.headToHead.length === 0) {
             <p class="m-0 text-sm text-muted-foreground">
-              Pas de confrontation récente en base pour ces deux clubs (historique à enrichir).
+              Aucune confrontation directe pour le moment.
             </p>
           } @else {
             <ul class="m-0 list-none divide-y divide-border/40 p-0">

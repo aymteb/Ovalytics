@@ -12,6 +12,7 @@ import com.ovalytics.backend.domain.MatchEventType;
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.repository.MatchEventRepository;
 import com.ovalytics.backend.web.dto.AbsenceResponse;
+import com.ovalytics.backend.web.dto.FormMatchResponse;
 import com.ovalytics.backend.web.dto.HeadToHeadMatchResponse;
 import com.ovalytics.backend.web.dto.MatchLineupResponse;
 import com.ovalytics.backend.web.dto.MatchResponse;
@@ -190,6 +191,17 @@ public class MatchAnalysisFactsBuilder {
 			sb.append(", dont ").append(form.fromPreviousSeason()).append(" saison derniere");
 		}
 		sb.append(").\n");
+		if (form.matches() == null || form.matches().isEmpty()) {
+			return;
+		}
+		for (FormMatchResponse row : form.matches()) {
+			sb.append("- ")
+					.append(row.kickoffAt().toLocalDate()).append(" ")
+					.append(row.homeShortName()).append(" ")
+					.append(row.homeScore()).append("-").append(row.awayScore())
+					.append(" ").append(row.awayShortName())
+					.append(" (").append(row.result()).append(")\n");
+		}
 	}
 
 	private static void appendVenue(StringBuilder sb, String label, VenueRecordResponse record) {

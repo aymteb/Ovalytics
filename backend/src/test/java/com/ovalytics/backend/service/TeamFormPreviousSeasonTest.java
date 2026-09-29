@@ -51,6 +51,12 @@ class TeamFormPreviousSeasonTest {
 		assertThat(homeForm.played()).isEqualTo(5);
 		assertThat(homeForm.fromPreviousSeason()).isEqualTo(5);
 		assertThat(homeForm.results()).hasSize(5);
+		assertThat(homeForm.matches()).hasSize(5);
+		assertThat(homeForm.matches().get(0).homeShortName()).isNotBlank();
+		assertThat(homeForm.matches().get(0).awayShortName()).isNotBlank();
+		assertThat(homeForm.matches().get(0).homeScore()).isNotNull();
+		assertThat(homeForm.matches().get(0).awayScore()).isNotNull();
+		assertThat(homeForm.matches().get(0).result()).isIn("V", "N", "D");
 	}
 
 	@Test

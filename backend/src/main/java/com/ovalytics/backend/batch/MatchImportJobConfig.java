@@ -81,4 +81,63 @@ public class MatchImportJobConfig {
 				.start(matchImportStep)
 				.build();
 	}
+
+	@Bean
+	public FlatFileItemReader<MatchCsvRow> matchH2hCsvReader(
+			MatchImportProperties properties,
+			ResourceLoader resourceLoader) {
+		return new FlatFileItemReaderBuilder<MatchCsvRow>()
+				.name("matchH2hCsvReader")
+				.resource(MatchImportResource.resolve(
+						properties.getH2hFile(),
+						resourceLoader,
+						"data/import/top14-h2h.csv"))
+				.linesToSkip(1)
+				.delimited()
+				.names(
+						"competitionCode",
+						"homeShortName",
+						"awayShortName",
+						"matchday",
+						"kickoffAt",
+						"status",
+						"homeScore",
+						"awayScore",
+						"homeTries",
+						"awayTries")
+				.fieldSetMapper(fields -> new MatchCsvRow(
+						fields.readString("competitionCode"),
+						fields.readString("homeShortName"),
+						fields.readString("awayShortName"),
+						fields.readInt("matchday"),
+						fields.readString("kickoffAt"),
+						fields.readString("status"),
+						fields.readString("homeScore"),
+						fields.readString("awayScore"),
+						fields.readString("homeTries"),
+						fields.readString("awayTries")))
+				.build();
+	}
+
+	@Bean
+	public Step matchH2hImportStep(
+			JobRepository jobRepository,
+			PlatformTransactionManager transactionManager,
+			FlatFileItemReader<MatchCsvRow> matchH2hCsvReader,
+			MatchImportProcessor matchImportProcessor,
+			ItemWriter<RugbyMatch> matchWriter) {
+		return new StepBuilder("matchH2hImportStep", jobRepository)
+				.<MatchCsvRow, RugbyMatch>chunk(20, transactionManager)
+				.reader(matchH2hCsvReader)
+				.processor(matchImportProcessor)
+				.writer(matchWriter)
+				.build();
+	}
+
+	@Bean
+	public Job matchH2hImportJob(JobRepository jobRepository, Step matchH2hImportStep) {
+		return new JobBuilder("matchH2hImportJob", jobRepository)
+				.start(matchH2hImportStep)
+				.build();
+	}
 }

@@ -18,6 +18,16 @@ export interface Absence {
   note: string | null;
 }
 
+export interface FormMatch {
+  id: number;
+  kickoffAt: string;
+  homeShortName: string;
+  awayShortName: string;
+  homeScore: number;
+  awayScore: number;
+  result: string;
+}
+
 export interface TeamForm {
   results: string[];
   played: number;
@@ -25,6 +35,7 @@ export interface TeamForm {
   drawn: number;
   lost: number;
   fromPreviousSeason: number;
+  matches: FormMatch[];
 }
 
 export interface VenueRecord {

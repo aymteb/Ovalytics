@@ -151,6 +151,20 @@ export class MatchPage implements OnInit {
     return `dont ${form.fromPreviousSeason} saison dernière`;
   }
 
+  isMatchDay(match: Match): boolean {
+    const kickoff = new Date(match.kickoffAt);
+    const today = new Date();
+    return (
+      kickoff.getFullYear() === today.getFullYear() &&
+      kickoff.getMonth() === today.getMonth() &&
+      kickoff.getDate() === today.getDate()
+    );
+  }
+
+  showAnalysisText(match: Match): boolean {
+    return this.isMatchDay(match) && !!match.analysis;
+  }
+
   eventTypeLabel(type: string): string {
     if (type === 'TRY') {
       return 'Essai';

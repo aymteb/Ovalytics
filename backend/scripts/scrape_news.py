@@ -185,6 +185,19 @@ def looks_like_image_url(url: str) -> bool:
     return bool(re.search(r"\.(jpe?g|png|webp|gif)(\?|$)", url, re.I))
 
 
+def prefer_large_image(url: str) -> str:
+    if not url:
+        return url
+    upgraded = re.sub(
+        r"(/images/view/[^/]+/)standard/",
+        r"\1large/",
+        url,
+        count=1,
+        flags=re.I,
+    )
+    return upgraded
+
+
 def extract_image_from_rss_item(item: ET.Element) -> str:
     for enc in item.findall("enclosure"):
         url = (enc.get("url") or "").strip()
@@ -449,6 +462,7 @@ def enrich_with_body(candidate: dict, source: dict) -> dict | None:
         return None
 
     image = candidate.get("imageUrl") or extract_image_from_html(page)
+    image = prefer_large_image(image)
     summary = body.split("\n\n", 1)[0][:400]
 
     return {

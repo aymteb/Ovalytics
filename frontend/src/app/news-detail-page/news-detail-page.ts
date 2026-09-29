@@ -37,6 +37,16 @@ export class NewsDetailPage implements OnInit {
       .filter((part) => part.length > 0);
   }
 
+  displayImageUrl(url: string): string {
+    if (!url) {
+      return url;
+    }
+    return url.replace(
+      /\/images\/view\/([^/]+)\/standard\//i,
+      '/images/view/$1/large/',
+    );
+  }
+
   constructor(
     private route: ActivatedRoute,
     private api: CompetitionApi,

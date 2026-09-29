@@ -36,7 +36,7 @@
       @if (n.imageUrl) {
         <div class="news-hero-media mt-8 mb-12">
           <img
-            [src]="n.imageUrl"
+            [src]="displayImageUrl(n.imageUrl)"
             [alt]="n.title"
             class="news-hero-image"
           />
