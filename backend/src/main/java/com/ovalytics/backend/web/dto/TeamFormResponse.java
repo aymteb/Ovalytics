@@ -8,5 +8,6 @@ public record TeamFormResponse(
 		int won,
 		int drawn,
 		int lost,
-		int fromPreviousSeason) {
+		int fromPreviousSeason,
+		List<FormMatchResponse> matches) {
 }

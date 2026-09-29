@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MatchImportProperties {
 
 	private String file = "";
+	private String h2hFile = "";
 
 	public String getFile() {
 		return file;
@@ -13,5 +14,13 @@ public class MatchImportProperties {
 
 	public void setFile(String file) {
 		this.file = file;
+	}
+
+	public String getH2hFile() {
+		return h2hFile;
+	}
+
+	public void setH2hFile(String h2hFile) {
+		this.h2hFile = h2hFile;
 	}
 }

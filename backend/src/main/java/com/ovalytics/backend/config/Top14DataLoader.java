@@ -188,13 +188,7 @@ public class Top14DataLoader implements ApplicationRunner {
 	}
 
 	private void cleanupDemoData(Competition top14) {
-		LocalDateTime seasonStart = top14.getSeasonStart().atStartOfDay();
 		for (RugbyMatch match : rugbyMatchRepository.findByCompetitionCode(top14.getCode())) {
-			if (match.getKickoffAt().isBefore(seasonStart)) {
-				matchAppearanceRepository.deleteByMatchId(match.getId());
-				rugbyMatchRepository.delete(match);
-				continue;
-			}
 			if (match.getAnalysis() != null && isDemoAnalysis(match.getAnalysis())) {
 				match.setAnalysis(null);
 			}

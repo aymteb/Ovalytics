@@ -32,12 +32,14 @@ spring:
 ovalytics:
   import:
     file: ../data/import/top14-matches.csv
+    h2h-file: ../data/import/top14-h2h.csv
     news:
       file: ../data/import/news.csv
     transfer:
       file: ../data/import/transfers.csv
     prod2:
       file: ../data/import/prod2-matches.csv
+      h2h-file: ../data/import/prod2-h2h.csv
     squad:
       file: ../data/import/squads.csv
     player-profile:

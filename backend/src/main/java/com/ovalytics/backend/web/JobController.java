@@ -29,7 +29,9 @@ public class JobController {
 
 	private final JobOperator jobOperator;
 	private final Job matchImportJob;
+	private final Job matchH2hImportJob;
 	private final Job prod2MatchImportJob;
+	private final Job prod2MatchH2hImportJob;
 	private final Job newsImportJob;
 	private final Job transferImportJob;
 	private final Job playerImportJob;
@@ -49,7 +51,9 @@ public class JobController {
 	public JobController(
 			JobOperator jobOperator,
 			Job matchImportJob,
+			Job matchH2hImportJob,
 			Job prod2MatchImportJob,
+			Job prod2MatchH2hImportJob,
 			Job newsImportJob,
 			Job transferImportJob,
 			Job playerImportJob,
@@ -67,7 +71,9 @@ public class JobController {
 			MatchSheetSyncService matchSheetSyncService) {
 		this.jobOperator = jobOperator;
 		this.matchImportJob = matchImportJob;
+		this.matchH2hImportJob = matchH2hImportJob;
 		this.prod2MatchImportJob = prod2MatchImportJob;
+		this.prod2MatchH2hImportJob = prod2MatchH2hImportJob;
 		this.newsImportJob = newsImportJob;
 		this.transferImportJob = transferImportJob;
 		this.playerImportJob = playerImportJob;
@@ -97,6 +103,13 @@ public class JobController {
 	@PostMapping("/match-import")
 	public ResponseEntity<String> runMatchImport() throws Exception {
 		return startJob(matchImportJob);
+	}
+
+	@PostMapping("/match-import/h2h")
+	public ResponseEntity<String> runMatchH2hImport() throws Exception {
+		ResponseEntity<String> top14 = startJob(matchH2hImportJob);
+		ResponseEntity<String> prod2 = startJob(prod2MatchH2hImportJob);
+		return ResponseEntity.ok(top14.getBody() + " | " + prod2.getBody());
 	}
 
 	@PostMapping("/match-import/prod2")

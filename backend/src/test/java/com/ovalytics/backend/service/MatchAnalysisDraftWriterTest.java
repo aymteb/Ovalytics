@@ -51,8 +51,8 @@ class MatchAnalysisDraftWriterTest {
 						new AbsenceResponse("Rati Zazadze", "INJURED", null),
 						new AbsenceResponse("Wendemi Viellard", "INJURED", null)),
 				List.of(),
-				new TeamFormResponse(List.of("D", "D", "D", "V", "V"), 5, 2, 0, 3, 2),
-				new TeamFormResponse(List.of("V", "D", "V", "V", "D"), 5, 3, 0, 2, 2),
+				new TeamFormResponse(List.of("D", "D", "D", "V", "V"), 5, 2, 0, 3, 2, List.of()),
+				new TeamFormResponse(List.of("V", "D", "V", "V", "D"), 5, 3, 0, 2, 2, List.of()),
 				new VenueRecordResponse(18, 14, 2, 2),
 				new VenueRecordResponse(20, 1, 1, 18),
 				List.of(new HeadToHeadMatchResponse(
@@ -106,8 +106,8 @@ class MatchAnalysisDraftWriterTest {
 				null,
 				List.of(new AbsenceResponse("Maël Castel", "INJURED", null)),
 				List.of(),
-				new TeamFormResponse(List.of("V", "V", "D"), 3, 2, 0, 1, 0),
-				new TeamFormResponse(List.of("V", "D", "V"), 3, 2, 0, 1, 0),
+				new TeamFormResponse(List.of("V", "V", "D"), 3, 2, 0, 1, 0, List.of()),
+				new TeamFormResponse(List.of("V", "D", "V"), 3, 2, 0, 1, 0, List.of()),
 				new VenueRecordResponse(10, 7, 1, 2),
 				new VenueRecordResponse(10, 3, 1, 6),
 				List.of(new HeadToHeadMatchResponse(
