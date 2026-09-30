@@ -12,6 +12,7 @@ public class CalendarSyncProperties {
 	private String pythonCommand = "python3";
 	private String top14Output = "data/import/top14-matches.csv";
 	private String prod2Output = "data/import/prod2-matches.csv";
+	private String nationaleOutput = "data/import/nationale-matches.csv";
 
 	public boolean isEnabled() {
 		return enabled;
@@ -67,5 +68,13 @@ public class CalendarSyncProperties {
 
 	public void setProd2Output(String prod2Output) {
 		this.prod2Output = prod2Output;
+	}
+
+	public String getNationaleOutput() {
+		return nationaleOutput;
+	}
+
+	public void setNationaleOutput(String nationaleOutput) {
+		this.nationaleOutput = nationaleOutput;
 	}
 }

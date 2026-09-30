@@ -40,7 +40,7 @@ public class AbsenceSyncScheduler {
 	}
 
 	public void runSync() {
-		log.info("Sync absences Top 14 + Pro D2");
+		log.info("Sync absences");
 		boolean scraped = absenceScraperService.scrape();
 		if (!scraped && properties.isScrapeEnabled()) {
 			log.warn("Scrape absences en echec, import ignore");

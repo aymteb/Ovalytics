@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match, StandingRow } from '../models';
+import { competitionSortRank } from '../competition-display';
 import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
@@ -93,14 +94,10 @@ export class StandingsPage implements OnInit {
   }
 
   private orderCompetitions(competitions: Competition[]): Competition[] {
-    return [...competitions].sort((a, b) => {
-      if (a.code === 'TOP14') {
-        return -1;
-      }
-      if (b.code === 'TOP14') {
-        return 1;
-      }
-      return a.name.localeCompare(b.name, 'fr');
-    });
+    return [...competitions].sort(
+      (a, b) =>
+        competitionSortRank(a.code) - competitionSortRank(b.code) ||
+        a.name.localeCompare(b.name, 'fr'),
+    );
   }
 }

@@ -26,7 +26,86 @@ public class CalendarScraperService {
 			return false;
 		}
 		return scrapeCompetition("TOP14", properties.getTop14Output())
-				&& scrapeCompetition("PROD2", properties.getProd2Output());
+				&& scrapeCompetition("PROD2", properties.getProd2Output())
+				&& scrapeNationale(properties.getNationaleOutput())
+				&& scrapeForeignCalendars();
+	}
+
+	private boolean scrapeForeignCalendars() {
+		Path repoRoot = Path.of(properties.getRepoRoot()).toAbsolutePath().normalize();
+		Path script = repoRoot.resolve("scripts/scrape_allrugby_calendar.py");
+		ProcessBuilder processBuilder = new ProcessBuilder(
+				properties.getPythonCommand(),
+				script.toString(),
+				"--competition",
+				"ALL");
+		processBuilder.directory(repoRoot.toFile());
+		processBuilder.redirectErrorStream(true);
+
+		try {
+			log.info("Scrape calendriers etrangers (ERCC, ERCH, URC, PREM, INT)");
+			Process process = processBuilder.start();
+			String outputLog = new String(process.getInputStream().readAllBytes());
+			if (!outputLog.isBlank()) {
+				log.info(outputLog.trim());
+			}
+			boolean finished = process.waitFor(45, TimeUnit.MINUTES);
+			if (!finished) {
+				process.destroyForcibly();
+				log.error("Scrape calendriers etrangers interrompu (timeout)");
+				return false;
+			}
+			if (process.exitValue() != 0) {
+				log.error("Scrape calendriers etrangers en echec (code {})", process.exitValue());
+				return false;
+			}
+			return true;
+		} catch (IOException | InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			log.error("Scrape calendriers etrangers impossible: {}", ex.getMessage());
+			return false;
+		}
+	}
+
+	private boolean scrapeNationale(String outputRelative) {
+		Path repoRoot = Path.of(properties.getRepoRoot()).toAbsolutePath().normalize();
+		Path script = repoRoot.resolve("scripts/scrape_nationale.py");
+		Path output = Path.of(outputRelative);
+		if (!output.isAbsolute()) {
+			output = repoRoot.resolve(outputRelative).normalize();
+		}
+
+		ProcessBuilder processBuilder = new ProcessBuilder(
+				properties.getPythonCommand(),
+				script.toString(),
+				"--output",
+				output.toString());
+		processBuilder.directory(repoRoot.toFile());
+		processBuilder.redirectErrorStream(true);
+
+		try {
+			log.info("Scrape calendrier NAT: {}", output);
+			Process process = processBuilder.start();
+			String outputLog = new String(process.getInputStream().readAllBytes());
+			if (!outputLog.isBlank()) {
+				log.info(outputLog.trim());
+			}
+			boolean finished = process.waitFor(45, TimeUnit.MINUTES);
+			if (!finished) {
+				process.destroyForcibly();
+				log.error("Scrape calendrier NAT interrompu (timeout)");
+				return false;
+			}
+			if (process.exitValue() != 0) {
+				log.error("Scrape calendrier NAT en echec (code {})", process.exitValue());
+				return false;
+			}
+			return true;
+		} catch (IOException | InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			log.error("Scrape calendrier NAT impossible: {}", ex.getMessage());
+			return false;
+		}
 	}
 
 	private boolean scrapeCompetition(String competition, String outputRelative) {

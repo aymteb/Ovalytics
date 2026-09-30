@@ -54,12 +54,31 @@ public class MatchImportProcessor implements ItemProcessor<MatchCsvRow, RugbyMat
 					enqueueIfFinished(previousStatus, existing);
 					return existing;
 				})
-				.orElseGet(() -> {
-					RugbyMatch created = createMatch(
-							row, kickoffAt, status, homeScore, awayScore, homeTries, awayTries);
-					enqueueIfFinished(MatchStatus.SCHEDULED, created);
-					return created;
-				});
+				.orElseGet(() -> createIfAllowed(
+						row, kickoffAt, status, homeScore, awayScore, homeTries, awayTries));
+	}
+
+	private RugbyMatch createIfAllowed(
+			MatchCsvRow row,
+			LocalDateTime kickoffAt,
+			MatchStatus status,
+			Integer homeScore,
+			Integer awayScore,
+			Integer homeTries,
+			Integer awayTries) {
+		if (row.matchday() > 35) {
+			Competition competition = competitionRepository.findByCode(row.competitionCode())
+					.orElse(null);
+			if (competition != null
+					&& competition.getSeasonStart() != null
+					&& !kickoffAt.toLocalDate().isBefore(competition.getSeasonStart())) {
+				return null;
+			}
+		}
+		RugbyMatch created = createMatch(
+				row, kickoffAt, status, homeScore, awayScore, homeTries, awayTries);
+		enqueueIfFinished(MatchStatus.SCHEDULED, created);
+		return created;
 	}
 
 	private java.util.Optional<RugbyMatch> findExisting(MatchCsvRow row, LocalDateTime kickoffAt) {

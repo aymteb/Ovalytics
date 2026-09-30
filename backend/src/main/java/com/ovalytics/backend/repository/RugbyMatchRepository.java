@@ -159,4 +159,10 @@ public interface RugbyMatchRepository extends JpaRepository<RugbyMatch, Long> {
 			@Param("status") MatchStatus status,
 			@Param("from") LocalDateTime from,
 			@Param("to") LocalDateTime to);
+
+	@Query("""
+			select count(m) from RugbyMatch m
+			where m.homeTeam.id = :teamId or m.awayTeam.id = :teamId
+			""")
+	long countByTeamId(@Param("teamId") Long teamId);
 }

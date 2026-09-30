@@ -9,14 +9,25 @@ import time
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 USER_AGENT = "OvalyticsScraper/1.0 (+https://github.com/)"
 MIN_BODY_CHARS = 700
 FETCH_DELAY_SEC = 0.35
 MAX_PER_SOURCE = 12
+PARIS = ZoneInfo("Europe/Paris")
+URL_DATE_RE = re.compile(r"/(\d{4})/(\d{2})/(\d{2})/")
+COMPOSITION_TITLE_RE = re.compile(
+    r"(?:"
+    r"\bles compos?\s+(?:pour|de la|de\b|du\b)"
+    r"|\bcompos(?:itions?)?\s+(?:officielles?|compl[eè]tes?|du match)"
+    r"|\bfeuille de match\b"
+    r")",
+    re.I,
+)
 
 STOP_WORDS = {
     "dans",
@@ -156,6 +167,18 @@ def guess_competition(title: str, body: str = "", url: str = "") -> str:
             return "TOP14"
         if "pro d2" in lower or "prod2" in lower:
             return "PROD2"
+        if "nationale" in lower and "nationale 2" not in lower:
+            return "NAT"
+        if "champions cup" in lower or "coupe d europe" in lower:
+            return "ERCC"
+        if "challenge cup" in lower:
+            return "ERCH"
+        if "united rugby championship" in lower or " urc " in f" {lower} ":
+            return "URC"
+        if "premiership" in lower:
+            return "PREM"
+        if "test match" in lower or "tests internationaux" in lower:
+            return "INT"
         if "supersevens" in lower or "super sevens" in lower:
             return "SEVENS"
         if re.search(r"\bsevens?\b", lower):
@@ -177,6 +200,64 @@ def is_duplicate(title: str, accepted: list[dict]) -> bool:
         if len(words & other) >= 3:
             return True
     return False
+
+
+def is_composition_recap(title: str) -> bool:
+    return bool(COMPOSITION_TITLE_RE.search(title or ""))
+
+
+def normalize_published(value: str) -> str | None:
+    raw = (value or "").strip()
+    if not raw:
+        return None
+    try:
+        if raw.endswith("Z"):
+            dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        else:
+            dt = datetime.fromisoformat(raw)
+    except ValueError:
+        try:
+            dt = parsedate_to_datetime(raw)
+        except (TypeError, ValueError, IndexError):
+            return None
+    if dt.tzinfo is not None:
+        dt = dt.astimezone(PARIS).replace(tzinfo=None)
+    return dt.strftime("%Y-%m-%dT%H:%M:%S")
+
+
+def published_from_url(url: str) -> str | None:
+    match = URL_DATE_RE.search(url or "")
+    if not match:
+        return None
+    return f"{match.group(1)}-{match.group(2)}-{match.group(3)}T12:00:00"
+
+
+def extract_published_from_html(page: str) -> str | None:
+    patterns = (
+        r'property=["\']article:published_time["\']\s+content=["\']([^"\']+)["\']',
+        r'content=["\']([^"\']+)["\']\s+property=["\']article:published_time["\']',
+        r'"datePublished"\s*:\s*"([^"]+)"',
+        r'<time[^>]+datetime=["\']([^"\']+)["\']',
+    )
+    for pattern in patterns:
+        match = re.search(pattern, page, re.I)
+        if match:
+            normalized = normalize_published(match.group(1))
+            if normalized:
+                return normalized
+    return None
+
+
+def is_fresh(published_at: str, max_age_days: int) -> bool:
+    if max_age_days <= 0:
+        return True
+    normalized = normalize_published(published_at)
+    if normalized is None:
+        return False
+    published_day = datetime.fromisoformat(normalized).date()
+    today = datetime.now(PARIS).date()
+    oldest = today - timedelta(days=max(0, max_age_days - 1))
+    return published_day >= oldest
 
 
 def looks_like_image_url(url: str) -> bool:
@@ -378,7 +459,7 @@ def extract_body(page: str, body_classes: tuple[str, ...]) -> str:
     return body_from_chunk(page)
 
 
-def parse_rss_items(feed_url: str, limit: int) -> list[dict]:
+def parse_rss_items(feed_url: str, limit: int, max_age_days: int) -> list[dict]:
     root = ET.fromstring(fetch(feed_url))
     channel = root.find("channel")
     nodes = channel.findall("item") if channel is not None else root.findall(".//item")
@@ -396,15 +477,20 @@ def parse_rss_items(feed_url: str, limit: int) -> list[dict]:
             continue
         if "/actu-en-direct/" in link or "/collection/" in link:
             continue
+        if is_composition_recap(title):
+            print(f"skip compos: {title[:80]}", file=sys.stderr)
+            continue
 
         pub_el = item.find("pubDate")
+        published = None
         if pub_el is not None and pub_el.text:
-            try:
-                published = parsedate_to_datetime(pub_el.text).strftime("%Y-%m-%dT%H:%M:%S")
-            except (TypeError, ValueError):
-                published = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        else:
-            published = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            published = normalize_published(pub_el.text)
+        if published is None:
+            published = published_from_url(link)
+        if published is None:
+            published = datetime.now(PARIS).strftime("%Y-%m-%dT%H:%M:%S")
+        if not is_fresh(published, max_age_days):
+            continue
 
         rows.append(
             {
@@ -419,7 +505,7 @@ def parse_rss_items(feed_url: str, limit: int) -> list[dict]:
     return rows
 
 
-def parse_listing_items(source: dict, limit: int) -> list[dict]:
+def parse_listing_items(source: dict, limit: int, max_age_days: int) -> list[dict]:
     page = fetch(source["listing"])
     links = re.findall(source["link_re"], page)
     prefix = source.get("link_prefix", "")
@@ -431,20 +517,23 @@ def parse_listing_items(source: dict, limit: int) -> list[dict]:
         if url in seen:
             continue
         seen.add(url)
+        published = published_from_url(url)
+        if published is not None and not is_fresh(published, max_age_days):
+            continue
         rows.append(
             {
                 "title": "",
                 "sourceUrl": url,
-                "publishedAt": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+                "publishedAt": published or "",
                 "imageUrl": "",
             }
         )
-        if len(rows) >= limit:
+        if len(rows) >= limit * 2:
             break
     return rows
 
 
-def enrich_with_body(candidate: dict, source: dict) -> dict | None:
+def enrich_with_body(candidate: dict, source: dict, max_age_days: int) -> dict | None:
     url = candidate["sourceUrl"]
     try:
         page = fetch(url)
@@ -458,7 +547,22 @@ def enrich_with_body(candidate: dict, source: dict) -> dict | None:
         return None
 
     title = candidate["title"] or extract_title_from_html(page)
+    title = re.sub(r"\s+", " ", html_lib.unescape(title or "")).strip()
     if not title:
+        return None
+    if is_composition_recap(title):
+        print(f"skip compos: {title[:80]}", file=sys.stderr)
+        return None
+
+    published = normalize_published(candidate.get("publishedAt") or "")
+    if published is None:
+        published = published_from_url(url)
+    if published is None:
+        published = extract_published_from_html(page)
+    if published is None:
+        published = datetime.now(PARIS).strftime("%Y-%m-%dT%H:%M:%S")
+    if not is_fresh(published, max_age_days):
+        print(f"skip old {source['name']}: {title[:80]} ({published[:10]})", file=sys.stderr)
         return None
 
     image = candidate.get("imageUrl") or extract_image_from_html(page)
@@ -470,14 +574,14 @@ def enrich_with_body(candidate: dict, source: dict) -> dict | None:
         "summary": summary,
         "body": body,
         "sourceUrl": url[:500],
-        "publishedAt": candidate["publishedAt"],
+        "publishedAt": published,
         "source": source["name"],
         "competitionCode": guess_competition(title, body, url),
         "imageUrl": image[:500] if image else "",
     }
 
 
-def scrape_all(limit_per_source: int) -> list[dict]:
+def scrape_all(limit_per_source: int, max_age_days: int) -> list[dict]:
     accepted: list[dict] = []
     seen_urls: set[str] = set()
 
@@ -485,19 +589,22 @@ def scrape_all(limit_per_source: int) -> list[dict]:
         print(f"source {source['name']}…", file=sys.stderr)
         try:
             if source["kind"] == "rss":
-                candidates = parse_rss_items(source["feed"], limit_per_source)
+                candidates = parse_rss_items(source["feed"], limit_per_source, max_age_days)
             else:
-                candidates = parse_listing_items(source, limit_per_source)
+                candidates = parse_listing_items(source, limit_per_source, max_age_days)
         except (urllib.error.HTTPError, urllib.error.URLError, ET.ParseError) as exc:
             print(f"feed fail {source['name']}: {exc}", file=sys.stderr)
             continue
 
+        kept = 0
         for candidate in candidates:
+            if kept >= limit_per_source:
+                break
             url = candidate["sourceUrl"]
             if url in seen_urls:
                 continue
             time.sleep(FETCH_DELAY_SEC)
-            row = enrich_with_body(candidate, source)
+            row = enrich_with_body(candidate, source, max_age_days)
             if row is None:
                 continue
             if is_duplicate(row["title"], accepted):
@@ -505,6 +612,7 @@ def scrape_all(limit_per_source: int) -> list[dict]:
                 continue
             seen_urls.add(url)
             accepted.append(row)
+            kept += 1
 
     return accepted
 
@@ -529,15 +637,21 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Scrap actu rugby multi-sources (corps complet)")
     parser.add_argument("--limit", type=int, default=MAX_PER_SOURCE)
     parser.add_argument("--output", default="data/import/news.csv")
+    parser.add_argument(
+        "--max-age-days",
+        type=int,
+        default=1,
+        help="Ne garder que les articles publies sur les N derniers jours calendaires (Paris)",
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent
     output_arg = Path(args.output)
     output = output_arg if output_arg.is_absolute() else (root / output_arg).resolve()
 
-    rows = scrape_all(args.limit)
+    rows = scrape_all(args.limit, args.max_age_days)
     write_csv(rows, output)
-    print(f"{len(rows)} lignes -> {output}")
+    print(f"{len(rows)} lignes -> {output} (max-age-days={args.max_age_days})")
     return 0
 
 

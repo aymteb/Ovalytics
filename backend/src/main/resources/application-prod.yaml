@@ -22,11 +22,25 @@ ovalytics:
     h2h-file: /import/top14-h2h.csv
     news:
       file: /import/news.csv
+      retain-days: 7
     transfer:
       file: /import/transfers.csv
     prod2:
       file: /import/prod2-matches.csv
       h2h-file: /import/prod2-h2h.csv
+    nationale:
+      file: /import/nationale-matches.csv
+      h2h-file: /import/nationale-h2h.csv
+    foreign:
+      ercc-file: /import/champions-cup-matches.csv
+      erch-file: /import/challenge-cup-matches.csv
+      urc-file: /import/urc-matches.csv
+      prem-file: /import/premiership-matches.csv
+      int-file: /import/international-matches.csv
+      ercc-h2h-file: /import/champions-cup-h2h.csv
+      erch-h2h-file: /import/challenge-cup-h2h.csv
+      urc-h2h-file: /import/urc-h2h.csv
+      prem-h2h-file: /import/premiership-h2h.csv
     squad:
       file: /import/squads.csv
     player-profile:
@@ -48,6 +62,7 @@ ovalytics:
     python-command: python3
     top14-output: /import/top14-matches.csv
     prod2-output: /import/prod2-matches.csv
+    nationale-output: /import/nationale-matches.csv
   news-sync:
     enabled: true
     scrape-enabled: true
@@ -55,6 +70,7 @@ ovalytics:
     repo-root: /app
     python-command: python3
     output: /import/news.csv
+    max-age-days: 1
   absence-sync:
     enabled: true
     scrape-enabled: true
@@ -62,6 +78,21 @@ ovalytics:
     repo-root: /app
     python-command: python3
     output: /import/absences.csv
+  h2h-sync:
+    enabled: true
+    scrape-enabled: true
+    cron: "0 0 7 * * *"
+    repo-root: /app
+    python-command: python3
+    top14-output: /import/top14-h2h.csv
+    prod2-output: /import/prod2-h2h.csv
+    nationale-output: /import/nationale-h2h.csv
+    ercc-output: /import/champions-cup-h2h.csv
+    erch-output: /import/challenge-cup-h2h.csv
+    urc-output: /import/urc-h2h.csv
+    prem-output: /import/premiership-h2h.csv
+    event-ids-file: /import/h2h-event-ids.txt
+    days-ahead: 45
   analysis:
     enabled: true
     catch-up-on-startup: false

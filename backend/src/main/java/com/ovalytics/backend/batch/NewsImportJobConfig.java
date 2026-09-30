@@ -58,8 +58,12 @@ public class NewsImportJobConfig {
 	}
 
 	@Bean
-	public Job newsImportJob(JobRepository jobRepository, Step newsImportStep) {
+	public Job newsImportJob(
+			JobRepository jobRepository,
+			Step newsImportStep,
+			NewsImportCleanupListener newsImportCleanupListener) {
 		return new JobBuilder("newsImportJob", jobRepository)
+				.listener(newsImportCleanupListener)
 				.start(newsImportStep)
 				.build();
 	}

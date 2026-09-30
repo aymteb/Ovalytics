@@ -3,18 +3,19 @@
 import argparse
 import csv
 import html
+import json
 import re
 import sys
 import time
 import unicodedata
+import urllib.parse
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 
-from clubs_config import ALL_RUGBY_LABEL_TO_SHORT
+from clubs_config import ALL_RUGBY_LABEL_TO_SHORT, SHORT_TO_COMPETITION
 
 USER_AGENT = "OvalyticsScraper/1.0"
-TOP14_URL = "https://www.allrugby.com/competitions/top-14/indisponibilites.html"
-PROD2_HUB_URL = "https://www.rugbyrama.fr/rugby/championnats-francais/pro-d2/"
 CSV_HEADERS = ["competitionCode", "teamShortName", "playerName", "type", "note"]
 
 SECTION_TYPES = {
@@ -24,7 +25,35 @@ SECTION_TYPES = {
     "selection": "INTERNATIONAL",
 }
 
+SECTION_LABEL_RE = r"Suspension|Infirmerie|S[ée]lection"
+
 TYPE_PRIORITY = {"SUSPENDED": 3, "INTERNATIONAL": 2, "INJURED": 1}
+
+ALLRUGBY_SOURCES = [
+    {
+        "competition_code": "TOP14",
+        "url": "https://www.allrugby.com/competitions/top-14/indisponibilites.html",
+        "labels": ALL_RUGBY_LABEL_TO_SHORT,
+    },
+]
+
+FFR_API = "https://api-presse.ffr.fr/wp-json/wp/v2"
+FFR_SELECTION_FEEDS = [
+    {
+        "name": "XV France masculin",
+        "category_id": 8,
+        "note": "XV de France",
+    },
+]
+
+FFR_LIST_SLUG_RE = re.compile(
+    r"(liste.*joueur|le-groupe|groupe-de-\d+|groupe-pour|groupe$)",
+    re.I,
+)
+FFR_LIST_EXCLUDE_RE = re.compile(
+    r"(programme-presse|media-guide|composition|fan-experience|parten|billett)",
+    re.I,
+)
 
 PROD2_CLUB_LABELS = {
     "Soyaux-Angoulême": "ANG",
@@ -73,12 +102,37 @@ NOT_AVAILABLE_RE = re.compile(
     re.I,
 )
 SUSPEND_RE = re.compile(r"(?:suspendu|carton rouge)", re.I)
+SELECTION_RE = re.compile(
+    r"(?:"
+    r"\ben s[ée]lections?\b"
+    r"|\bretenu(?:e|s)? en s[ée]lections?\b"
+    r"|\bretenu(?:e|s)? (?:avec |en )?(?:la |leur )?(?:s[ée]lection(?!neur)|equipe nationale)\b"
+    r"|\b(?:a|à)(?:\s+la)?\s+dispos(?:ition)? de la s[ée]lection(?!neur)"
+    r"|\bavec (?:la )?s[ée]lection(?!neur)"
+    r"|\bequipe nationale\b"
+    r"|\bparti(?:e|s)? en s[ée]lection(?!neur)"
+    r"|\bretrouv[ée](?:r)? la s[ée]lection(?!neur)"
+    r"|\brepart(?:i|is|ie|ies)? (?:dans|vers) (?:leurs |la )?s[ée]lections?"
+    r"|\bmis[e]? [àa] disposition de France\s*7\b"
+    r"|\bconvoqu[ée]s? (?:en |avec |par )?(?:la )?(?:s[ée]lection(?!neur)|equipe)"
+    r")",
+    re.I,
+)
 
 
 def fetch(url: str) -> str:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(request, timeout=30) as response:
         return response.read().decode("utf-8")
+
+
+def fetch_json(url: str):
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.loads(response.read().decode("utf-8"))
 
 
 def clean_text(raw: str) -> str:
@@ -131,6 +185,18 @@ def resolve_team(club_label: str, mapping: dict[str, str]) -> str | None:
     return None
 
 
+def resolve_club_competition(club_label: str) -> tuple[str, str] | None:
+    short = resolve_team(club_label, ALL_RUGBY_LABEL_TO_SHORT)
+    if short is None:
+        short = resolve_team(club_label, PROD2_CLUB_LABELS)
+    if short is None:
+        return None
+    code = SHORT_TO_COMPETITION.get(short)
+    if code is None:
+        return None
+    return code, short
+
+
 def extract_players(block: str) -> list[str]:
     names: list[str] = []
     for match in re.finditer(r'<a href="/joueurs/[^"]+"[^>]*>([^<]+)</a>', block, re.I):
@@ -164,27 +230,31 @@ def dedupe_rows(rows: list[dict]) -> list[dict]:
     return list(best.values())
 
 
-def parse_top14(html_text: str) -> list[dict]:
+def parse_allrugby_sections(
+    html_text: str,
+    competition_code: str,
+    labels: dict[str, str],
+) -> list[dict]:
     chunks = re.split(r"(?is)<h2[^>]*>\s*(.*?)\s*</h2>", html_text)
     rows: list[dict] = []
+    section_re = re.compile(
+        rf'(?is)<span>\s*({SECTION_LABEL_RE})\s*</span>\s*:\s*<ul class="joueurs">(.*?)</ul>'
+    )
 
     for i in range(1, len(chunks), 2):
         club_label = clean_text(chunks[i])
-        short = resolve_team(club_label, ALL_RUGBY_LABEL_TO_SHORT)
+        short = resolve_team(club_label, labels)
         if short is None:
             continue
         body = chunks[i + 1]
-        for match in re.finditer(
-            r'(?is)<span>\s*(Suspension|Infirmerie|S[ée]lection)\s*</span>\s*:\s*<ul class="joueurs">(.*?)</ul>',
-            body,
-        ):
+        for match in section_re.finditer(body):
             absence_type = SECTION_TYPES.get(clean_text(match.group(1)).lower())
             if absence_type is None:
                 continue
             for player_name in extract_players(match.group(2)):
                 rows.append(
                     {
-                        "competitionCode": "TOP14",
+                        "competitionCode": competition_code,
                         "teamShortName": short,
                         "playerName": player_name,
                         "type": absence_type,
@@ -194,13 +264,13 @@ def parse_top14(html_text: str) -> list[dict]:
     return dedupe_rows(rows)
 
 
-def load_squad_names(squads_csv: Path) -> dict[str, list[str]]:
+def load_squad_names(squads_csv: Path, competition_code: str) -> dict[str, list[str]]:
     by_team: dict[str, list[str]] = {}
     if not squads_csv.exists():
         return by_team
     with squads_csv.open(encoding="utf-8", newline="") as file:
         for row in csv.DictReader(file):
-            if row.get("competitionCode") != "PROD2":
+            if row.get("competitionCode") != competition_code:
                 continue
             short = (row.get("teamShortName") or "").strip()
             name = (row.get("playerName") or "").strip()
@@ -211,24 +281,39 @@ def load_squad_names(squads_csv: Path) -> dict[str, list[str]]:
 
 
 def discover_prod2_article_url() -> str:
-    hub = fetch(PROD2_HUB_URL)
-    candidates = re.findall(
-        r'href="((?:https://www\.rugbyrama\.fr)?/[^"]*pro-d2[^"]*infirmerie[^"]*)"',
-        hub,
-        re.I,
+    return discover_rugbyrama_article("pro d2 infirmeries", "pro-d2")
+
+
+def discover_top14_article_url() -> str:
+    return discover_rugbyrama_article("top 14 infirmeries", "top-14")
+
+
+def discover_rugbyrama_article(query: str, slug_token: str) -> str:
+    search_url = "https://www.rugbyrama.fr/recherche/?" + urllib.parse.urlencode(
+        {"q": query}
     )
-    if not candidates:
-        raise RuntimeError("Article infirmeries Pro D2 introuvable sur Rugbyrama")
-    path = candidates[0]
-    if path.startswith("http"):
-        return path
-    return "https://www.rugbyrama.fr" + path
-
-
-def context_around(text: str, start: int, end: int, radius: int = 220) -> str:
-    left = max(0, start - radius)
-    right = min(len(text), end + radius)
-    return text[left:right].strip()
+    page = fetch(search_url)
+    pattern = (
+        r'href="((?:https://www\.rugbyrama\.fr)?/\d{4}/\d{2}/\d{2}/[^"]*'
+        + re.escape(slug_token)
+        + r'[^"]*infirmerie[^"]*)"'
+    )
+    candidates = re.findall(pattern, page, re.I)
+    scored: list[tuple[str, str]] = []
+    for raw in candidates:
+        path = raw
+        if path.startswith("http"):
+            path = re.sub(r"^https://www\.rugbyrama\.fr", "", path)
+        if "amicaux" in path.lower():
+            continue
+        date_match = re.match(r"/(\d{4}/\d{2}/\d{2})/", path)
+        if not date_match:
+            continue
+        scored.append((date_match.group(1), path))
+    if not scored:
+        raise RuntimeError(f"Article infirmeries introuvable pour: {query}")
+    scored.sort(reverse=True)
+    return "https://www.rugbyrama.fr" + scored[0][1]
 
 
 def name_search_keys(name: str, all_names: list[str]) -> list[str]:
@@ -294,8 +379,11 @@ def classify_mention(text: str, start: int, end: int) -> str | None:
     near = text[start : min(len(text), end + 75)]
     local = text[max(0, start - 80) : min(len(text), end + 170)]
     forward = text[start : min(len(text), end + 320)]
+    selection_near = text[max(0, start - 70) : min(len(text), end + 130)]
     if SUSPEND_RE.search(after):
         return "SUSPENDED"
+    if SELECTION_RE.search(selection_near):
+        return "INTERNATIONAL"
     if FORCED_OUT_RE.search(near):
         return "INJURED"
     if RETURN_RE.search(local):
@@ -305,12 +393,17 @@ def classify_mention(text: str, start: int, end: int) -> str | None:
     return None
 
 
-def parse_prod2(html_text: str, squad_by_team: dict[str, list[str]]) -> list[dict]:
+def parse_article_squad_mentions(
+    html_text: str,
+    competition_code: str,
+    labels: dict[str, str],
+    squad_by_team: dict[str, list[str]],
+) -> list[dict]:
     chunks = re.split(r"(?is)<h2[^>]*>\s*(.*?)\s*</h2>", html_text)
     rows: list[dict] = []
     for i in range(1, len(chunks), 2):
         club_label = clean_text(chunks[i])
-        short = resolve_team(club_label, PROD2_CLUB_LABELS)
+        short = resolve_team(club_label, labels)
         if short is None:
             continue
         body_html = chunks[i + 1]
@@ -325,13 +418,136 @@ def parse_prod2(html_text: str, squad_by_team: dict[str, list[str]]) -> list[dic
                 continue
             rows.append(
                 {
-                    "competitionCode": "PROD2",
+                    "competitionCode": competition_code,
                     "teamShortName": short,
                     "playerName": clean_player_name(player_name),
                     "type": absence_type,
                     "note": "",
                 }
             )
+    return dedupe_rows(rows)
+
+
+def parse_post_date(value: str) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def is_ffr_group_post(slug: str, title: str) -> bool:
+    blob = f"{slug} {title}"
+    if FFR_LIST_EXCLUDE_RE.search(blob):
+        return False
+    return bool(FFR_LIST_SLUG_RE.search(slug) or FFR_LIST_SLUG_RE.search(fold(title).replace(" ", "-")))
+
+
+def parse_ffr_player_tables(content_html: str, note: str) -> list[dict]:
+    rows: list[dict] = []
+    for tr in re.findall(r"(?is)<tr[^>]*>(.*?)</tr>", content_html):
+        cells = [
+            clean_text(cell)
+            for cell in re.findall(r"(?is)<t[hd][^>]*>(.*?)</t[hd]>", tr)
+        ]
+        cells = [cell for cell in cells if cell]
+        if len(cells) < 7:
+            continue
+        if cells[0].upper().startswith("CLUB") or cells[1].upper().startswith("CLUB"):
+            continue
+        first, last = cells[0], cells[1]
+        club = cells[6]
+        if not first or not last or not club:
+            continue
+        if fold(last) in {"ans", "selection", "selections"}:
+            continue
+        resolved = resolve_club_competition(club)
+        if resolved is None:
+            continue
+        competition_code, short = resolved
+        player_name = clean_player_name(f"{first} {last}")
+        if not player_name:
+            continue
+        rows.append(
+            {
+                "competitionCode": competition_code,
+                "teamShortName": short,
+                "playerName": player_name,
+                "type": "INTERNATIONAL",
+                "note": note,
+            }
+        )
+    return rows
+
+
+def discover_ffr_group_posts(category_id: int, max_age_days: int) -> list[dict]:
+    query = urllib.parse.urlencode(
+        {
+            "categories": category_id,
+            "per_page": 20,
+            "_fields": "id,date,slug,title,content",
+        }
+    )
+    posts = fetch_json(f"{FFR_API}/posts?{query}")
+    now = datetime.now(timezone.utc)
+    chosen: list[dict] = []
+    for post in posts:
+        slug = post.get("slug") or ""
+        title_raw = post.get("title") or {}
+        title = clean_text(title_raw.get("rendered") if isinstance(title_raw, dict) else str(title_raw))
+        if not is_ffr_group_post(slug, title):
+            continue
+        posted_at = parse_post_date(post.get("date") or "")
+        if posted_at is None:
+            continue
+        age_days = (now - posted_at.astimezone(timezone.utc)).days
+        if age_days > max_age_days:
+            continue
+        content_raw = post.get("content") or {}
+        content = content_raw.get("rendered") if isinstance(content_raw, dict) else ""
+        if not content or "<table" not in content.lower():
+            continue
+        chosen.append(
+            {
+                "slug": slug,
+                "title": title,
+                "date": posted_at,
+                "age_days": age_days,
+                "content": content,
+            }
+        )
+    chosen.sort(key=lambda item: item["date"], reverse=True)
+    return chosen
+
+
+def scrape_ffr_selections(max_age_days: int, force_url: str = "") -> list[dict]:
+    rows: list[dict] = []
+
+    if force_url.strip():
+        html_text = fetch(force_url.strip())
+        parsed = parse_ffr_player_tables(html_text, "XV de France")
+        rows.extend(parsed)
+        print(f"FFR force URL: {len(parsed)} joueurs ({force_url.strip()})")
+        return dedupe_rows(rows)
+
+    for feed in FFR_SELECTION_FEEDS:
+        posts = discover_ffr_group_posts(feed["category_id"], max_age_days)
+        if not posts:
+            print(
+                f"FFR {feed['name']}: aucune liste recente"
+                f" (max {max_age_days} j)"
+            )
+            continue
+        latest = posts[0]
+        parsed = parse_ffr_player_tables(latest["content"], feed["note"])
+        rows.extend(parsed)
+        print(
+            f"FFR {feed['name']}: {len(parsed)} joueurs"
+            f" via {latest['slug']} ({latest['age_days']} j)"
+        )
+        time.sleep(0.2)
+
     return dedupe_rows(rows)
 
 
@@ -350,10 +566,13 @@ def write_csv(rows: list[dict], output: Path) -> None:
 
 def print_summary(rows: list[dict]) -> None:
     by_comp: dict[str, dict[str, int]] = {}
+    by_type: dict[str, int] = {}
     for row in rows:
         team_counts = by_comp.setdefault(row["competitionCode"], {})
         team_counts[row["teamShortName"]] = team_counts.get(row["teamShortName"], 0) + 1
+        by_type[row["type"]] = by_type.get(row["type"], 0) + 1
     print(f"{len(rows)} absences")
+    print("  types: " + ", ".join(f"{k}={v}" for k, v in sorted(by_type.items())))
     for code in sorted(by_comp):
         print(f"  {code}: {sum(by_comp[code].values())}")
         for short in sorted(by_comp[code]):
@@ -361,14 +580,26 @@ def print_summary(rows: list[dict]) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Scrap absences Top 14 + Pro D2")
+    parser = argparse.ArgumentParser(description="Scrap absences (multi-competitions)")
     parser.add_argument("--output", default="data/import/absences.csv")
     parser.add_argument(
         "--squads",
         default="data/import/squads.csv",
-        help="Effectifs pour matcher les noms Pro D2",
+        help="Effectifs pour matcher les noms (articles type Pro D2)",
     )
-    parser.add_argument("--prod2-url", default="", help="URL article Rugbyrama (sinon auto)")
+    parser.add_argument("--prod2-url", default="", help="URL article Rugbyrama Pro D2 (sinon auto)")
+    parser.add_argument("--top14-url", default="", help="URL article Rugbyrama Top 14 (sinon auto)")
+    parser.add_argument(
+        "--ffr-max-age-days",
+        type=int,
+        default=28,
+        help="Ignorer une liste FFR plus vieille (joueurs liberes / fenetre close)",
+    )
+    parser.add_argument(
+        "--ffr-force-url",
+        default="",
+        help="Forcer une URL presse FFR (test / reprise manuelle)",
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent
@@ -377,27 +608,56 @@ def main() -> int:
 
     rows: list[dict] = []
 
-    top14_html = fetch(TOP14_URL)
-    top14_rows = parse_top14(top14_html)
-    rows.extend(top14_rows)
-    print(f"Top 14: {len(top14_rows)} apres dedupe")
+    for source in ALLRUGBY_SOURCES:
+        code = source["competition_code"]
+        page = fetch(source["url"])
+        parsed = parse_allrugby_sections(page, code, source["labels"])
+        rows.extend(parsed)
+        print(f"{code} AllRugby: {len(parsed)} apres dedupe")
+        time.sleep(0.2)
 
-    squad_by_team = load_squad_names(squads_csv)
+    top14_squads = load_squad_names(squads_csv, "TOP14")
+    try:
+        top14_url = args.top14_url.strip() or discover_top14_article_url()
+        print(f"Top 14 article: {top14_url}")
+        top14_html = fetch(top14_url)
+        time.sleep(0.3)
+        top14_article_rows = parse_article_squad_mentions(
+            top14_html,
+            "TOP14",
+            ALL_RUGBY_LABEL_TO_SHORT,
+            top14_squads,
+        )
+        rows.extend(top14_article_rows)
+        print(f"TOP14 article: {len(top14_article_rows)}")
+    except Exception as ex:
+        print(f"Top 14 article ignore: {ex}")
+
+    squad_by_team = load_squad_names(squads_csv, "PROD2")
     prod2_url = args.prod2_url.strip() or discover_prod2_article_url()
     print(f"Pro D2 article: {prod2_url}")
     prod2_html = fetch(prod2_url)
     time.sleep(0.3)
-    prod2_rows = parse_prod2(prod2_html, squad_by_team)
+    prod2_rows = parse_article_squad_mentions(
+        prod2_html,
+        "PROD2",
+        PROD2_CLUB_LABELS,
+        squad_by_team,
+    )
     rows.extend(prod2_rows)
-    print(f"Pro D2: {len(prod2_rows)}")
+    print(f"PROD2 article: {len(prod2_rows)}")
+
+    ffr_rows = scrape_ffr_selections(args.ffr_max_age_days, args.ffr_force_url)
+    rows.extend(ffr_rows)
+    print(f"FFR selections: {len(ffr_rows)}")
 
     if not rows:
         print("Aucune absence parse", file=sys.stderr)
         return 1
 
-    write_csv(rows, output)
+    write_csv(dedupe_rows(rows), output)
     print(f"-> {output}")
-    print_summary(rows)
+    print_summary(dedupe_rows(rows))
     return 0
 
 

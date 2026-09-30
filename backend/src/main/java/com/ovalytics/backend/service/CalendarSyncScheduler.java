@@ -20,18 +20,36 @@ public class CalendarSyncScheduler {
 	private final JobOperator jobOperator;
 	private final Job matchImportJob;
 	private final Job prod2MatchImportJob;
+	private final Job nationaleMatchImportJob;
+	private final Job erccMatchImportJob;
+	private final Job erchMatchImportJob;
+	private final Job urcMatchImportJob;
+	private final Job premMatchImportJob;
+	private final Job intMatchImportJob;
 
 	public CalendarSyncScheduler(
 			CalendarSyncProperties properties,
 			CalendarScraperService calendarScraperService,
 			JobOperator jobOperator,
 			Job matchImportJob,
-			Job prod2MatchImportJob) {
+			Job prod2MatchImportJob,
+			Job nationaleMatchImportJob,
+			Job erccMatchImportJob,
+			Job erchMatchImportJob,
+			Job urcMatchImportJob,
+			Job premMatchImportJob,
+			Job intMatchImportJob) {
 		this.properties = properties;
 		this.calendarScraperService = calendarScraperService;
 		this.jobOperator = jobOperator;
 		this.matchImportJob = matchImportJob;
 		this.prod2MatchImportJob = prod2MatchImportJob;
+		this.nationaleMatchImportJob = nationaleMatchImportJob;
+		this.erccMatchImportJob = erccMatchImportJob;
+		this.erchMatchImportJob = erchMatchImportJob;
+		this.urcMatchImportJob = urcMatchImportJob;
+		this.premMatchImportJob = premMatchImportJob;
+		this.intMatchImportJob = intMatchImportJob;
 	}
 
 	@Scheduled(cron = "${ovalytics.calendar-sync.cron:0 30 6 * * *}", zone = "Europe/Paris")
@@ -43,7 +61,7 @@ public class CalendarSyncScheduler {
 	}
 
 	public void runSync() {
-		log.info("Sync calendrier Top14 + Pro D2");
+		log.info("Sync calendrier Top14 + Pro D2 + Nationale + etrangers");
 		boolean scraped = calendarScraperService.scrapeAll();
 		if (!scraped && properties.isScrapeEnabled()) {
 			log.warn("Scrape calendrier en echec, import ignore");
@@ -65,7 +83,37 @@ public class CalendarSyncScheduler {
 					new JobParametersBuilder()
 							.addLong("run.id", runId + 1)
 							.toJobParameters());
-			log.info("Imports matchs Top14 + Pro D2 lances");
+			jobOperator.start(
+					nationaleMatchImportJob,
+					new JobParametersBuilder()
+							.addLong("run.id", runId + 2)
+							.toJobParameters());
+			jobOperator.start(
+					erccMatchImportJob,
+					new JobParametersBuilder()
+							.addLong("run.id", runId + 3)
+							.toJobParameters());
+			jobOperator.start(
+					erchMatchImportJob,
+					new JobParametersBuilder()
+							.addLong("run.id", runId + 4)
+							.toJobParameters());
+			jobOperator.start(
+					urcMatchImportJob,
+					new JobParametersBuilder()
+							.addLong("run.id", runId + 5)
+							.toJobParameters());
+			jobOperator.start(
+					premMatchImportJob,
+					new JobParametersBuilder()
+							.addLong("run.id", runId + 6)
+							.toJobParameters());
+			jobOperator.start(
+					intMatchImportJob,
+					new JobParametersBuilder()
+							.addLong("run.id", runId + 7)
+							.toJobParameters());
+			log.info("Imports matchs calendrier lances");
 		} catch (Exception ex) {
 			log.error("Import calendrier impossible: {}", ex.getMessage());
 		}

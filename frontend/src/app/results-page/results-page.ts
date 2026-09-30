@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match } from '../models';
+import { competitionSortRank } from '../competition-display';
 import { TeamLogo } from '../team-logo/team-logo';
 
 interface MatchdayGroup {
@@ -122,6 +123,9 @@ export class ResultsPage implements OnInit {
   private buildMatchdayGroups(matches: Match[]): MatchdayGroup[] {
     const byDay = new Map<number, Match[]>();
     for (const match of matches) {
+      if (match.matchday > 35) {
+        continue;
+      }
       const list = byDay.get(match.matchday) ?? [];
       list.push(match);
       byDay.set(match.matchday, list);
@@ -137,14 +141,10 @@ export class ResultsPage implements OnInit {
   }
 
   private orderCompetitions(competitions: Competition[]): Competition[] {
-    return [...competitions].sort((a, b) => {
-      if (a.code === 'TOP14') {
-        return -1;
-      }
-      if (b.code === 'TOP14') {
-        return 1;
-      }
-      return a.name.localeCompare(b.name, 'fr');
-    });
+    return [...competitions].sort(
+      (a, b) =>
+        competitionSortRank(a.code) - competitionSortRank(b.code) ||
+        a.name.localeCompare(b.name, 'fr'),
+    );
   }
 }

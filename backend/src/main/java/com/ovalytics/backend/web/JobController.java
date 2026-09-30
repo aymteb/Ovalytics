@@ -16,6 +16,7 @@ import com.ovalytics.backend.domain.PendingTeamRefresh;
 import com.ovalytics.backend.repository.PendingTeamRefreshRepository;
 import com.ovalytics.backend.service.AbsenceSyncScheduler;
 import com.ovalytics.backend.service.CalendarSyncScheduler;
+import com.ovalytics.backend.service.H2hSyncScheduler;
 import com.ovalytics.backend.service.MatchAnalysisLlmClient;
 import com.ovalytics.backend.service.MatchAnalysisService;
 import com.ovalytics.backend.service.MatchSheetSyncService;
@@ -32,6 +33,17 @@ public class JobController {
 	private final Job matchH2hImportJob;
 	private final Job prod2MatchImportJob;
 	private final Job prod2MatchH2hImportJob;
+	private final Job nationaleMatchImportJob;
+	private final Job nationaleMatchH2hImportJob;
+	private final Job erccMatchImportJob;
+	private final Job erchMatchImportJob;
+	private final Job urcMatchImportJob;
+	private final Job premMatchImportJob;
+	private final Job intMatchImportJob;
+	private final Job erccMatchH2hImportJob;
+	private final Job erchMatchH2hImportJob;
+	private final Job urcMatchH2hImportJob;
+	private final Job premMatchH2hImportJob;
 	private final Job newsImportJob;
 	private final Job transferImportJob;
 	private final Job playerImportJob;
@@ -44,6 +56,7 @@ public class JobController {
 	private final CalendarSyncScheduler calendarSyncScheduler;
 	private final NewsSyncScheduler newsSyncScheduler;
 	private final AbsenceSyncScheduler absenceSyncScheduler;
+	private final H2hSyncScheduler h2hSyncScheduler;
 	private final MatchAnalysisService matchAnalysisService;
 	private final MatchAnalysisLlmClient matchAnalysisLlmClient;
 	private final MatchSheetSyncService matchSheetSyncService;
@@ -54,6 +67,17 @@ public class JobController {
 			Job matchH2hImportJob,
 			Job prod2MatchImportJob,
 			Job prod2MatchH2hImportJob,
+			Job nationaleMatchImportJob,
+			Job nationaleMatchH2hImportJob,
+			Job erccMatchImportJob,
+			Job erchMatchImportJob,
+			Job urcMatchImportJob,
+			Job premMatchImportJob,
+			Job intMatchImportJob,
+			Job erccMatchH2hImportJob,
+			Job erchMatchH2hImportJob,
+			Job urcMatchH2hImportJob,
+			Job premMatchH2hImportJob,
 			Job newsImportJob,
 			Job transferImportJob,
 			Job playerImportJob,
@@ -66,6 +90,7 @@ public class JobController {
 			CalendarSyncScheduler calendarSyncScheduler,
 			NewsSyncScheduler newsSyncScheduler,
 			AbsenceSyncScheduler absenceSyncScheduler,
+			H2hSyncScheduler h2hSyncScheduler,
 			MatchAnalysisService matchAnalysisService,
 			MatchAnalysisLlmClient matchAnalysisLlmClient,
 			MatchSheetSyncService matchSheetSyncService) {
@@ -74,6 +99,17 @@ public class JobController {
 		this.matchH2hImportJob = matchH2hImportJob;
 		this.prod2MatchImportJob = prod2MatchImportJob;
 		this.prod2MatchH2hImportJob = prod2MatchH2hImportJob;
+		this.nationaleMatchImportJob = nationaleMatchImportJob;
+		this.nationaleMatchH2hImportJob = nationaleMatchH2hImportJob;
+		this.erccMatchImportJob = erccMatchImportJob;
+		this.erchMatchImportJob = erchMatchImportJob;
+		this.urcMatchImportJob = urcMatchImportJob;
+		this.premMatchImportJob = premMatchImportJob;
+		this.intMatchImportJob = intMatchImportJob;
+		this.erccMatchH2hImportJob = erccMatchH2hImportJob;
+		this.erchMatchH2hImportJob = erchMatchH2hImportJob;
+		this.urcMatchH2hImportJob = urcMatchH2hImportJob;
+		this.premMatchH2hImportJob = premMatchH2hImportJob;
 		this.newsImportJob = newsImportJob;
 		this.transferImportJob = transferImportJob;
 		this.playerImportJob = playerImportJob;
@@ -86,6 +122,7 @@ public class JobController {
 		this.calendarSyncScheduler = calendarSyncScheduler;
 		this.newsSyncScheduler = newsSyncScheduler;
 		this.absenceSyncScheduler = absenceSyncScheduler;
+		this.h2hSyncScheduler = h2hSyncScheduler;
 		this.matchAnalysisService = matchAnalysisService;
 		this.matchAnalysisLlmClient = matchAnalysisLlmClient;
 		this.matchSheetSyncService = matchSheetSyncService;
@@ -107,14 +144,36 @@ public class JobController {
 
 	@PostMapping("/match-import/h2h")
 	public ResponseEntity<String> runMatchH2hImport() throws Exception {
-		ResponseEntity<String> top14 = startJob(matchH2hImportJob);
-		ResponseEntity<String> prod2 = startJob(prod2MatchH2hImportJob);
-		return ResponseEntity.ok(top14.getBody() + " | " + prod2.getBody());
+		long runId = System.currentTimeMillis();
+		startJob(matchH2hImportJob, runId);
+		startJob(prod2MatchH2hImportJob, runId + 1);
+		startJob(nationaleMatchH2hImportJob, runId + 2);
+		startJob(erccMatchH2hImportJob, runId + 3);
+		startJob(erchMatchH2hImportJob, runId + 4);
+		startJob(urcMatchH2hImportJob, runId + 5);
+		startJob(premMatchH2hImportJob, runId + 6);
+		return ResponseEntity.ok("Imports H2H lances");
 	}
 
 	@PostMapping("/match-import/prod2")
 	public ResponseEntity<String> runProd2MatchImport() throws Exception {
 		return startJob(prod2MatchImportJob);
+	}
+
+	@PostMapping("/match-import/nationale")
+	public ResponseEntity<String> runNationaleMatchImport() throws Exception {
+		return startJob(nationaleMatchImportJob);
+	}
+
+	@PostMapping("/match-import/foreign")
+	public ResponseEntity<String> runForeignMatchImport() throws Exception {
+		long runId = System.currentTimeMillis();
+		startJob(erccMatchImportJob, runId);
+		startJob(erchMatchImportJob, runId + 1);
+		startJob(urcMatchImportJob, runId + 2);
+		startJob(premMatchImportJob, runId + 3);
+		startJob(intMatchImportJob, runId + 4);
+		return ResponseEntity.ok("Imports etrangers lances");
 	}
 
 	@PostMapping("/news-import")
@@ -187,6 +246,12 @@ public class JobController {
 		return ResponseEntity.ok("Sync absences lance");
 	}
 
+	@PostMapping("/h2h-sync")
+	public ResponseEntity<String> runH2hSync() {
+		h2hSyncScheduler.runSync();
+		return ResponseEntity.ok("Sync H2H lance");
+	}
+
 	@PostMapping("/match-sheet-sync")
 	public ResponseEntity<String> runMatchSheetSync() {
 		int synced = matchSheetSyncService.catchUp();
@@ -210,11 +275,15 @@ public class JobController {
 	}
 
 	private ResponseEntity<String> startJob(Job job) throws Exception {
+		startJob(job, System.currentTimeMillis());
+		return ResponseEntity.ok("Import lance");
+	}
+
+	private void startJob(Job job, long runId) throws Exception {
 		jobOperator.start(
 				job,
 				new JobParametersBuilder()
-						.addLong("run.id", System.currentTimeMillis())
+						.addLong("run.id", runId)
 						.toJobParameters());
-		return ResponseEntity.ok("Import lance");
 	}
 }

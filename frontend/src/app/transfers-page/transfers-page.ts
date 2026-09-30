@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Team, Transfer } from '../models';
 import { resolveClubShort } from '../team-branding';
+import { competitionSortRank } from '../competition-display';
 import { TeamLogo } from '../team-logo/team-logo';
 
 type TransfersTab = 'journal' | 'clubs';
@@ -144,15 +145,11 @@ export class TransfersPage implements OnInit {
   }
 
   private orderCompetitions(competitions: Competition[]): Competition[] {
-    return [...competitions].sort((a, b) => {
-      if (a.code === 'TOP14') {
-        return -1;
-      }
-      if (b.code === 'TOP14') {
-        return 1;
-      }
-      return a.name.localeCompare(b.name, 'fr');
-    });
+    return [...competitions].sort(
+      (a, b) =>
+        competitionSortRank(a.code) - competitionSortRank(b.code) ||
+        a.name.localeCompare(b.name, 'fr'),
+    );
   }
 
   private buildClubBoards(teams: Team[], transfers: Transfer[]): ClubTransferBoard[] {

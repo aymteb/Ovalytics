@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 		CalendarSyncProperties.class,
 		NewsSyncProperties.class,
 		AbsenceSyncProperties.class,
+		H2hSyncProperties.class,
 		AnalysisProperties.class,
 		CorsProperties.class
 })

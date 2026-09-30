@@ -6,6 +6,10 @@ import { interval, startWith, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Match, NewsItem, StandingRow } from '../models';
 import { NewsNav } from '../news-nav';
+import {
+  competitionBadgeClass,
+  competitionLabel,
+} from '../competition-display';
 import { TeamLogo } from '../team-logo/team-logo';
 
 @Component({
@@ -86,26 +90,6 @@ export class HomePage implements OnInit {
       });
   }
 
-  competitionLabel(code: string | null): string {
-    if (code === 'TOP14') {
-      return 'Top 14';
-    }
-    if (code === 'PROD2') {
-      return 'Pro D2';
-    }
-    if (code === 'SEVENS') {
-      return 'Sevens';
-    }
-    return '';
-  }
-
-  badgeClass(code: string | null): string {
-    if (code === 'TOP14') {
-      return 'bg-primary text-on-primary';
-    }
-    if (code === 'PROD2') {
-      return 'bg-sky-700 text-white';
-    }
-    return 'bg-muted text-foreground';
-  }
+  readonly competitionLabel = competitionLabel;
+  readonly badgeClass = competitionBadgeClass;
 }

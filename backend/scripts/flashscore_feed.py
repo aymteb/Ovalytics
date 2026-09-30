@@ -91,6 +91,140 @@ FS_PROD2_NAME_TO_SHORT = {
     "Valence Romans Drôme Rugby": "VAL",
 }
 
+FS_NAT_NAME_TO_SHORT = {
+    "RC Massy Essonne": "MAS",
+    "Massy": "MAS",
+    "US Carcassonne": "CAR",
+    "Carcassonne": "CAR",
+    "SC Albi": "ALB",
+    "Albi": "ALB",
+    "Stade Montois": "MDM",
+    "Mont-de-Marsan": "MDM",
+    "SO Chambéry": "CHA",
+    "Chambéry": "CHA",
+    "Chambery": "CHA",
+    "Rouen Normandie": "ROU",
+    "Rouen": "ROU",
+    "RC Suresnes": "SUR",
+    "Suresnes": "SUR",
+    "CS Bourgoin-Jallieu": "BOU",
+    "Bourgoin": "BOU",
+    "Orléans": "ORL",
+    "Orleans": "ORL",
+    "CA Périgueux": "PER",
+    "Périgueux": "PER",
+    "Perigueux": "PER",
+    "Rennes": "REN",
+    "CS Vienne": "VIE",
+    "Vienne": "VIE",
+    "US Bressane": "USB",
+    "Bourg-en-Bresse": "USB",
+    "Ol. Marcquois": "MAR",
+    "Marcq-en-Baroeul": "MAR",
+    "Marcq-en-Barœul": "MAR",
+}
+
+FS_ERCC_NAME_TO_SHORT = {
+    **{k: v for k, v in FS_NAME_TO_SHORT.items() if v != "MTB"},
+    "Bath": "BAT",
+    "Bristol": "BRS",
+    "Bulls": "BUL",
+    "Cardiff Rugby": "CDF",
+    "Cardiff": "CDF",
+    "Connacht": "CON",
+    "Exeter Chiefs": "EXE",
+    "Exeter": "EXE",
+    "Glasgow": "GLA",
+    "Gloucester": "GLO",
+    "Leicester Tigers": "LEIC",
+    "Leicester": "LEIC",
+    "Leinster": "LEI",
+    "Lions": "LIO",
+    "Munster": "MUN",
+    "Northampton Saints": "NOR",
+    "Northampton": "NOR",
+    "Sale Sharks": "SAL",
+    "Sale": "SAL",
+    "Saracens": "SAR",
+    "Stormers": "STO",
+}
+
+FS_ERCH_NAME_TO_SHORT = {
+    "Aviron Bayonnais": "BAY",
+    "Bayonne": "BAY",
+    "Cheetahs": "CHE",
+    "Dragons": "DRA",
+    "USA Perpignan": "USAP",
+    "Perpignan": "USAP",
+    "Ulster": "ULS",
+    "Zebre": "ZEB",
+    "Castres Olympique": "CAS",
+    "Castres": "CAS",
+    "Lyon OU": "LOU",
+    "Lyon": "LOU",
+    "Newcastle Red Bulls": "NEW",
+    "Newcastle": "NEW",
+    "Scarlets": "SCA",
+    "Sharks": "SHA",
+    "Benetton": "TRE",
+    "Black Lion": "BLA",
+    "Edinburgh": "EDI",
+    "Harlequins": "HAR",
+    "Ospreys": "OSP",
+    "RC Toulon": "TOL",
+    "Toulon": "TOL",
+    "RC Vannes": "VAN",
+    "Vannes": "VAN",
+}
+
+FS_URC_NAME_TO_SHORT = {
+    "Bulls": "BUL",
+    "Sharks": "SHA",
+    "Stormers": "STO",
+    "Glasgow": "GLA",
+    "Edinburgh": "EDI",
+    "Cardiff Rugby": "CDF",
+    "Cardiff": "CDF",
+    "Lions": "LIO",
+    "Dragons": "DRA",
+    "Benetton": "TRE",
+    "Leinster": "LEI",
+    "Ulster": "ULS",
+    "Munster": "MUN",
+    "Scarlets": "SCA",
+    "Ospreys": "OSP",
+    "Connacht": "CON",
+    "Zebre": "ZEB",
+}
+
+FS_PREM_NAME_TO_SHORT = {
+    "Northampton Saints": "NOR",
+    "Northampton": "NOR",
+    "Gloucester": "GLO",
+    "Bath": "BAT",
+    "Bristol": "BRS",
+    "Saracens": "SAR",
+    "Leicester Tigers": "LEIC",
+    "Leicester": "LEIC",
+    "Exeter Chiefs": "EXE",
+    "Exeter": "EXE",
+    "Newcastle Red Bulls": "NEW",
+    "Newcastle": "NEW",
+    "Sale Sharks": "SAL",
+    "Sale": "SAL",
+    "Harlequins": "HAR",
+}
+
+COMPETITION_NAME_MAPS = {
+    "TOP14": FS_NAME_TO_SHORT,
+    "PROD2": FS_PROD2_NAME_TO_SHORT,
+    "NAT": FS_NAT_NAME_TO_SHORT,
+    "ERCC": FS_ERCC_NAME_TO_SHORT,
+    "ERCH": FS_ERCH_NAME_TO_SHORT,
+    "URC": FS_URC_NAME_TO_SHORT,
+    "PREM": FS_PREM_NAME_TO_SHORT,
+}
+
 FS_DEMO_REMAP = {"MTB": "VAN"}
 
 
@@ -167,9 +301,10 @@ def tournament_prefix(pathname: str) -> str | None:
     return "/" + "/".join(parts[:2]) + "/"
 
 
-def page_urls_for_season(season_label: str, user_agent: str) -> list[str]:
+def page_urls_for_hub(hub_path: str, season_label: str, user_agent: str) -> list[str]:
     fs_season = season_label.replace("-", "/")
-    hub_url = f"{FLASHSCORE_BASE}/rugby/france/top-14/calendrier/"
+    hub_path = "/" + hub_path.strip("/") + "/"
+    hub_url = f"{FLASHSCORE_BASE}{hub_path}calendrier/"
     hub = fetch_page(hub_url, user_agent)
 
     seasons = season_list(hub)
@@ -182,16 +317,17 @@ def page_urls_for_season(season_label: str, user_agent: str) -> list[str]:
             target = entry
             break
     if target is None:
-        raise RuntimeError(f"Saison Flashscore introuvable: {season_label}")
+        print(f"Flashscore: saison {season_label} introuvable pour {hub_path}", file=sys.stderr)
+        return [hub_url, f"{FLASHSCORE_BASE}{hub_path}resultats/"]
 
     urls = []
     if target.get("id") == selected_id:
-        urls.append(f"{FLASHSCORE_BASE}/rugby/france/top-14/calendrier/")
-        urls.append(f"{FLASHSCORE_BASE}/rugby/france/top-14/resultats/")
+        urls.append(hub_url)
+        urls.append(f"{FLASHSCORE_BASE}{hub_path}resultats/")
 
     pathname = target.get("pathname", "")
-    prefix = tournament_prefix(pathname)
-    if prefix:
+    prefix = tournament_prefix(pathname) or hub_path
+    if pathname:
         try:
             season_page = fetch_page(FLASHSCORE_BASE + pathname, user_agent)
         except urllib.error.HTTPError:
@@ -200,6 +336,9 @@ def page_urls_for_season(season_label: str, user_agent: str) -> list[str]:
         if stage_id:
             urls.append(f"{FLASHSCORE_BASE}{prefix}{stage_id}/calendrier/")
             urls.append(f"{FLASHSCORE_BASE}{prefix}{stage_id}/resultats/")
+
+    if not urls:
+        urls.append(hub_url)
 
     unique = []
     seen = set()
@@ -210,34 +349,144 @@ def page_urls_for_season(season_label: str, user_agent: str) -> list[str]:
     return unique
 
 
+def page_urls_for_season(season_label: str, user_agent: str) -> list[str]:
+    return page_urls_for_hub("/rugby/france/top-14/", season_label, user_agent)
+
+
+DEFAULT_TOURNAMENT_HUBS = (
+    "/rugby/france/top-14/",
+    "/rugby/france/pro-d2/",
+    "/rugby/france/nationale/",
+    "/rugby/europe/champions-cup-rugby/",
+    "/rugby/europe/challenge-cup/",
+    "/rugby/monde/united-rugby-championship/",
+    "/rugby/angleterre/premiership-rugby/",
+)
+
+HUB_COMPETITION_CODES = {
+    "/rugby/france/top-14/": "TOP14",
+    "/rugby/france/pro-d2/": "PROD2",
+    "/rugby/france/nationale/": "NAT",
+    "/rugby/europe/champions-cup-rugby/": "ERCC",
+    "/rugby/europe/challenge-cup/": "ERCH",
+    "/rugby/monde/united-rugby-championship/": "URC",
+    "/rugby/angleterre/premiership-rugby/": "PREM",
+}
+
+
+def scrape_tournament_pages(
+    user_agent: str,
+    demo_map: bool,
+    season_label: str,
+    hubs: list[str] | None = None,
+) -> list[dict]:
+    hub_list = hubs if hubs else list(DEFAULT_TOURNAMENT_HUBS)
+    merged_fields: dict[str, dict] = {}
+    preferred_by_event: dict[str, str] = {}
+
+    for hub in hub_list:
+        preferred = HUB_COMPETITION_CODES.get(hub)
+        urls = page_urls_for_hub(hub, season_label, user_agent)
+        for url in urls:
+            try:
+                page = fetch_page(url, user_agent)
+            except urllib.error.HTTPError as error:
+                print(f"Flashscore page inaccessible: {url} ({error})", file=sys.stderr)
+                continue
+
+            for fields in parse_embedded_events(page):
+                event_id = fields.get("AA", "")
+                if not event_id:
+                    continue
+                if preferred and event_id not in preferred_by_event:
+                    preferred_by_event[event_id] = preferred
+                if event_id in merged_fields and merged_fields[event_id].get("AB") == "3":
+                    continue
+                merged_fields[event_id] = fields
+
+    rows: list[dict] = []
+    for event_id, fields in merged_fields.items():
+        row = event_to_row(fields, demo_map, preferred_by_event.get(event_id))
+        if row is not None:
+            rows.append(row)
+    if not rows:
+        print(
+            f"Flashscore: aucun match embarqué pour {season_label} "
+            "(saison archivée ou chargée en JS). Utiliser LNR ou --fs-live-days.",
+            file=sys.stderr,
+        )
+    return rows
+
+
 def team_short(name: str, demo_map: bool) -> str | None:
     clean = html.unescape(name).strip()
     if "7s" in clean.lower():
         return None
-    short = _resolve_short(clean, FS_NAME_TO_SHORT)
-    if short is None:
-        short = _resolve_short(clean, FS_PROD2_NAME_TO_SHORT)
-    if short is None:
+    for mapping in COMPETITION_NAME_MAPS.values():
+        short = _resolve_short(clean, mapping)
+        if short is not None:
+            if demo_map and short in FS_DEMO_REMAP:
+                return FS_DEMO_REMAP[short]
+            return short
+    return None
+
+
+def map_pair_in_competition(
+    home_name: str,
+    away_name: str,
+    competition_code: str,
+    demo_map: bool = False,
+) -> tuple[str, str, str] | None:
+    mapping = COMPETITION_NAME_MAPS.get(competition_code)
+    if mapping is None:
         return None
-    if demo_map and short in FS_DEMO_REMAP:
-        return FS_DEMO_REMAP[short]
-    return short
-
-
-def map_competition_pair(home_name: str, away_name: str, demo_map: bool) -> tuple[str, str, str] | None:
     home_clean = html.unescape(home_name).strip()
     away_clean = html.unescape(away_name).strip()
-    top14_home = _resolve_short(home_clean, FS_NAME_TO_SHORT)
-    top14_away = _resolve_short(away_clean, FS_NAME_TO_SHORT)
-    if top14_home and top14_away:
-        if demo_map:
-            top14_home = FS_DEMO_REMAP.get(top14_home, top14_home)
-            top14_away = FS_DEMO_REMAP.get(top14_away, top14_away)
-        return "TOP14", top14_home, top14_away
-    prod2_home = _resolve_short(home_clean, FS_PROD2_NAME_TO_SHORT)
-    prod2_away = _resolve_short(away_clean, FS_PROD2_NAME_TO_SHORT)
-    if prod2_home and prod2_away:
-        return "PROD2", prod2_home, prod2_away
+    if "7s" in home_clean.lower() or "7s" in away_clean.lower():
+        return None
+    home = _resolve_short(home_clean, mapping)
+    away = _resolve_short(away_clean, mapping)
+    if home is None or away is None:
+        return None
+    if demo_map:
+        home = FS_DEMO_REMAP.get(home, home)
+        away = FS_DEMO_REMAP.get(away, away)
+    return competition_code, home, away
+
+
+def competition_code_from_label(label: str) -> str | None:
+    lower = (label or "").lower()
+    if "nationale" in lower and "nationale 2" not in lower:
+        return "NAT"
+    if "top 14" in lower or "top14" in lower:
+        return "TOP14"
+    if "pro d2" in lower or "prod2" in lower:
+        return "PROD2"
+    if "champions cup" in lower or "champions-cup" in lower:
+        return "ERCC"
+    if "challenge cup" in lower or "challenge-cup" in lower:
+        return "ERCH"
+    if "united rugby" in lower or "urc" in lower:
+        return "URC"
+    if "premiership" in lower:
+        return "PREM"
+    return None
+
+
+def map_competition_pair(
+    home_name: str,
+    away_name: str,
+    demo_map: bool,
+    preferred_competition: str | None = None,
+) -> tuple[str, str, str] | None:
+    if preferred_competition:
+        mapped = map_pair_in_competition(home_name, away_name, preferred_competition, demo_map)
+        if mapped is not None:
+            return mapped
+    for code in ("TOP14", "NAT", "PROD2", "ERCC", "ERCH", "URC", "PREM"):
+        mapped = map_pair_in_competition(home_name, away_name, code, demo_map)
+        if mapped is not None:
+            return mapped
     return None
 
 
@@ -260,10 +509,14 @@ def kickoff_from_timestamp(value: str) -> str | None:
     return dt.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def event_to_row(fields: dict, demo_map: bool) -> dict | None:
+def event_to_row(
+    fields: dict,
+    demo_map: bool,
+    preferred_competition: str | None = None,
+) -> dict | None:
     home_name = fields.get("AE", "")
     away_name = fields.get("AF", "")
-    mapped = map_competition_pair(home_name, away_name, demo_map)
+    mapped = map_competition_pair(home_name, away_name, demo_map, preferred_competition)
     if mapped is None:
         return None
     competition_code, home_short, away_short = mapped
@@ -303,45 +556,16 @@ def event_to_row(fields: dict, demo_map: bool) -> dict | None:
     }
 
 
-def events_to_rows(events: list[dict], demo_map: bool) -> list[dict]:
+def events_to_rows(
+    events: list[dict],
+    demo_map: bool,
+    preferred_competition: str | None = None,
+) -> list[dict]:
     rows = []
     for fields in events:
-        row = event_to_row(fields, demo_map)
+        row = event_to_row(fields, demo_map, preferred_competition)
         if row is not None:
             rows.append(row)
-    return rows
-
-
-def scrape_tournament_pages(
-    user_agent: str,
-    demo_map: bool,
-    season_label: str,
-) -> list[dict]:
-    urls = page_urls_for_season(season_label, user_agent)
-    merged_fields: dict[str, dict] = {}
-
-    for url in urls:
-        try:
-            page = fetch_page(url, user_agent)
-        except urllib.error.HTTPError as error:
-            print(f"Flashscore page inaccessible: {url} ({error})", file=sys.stderr)
-            continue
-
-        for fields in parse_embedded_events(page):
-            event_id = fields.get("AA", "")
-            if not event_id:
-                continue
-            if event_id in merged_fields and merged_fields[event_id].get("AB") == "3":
-                continue
-            merged_fields[event_id] = fields
-
-    rows = events_to_rows(list(merged_fields.values()), demo_map)
-    if not rows:
-        print(
-            f"Flashscore: aucun match embarqué pour {season_label} "
-            "(saison archivée ou chargée en JS). Utiliser LNR ou --fs-live-days.",
-            file=sys.stderr,
-        )
     return rows
 
 
@@ -432,7 +656,12 @@ def parse_h2h_section(raw: str) -> list[dict]:
         kickoff = kickoff_from_timestamp(fields.get("KC", ""))
         if kickoff is None:
             continue
-        mapped = map_competition_pair(home_name, away_name, False)
+        mapped = map_competition_pair(
+            home_name,
+            away_name,
+            False,
+            competition_code_from_label(competition_label),
+        )
         if mapped is None:
             continue
         competition_code, home_short, away_short = mapped

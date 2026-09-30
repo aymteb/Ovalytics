@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match } from '../models';
+import { competitionSortRank } from '../competition-display';
 import { TeamLogo } from '../team-logo/team-logo';
 
 type FixturesView = 'hub' | 'competition';
@@ -139,8 +140,8 @@ export class FixturesPage implements OnInit {
             return byTime;
           }
           return (
-            this.competitionOrder(a.competitionCode) -
-            this.competitionOrder(b.competitionCode)
+            competitionSortRank(a.competitionCode) -
+            competitionSortRank(b.competitionCode)
           );
         }),
       }));
@@ -149,6 +150,9 @@ export class FixturesPage implements OnInit {
   private buildMatchdayGroups(matches: Match[]): MatchdayGroup[] {
     const byDay = new Map<number, Match[]>();
     for (const match of matches) {
+      if (match.matchday > 35) {
+        continue;
+      }
       const list = byDay.get(match.matchday) ?? [];
       list.push(match);
       byDay.set(match.matchday, list);
@@ -164,24 +168,10 @@ export class FixturesPage implements OnInit {
   }
 
   private orderCompetitions(competitions: Competition[]): Competition[] {
-    return [...competitions].sort((a, b) => {
-      if (a.code === 'TOP14') {
-        return -1;
-      }
-      if (b.code === 'TOP14') {
-        return 1;
-      }
-      return a.name.localeCompare(b.name, 'fr');
-    });
-  }
-
-  private competitionOrder(code: string): number {
-    if (code === 'TOP14') {
-      return 0;
-    }
-    if (code === 'PROD2') {
-      return 1;
-    }
-    return 2;
+    return [...competitions].sort(
+      (a, b) =>
+        competitionSortRank(a.code) - competitionSortRank(b.code) ||
+        a.name.localeCompare(b.name, 'fr'),
+    );
   }
 }

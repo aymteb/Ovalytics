@@ -37,7 +37,9 @@ public class NewsScraperService {
 				properties.getPythonCommand(),
 				script.toString(),
 				"--output",
-				output.toString());
+				output.toString(),
+				"--max-age-days",
+				String.valueOf(Math.max(1, properties.getMaxAgeDays())));
 		processBuilder.directory(repoRoot.toFile());
 		processBuilder.redirectErrorStream(true);
 
