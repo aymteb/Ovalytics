@@ -3,6 +3,10 @@ import { DatePipe, NgClass, ViewportScroller } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { NewsItem } from '../models';
+import {
+  competitionBadgeClass,
+  competitionLabel,
+} from '../competition-display';
 import { NewsNav } from '../news-nav';
 
 @Component({
@@ -67,28 +71,8 @@ export class NewsDetailPage implements OnInit {
     });
   }
 
-  competitionLabel(code: string | null): string {
-    if (code === 'TOP14') {
-      return 'Top 14';
-    }
-    if (code === 'PROD2') {
-      return 'Pro D2';
-    }
-    if (code === 'SEVENS') {
-      return 'Sevens';
-    }
-    return '';
-  }
-
-  badgeClass(code: string | null): string {
-    if (code === 'TOP14') {
-      return 'bg-primary text-on-primary';
-    }
-    if (code === 'PROD2') {
-      return 'bg-sky-700 text-white';
-    }
-    return 'bg-muted text-foreground';
-  }
+  readonly competitionLabel = competitionLabel;
+  readonly badgeClass = competitionBadgeClass;
 
   private loadArticle(id: number): void {
     this.loading.set(true);

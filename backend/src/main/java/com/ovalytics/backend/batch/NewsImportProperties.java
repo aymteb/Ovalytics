@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class NewsImportProperties {
 
 	private String file = "";
+	private int retainDays = 7;
 
 	public String getFile() {
 		return file;
@@ -13,5 +14,13 @@ public class NewsImportProperties {
 
 	public void setFile(String file) {
 		this.file = file;
+	}
+
+	public int getRetainDays() {
+		return retainDays;
+	}
+
+	public void setRetainDays(int retainDays) {
+		this.retainDays = retainDays;
 	}
 }

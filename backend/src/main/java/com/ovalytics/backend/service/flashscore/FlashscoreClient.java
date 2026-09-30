@@ -21,7 +21,16 @@ public class FlashscoreClient {
 	private static final String HUB_URL = "https://www.flashscore.fr/rugby/france/top-14/";
 	private static final List<String> RESULTS_URLS = List.of(
 			"https://www.flashscore.fr/rugby/france/top-14/resultats/",
-			"https://www.flashscore.fr/rugby/france/pro-d2/resultats/");
+			"https://www.flashscore.fr/rugby/france/pro-d2/resultats/",
+			"https://www.flashscore.fr/rugby/france/nationale/resultats/");
+	private static final List<CalendarSource> CALENDAR_SOURCES = List.of(
+			new CalendarSource("TOP14", "https://www.flashscore.fr/rugby/france/top-14/calendrier/"),
+			new CalendarSource("PROD2", "https://www.flashscore.fr/rugby/france/pro-d2/calendrier/"),
+			new CalendarSource("NAT", "https://www.flashscore.fr/rugby/france/nationale/calendrier/"),
+			new CalendarSource("ERCC", "https://www.flashscore.fr/rugby/europe/champions-cup-rugby/calendrier/"),
+			new CalendarSource("ERCH", "https://www.flashscore.fr/rugby/europe/challenge-cup/calendrier/"),
+			new CalendarSource("URC", "https://www.flashscore.fr/rugby/monde/united-rugby-championship/calendrier/"),
+			new CalendarSource("PREM", "https://www.flashscore.fr/rugby/angleterre/premiership-rugby/calendrier/"));
 	private static final Pattern FEED_SIGN_PATTERN = Pattern.compile("\"feed_sign\":\"([^\"]+)\"");
 
 	private final RestClient restClient;
@@ -82,6 +91,42 @@ public class FlashscoreClient {
 			mergeFinished(merged, FlashscoreEventParser.parseFeed(page));
 		}
 		return toUpdates(merged.values(), true);
+	}
+
+	public List<FlashscoreMatchUpdate> fetchScheduledCalendarUpdates() {
+		Map<String, Map<String, String>> merged = new LinkedHashMap<>();
+		Map<String, String> preferredByEvent = new LinkedHashMap<>();
+		for (CalendarSource source : CALENDAR_SOURCES) {
+			String page = fetchPage(source.url());
+			for (Map<String, String> fields : FlashscoreEventParser.parseFeed(page)) {
+				String eventId = fields.get("AA");
+				if (eventId == null || eventId.isBlank()) {
+					continue;
+				}
+				preferredByEvent.putIfAbsent(eventId, source.competitionCode());
+				merged.put(eventId, fields);
+			}
+		}
+		List<FlashscoreMatchUpdate> updates = new ArrayList<>();
+		for (Map.Entry<String, Map<String, String>> entry : merged.entrySet()) {
+			Map<String, String> fields = entry.getValue();
+			String homeName = fields.get("AE");
+			String awayName = fields.get("AF");
+			var pair = teamMapper.mapPair(homeName, awayName, preferredByEvent.get(entry.getKey()));
+			if (pair.isEmpty()) {
+				continue;
+			}
+			FlashscoreTeamMapper.TeamPair teams = pair.get();
+			FlashscoreMatchUpdate update = FlashscoreMatchUpdate.fromFields(
+					fields,
+					teams.competitionCode(),
+					teams.homeShortName(),
+					teams.awayShortName());
+			if (update != null && update.status() == MatchStatus.SCHEDULED) {
+				updates.add(update);
+			}
+		}
+		return updates;
 	}
 
 	private void mergeFinished(
@@ -194,5 +239,8 @@ public class FlashscoreClient {
 		} catch (RuntimeException ex) {
 			return "";
 		}
+	}
+
+	private record CalendarSource(String competitionCode, String url) {
 	}
 }

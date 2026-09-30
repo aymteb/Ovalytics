@@ -11,6 +11,7 @@ public class NewsSyncProperties {
 	private String repoRoot = "..";
 	private String pythonCommand = "python3";
 	private String output = "data/import/news.csv";
+	private int maxAgeDays = 1;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -58,5 +59,13 @@ public class NewsSyncProperties {
 
 	public void setOutput(String output) {
 		this.output = output;
+	}
+
+	public int getMaxAgeDays() {
+		return maxAgeDays;
+	}
+
+	public void setMaxAgeDays(int maxAgeDays) {
+		this.maxAgeDays = maxAgeDays;
 	}
 }

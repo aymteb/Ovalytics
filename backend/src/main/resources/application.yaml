@@ -35,11 +35,25 @@ ovalytics:
     h2h-file: ../data/import/top14-h2h.csv
     news:
       file: ../data/import/news.csv
+      retain-days: 7
     transfer:
       file: ../data/import/transfers.csv
     prod2:
       file: ../data/import/prod2-matches.csv
       h2h-file: ../data/import/prod2-h2h.csv
+    nationale:
+      file: ../data/import/nationale-matches.csv
+      h2h-file: ../data/import/nationale-h2h.csv
+    foreign:
+      ercc-file: ../data/import/champions-cup-matches.csv
+      erch-file: ../data/import/challenge-cup-matches.csv
+      urc-file: ../data/import/urc-matches.csv
+      prem-file: ../data/import/premiership-matches.csv
+      int-file: ../data/import/international-matches.csv
+      ercc-h2h-file: ../data/import/champions-cup-h2h.csv
+      erch-h2h-file: ../data/import/challenge-cup-h2h.csv
+      urc-h2h-file: ../data/import/urc-h2h.csv
+      prem-h2h-file: ../data/import/premiership-h2h.csv
     squad:
       file: ../data/import/squads.csv
     player-profile:
@@ -67,6 +81,7 @@ ovalytics:
     python-command: python3
     top14-output: data/import/top14-matches.csv
     prod2-output: data/import/prod2-matches.csv
+    nationale-output: data/import/nationale-matches.csv
   news-sync:
     enabled: false
     cron: "0 0 */2 * * *"
@@ -74,6 +89,7 @@ ovalytics:
     repo-root: ..
     python-command: python3
     output: data/import/news.csv
+    max-age-days: 1
   absence-sync:
     enabled: false
     cron: "0 0 8,18 * * *"
@@ -81,6 +97,21 @@ ovalytics:
     repo-root: ..
     python-command: python3
     output: data/import/absences.csv
+  h2h-sync:
+    enabled: false
+    cron: "0 0 7 * * *"
+    scrape-enabled: true
+    repo-root: ..
+    python-command: python3
+    top14-output: data/import/top14-h2h.csv
+    prod2-output: data/import/prod2-h2h.csv
+    nationale-output: data/import/nationale-h2h.csv
+    ercc-output: data/import/champions-cup-h2h.csv
+    erch-output: data/import/challenge-cup-h2h.csv
+    urc-output: data/import/urc-h2h.csv
+    prem-output: data/import/premiership-h2h.csv
+    event-ids-file: data/import/h2h-event-ids.txt
+    days-ahead: 45
   analysis:
     enabled: true
     cron: "0 0 9 * * *"

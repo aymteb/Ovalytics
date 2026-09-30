@@ -3,8 +3,10 @@ package com.ovalytics.backend.config;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -93,9 +95,17 @@ public class ProD2DataLoader implements ApplicationRunner {
 		for (Team team : teamRepository.findByCompetitionCodeOrderByNameAsc("PROD2")) {
 			existing.put(team.getShortName(), team);
 		}
+		Set<String> keep = new HashSet<>();
 		for (Team team : prod2Teams(proD2)) {
+			keep.add(team.getShortName());
 			if (!existing.containsKey(team.getShortName())) {
 				teamRepository.save(team);
+			}
+		}
+		for (Team team : existing.values()) {
+			if (!keep.contains(team.getShortName())
+					&& rugbyMatchRepository.countByTeamId(team.getId()) == 0) {
+				teamRepository.delete(team);
 			}
 		}
 	}
