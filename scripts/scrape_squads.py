@@ -116,8 +116,13 @@ def mercato_class_to_status(css_class: str) -> tuple[str, str]:
 
 def parse_effectif_rows(html_text: str) -> dict[str, dict]:
     players: dict[str, dict] = {}
-    for row_html in re.findall(r'<tr data-pays="[^"]*"[^>]*>.*?</tr>', html_text, re.S):
-        pays_match = re.search(r'data-pays="([^"]*)"', row_html)
+    table_match = re.search(
+        r'<table class="rtable striped alternate eff">(.*?)</table>',
+        html_text,
+        re.S,
+    )
+    block = table_match.group(1) if table_match else html_text
+    for row_html in re.findall(r"<tr[^>]*>.*?</tr>", block, re.S):
         name_match = re.search(
             r'class="nom"[^>]*>\s*(?:<a[^>]+>)?\s*([^<]+)',
             row_html,
@@ -152,7 +157,12 @@ def parse_effectif_rows(html_text: str) -> dict[str, dict]:
         dur_match = re.search(r'class="txtcenter dur">([^<]+)', row_html)
         contract_end = parse_contract_end(dur_match.group(1) if dur_match else "")
 
-        nationality = pays_match.group(1).strip() if pays_match else ""
+        pays_match = re.search(r'data-pays="([^"]*)"', row_html)
+        if pays_match and pays_match.group(1).strip():
+            nationality = pays_match.group(1).strip()
+        else:
+            alt_match = re.search(r'alt="([^"]*)"', row_html)
+            nationality = alt_match.group(1).strip() if alt_match else ""
 
         players[name.casefold()] = {
             "playerName": name,
@@ -226,11 +236,12 @@ def scrape_club(
         print(f"effectif ignoré {club_slug}: {error}", file=sys.stderr)
 
     mercato_players: list[dict] = []
-    try:
-        mercato_html = fetch(f"{BASE_URL}/dossiers/{mercato_slug}.html")
-        mercato_players = parse_mercato_squad(mercato_html)
-    except urllib.error.URLError as error:
-        print(f"mercato ignoré {mercato_slug}: {error}", file=sys.stderr)
+    if mercato_slug:
+        try:
+            mercato_html = fetch(f"{BASE_URL}/dossiers/{mercato_slug}.html")
+            mercato_players = parse_mercato_squad(mercato_html)
+        except urllib.error.URLError as error:
+            print(f"mercato ignoré {mercato_slug}: {error}", file=sys.stderr)
 
     source = mercato_players if mercato_players else [
         effectif_map[key] for key in sorted(effectif_map.keys(), key=lambda k: effectif_map[k]["playerName"])

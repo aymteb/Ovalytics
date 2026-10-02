@@ -1,7 +1,8 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { ClubMercato, SquadPlayer, Transfer } from '../models';
+import { PlayerNav } from '../player-nav';
 import { TeamLogo } from '../team-logo/team-logo';
 
 interface SquadGroup {
@@ -55,6 +56,10 @@ export class ClubPage implements OnInit {
   errorMessage = signal('');
   loading = signal(true);
 
+  private readonly playerNav = inject(PlayerNav);
+  private clubCode = '';
+  private clubShortName = '';
+
   squadGroups = computed(() => this.buildSquadGroups(this.mercato()?.squad ?? []));
 
   constructor(
@@ -70,6 +75,8 @@ export class ClubPage implements OnInit {
       this.loading.set(false);
       return;
     }
+    this.clubCode = code;
+    this.clubShortName = shortName;
 
     this.api.getClubMercato(code, shortName).subscribe({
       next: (mercato) => {
@@ -81,6 +88,10 @@ export class ClubPage implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  leaveToPlayer(): void {
+    this.playerNav.leaveFromClub(this.clubCode, this.clubShortName);
   }
 
   typeLabel(type: string): string {

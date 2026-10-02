@@ -1,8 +1,9 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { PlayerDetail, Transfer } from '../models';
+import { PlayerNav } from '../player-nav';
 import { resolveClubShort } from '../team-branding';
 import { TeamLogo } from '../team-logo/team-logo';
 
@@ -17,6 +18,8 @@ export class PlayerPage implements OnInit {
   errorMessage = signal('');
   loading = signal(true);
 
+  private readonly playerNav = inject(PlayerNav);
+
   careerEntries = computed(() => {
     const history = this.player()?.careerHistory;
     if (!history) {
@@ -30,6 +33,28 @@ export class PlayerPage implements OnInit {
 
   showTransferDuration = computed(() =>
     (this.player()?.transfers ?? []).some((transfer) => !!transfer.contractLength?.trim()),
+  );
+
+  backPath = computed(() => {
+    if (this.playerNav.backTo === 'transfers') {
+      return '/transfers';
+    }
+    if (this.playerNav.clubCode && this.playerNav.clubShortName) {
+      return [
+        '/clubs',
+        this.playerNav.clubCode,
+        this.playerNav.clubShortName,
+      ];
+    }
+    const player = this.player();
+    if (player) {
+      return ['/clubs', player.competitionCode, player.team.shortName];
+    }
+    return '/transfers';
+  });
+
+  backLabel = computed(() =>
+    this.playerNav.backTo === 'transfers' ? '← Transferts' : '← Effectif',
   );
 
   constructor(

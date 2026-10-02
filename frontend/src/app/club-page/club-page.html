@@ -40,6 +40,7 @@
               @if (playerLink(t); as link) {
                 <a
                   [routerLink]="link"
+                  (click)="leaveToPlayer()"
                   class="font-medium text-foreground no-underline hover:text-primary"
                   >{{ t.playerName }}</a
                 >
@@ -73,6 +74,7 @@
               @if (playerLink(t); as link) {
                 <a
                   [routerLink]="link"
+                  (click)="leaveToPlayer()"
                   class="font-medium text-foreground no-underline hover:text-primary"
                   >{{ t.playerName }}</a
                 >
@@ -108,6 +110,7 @@
               @if (playerLink(t); as link) {
                 <a
                   [routerLink]="link"
+                  (click)="leaveToPlayer()"
                   class="font-medium text-foreground no-underline hover:text-primary"
                   >{{ t.playerName }}</a
                 >
@@ -141,6 +144,7 @@
               @if (p.id) {
                 <a
                   [routerLink]="['/players', p.id]"
+                  (click)="leaveToPlayer()"
                   class="font-medium text-foreground no-underline hover:text-primary"
                   >{{ p.name }}</a
                 >
@@ -188,6 +192,7 @@
                   <li class="text-sm">
                     <a
                       [routerLink]="['/players', player.id]"
+                      (click)="leaveToPlayer()"
                       [class]="'squad-player ' + playerStatusClass(player)"
                       >{{ player.name }}</a
                     >
