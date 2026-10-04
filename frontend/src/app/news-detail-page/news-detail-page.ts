@@ -1,13 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, NgClass, ViewportScroller } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { NewsItem } from '../models';
 import {
   competitionBadgeClass,
   competitionLabel,
 } from '../competition-display';
-import { NewsNav } from '../news-nav';
+import { NavBack } from '../nav-back';
 
 @Component({
   selector: 'app-news-detail-page',
@@ -22,16 +22,21 @@ export class NewsDetailPage implements OnInit {
   loading = signal(true);
 
   private readonly viewport = inject(ViewportScroller);
-  private readonly newsNav = inject(NewsNav);
+  private readonly navBack = inject(NavBack);
+  private readonly router = inject(Router);
 
-  readonly backPath = this.newsNav.backTo === 'home' ? '/' : '/news';
-  readonly backLabel =
-    this.newsNav.backTo === 'home' ? '← Accueil' : '← Revenir aux actualités';
+  backPath = computed(() => {
+    this.navBack.revision();
+    return this.navBack.originFor(this.router.url).path;
+  });
+
+  backLabel = computed(() => {
+    this.navBack.revision();
+    return this.navBack.originFor(this.router.url).label;
+  });
 
   onBackClick(): void {
-    if (this.newsNav.backTo === 'news') {
-      this.newsNav.prepareBackToList();
-    }
+    this.navBack.prepareBack(this.router.url);
   }
 
   bodyParagraphs(body: string): string[] {

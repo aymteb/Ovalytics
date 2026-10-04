@@ -1,10 +1,10 @@
 <section class="mx-auto max-w-[1100px] overflow-x-hidden px-6 py-10 lg:px-8">
   <p class="mb-8">
     <a
-      [routerLink]="backPath"
+      [routerLink]="backPath()"
       (click)="onBackClick()"
       class="text-xs font-semibold uppercase tracking-wide text-muted-foreground no-underline transition duration-200 hover:text-foreground"
-      >{{ backLabel }}</a
+      >{{ backLabel() }}</a
     >
   </p>
 

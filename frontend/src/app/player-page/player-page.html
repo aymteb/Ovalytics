@@ -1,7 +1,8 @@
 <section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
   <p class="mb-6">
     <a
-      [routerLink]="backPath()"
+      href="#"
+      (click)="goBack($event)"
       class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
       >{{ backLabel() }}</a
     >
@@ -13,42 +14,71 @@
     <p class="font-semibold text-primary">{{ errorMessage() }}</p>
   } @else if (player(); as p) {
     <header
-      class="mb-10 rounded-lg border border-border/70 border-l-4 border-l-primary bg-card/80 p-6"
+      class="mb-10 flex flex-wrap gap-6 rounded-lg border border-border/70 border-l-4 border-l-primary bg-card/80 p-6"
     >
-      <p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-        {{ p.competitionName }}
-      </p>
-      <h2 class="m-0 font-display text-4xl uppercase tracking-wide text-foreground">
-        {{ p.name }}
-      </h2>
-      <p class="mt-3 mb-0 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-        @if (p.position) {
-          <span>{{ p.position }}</span>
-        }
-        @if (p.age) {
-          <span>{{ p.age }} ans</span>
-        }
-        @if (p.nationality) {
-          <span>{{ p.nationality }}</span>
-        }
-        @if (p.heightCm && p.weightKg) {
-          <span>{{ p.heightCm }} cm · {{ p.weightKg }} kg</span>
-        }
-      </p>
-      <p class="mt-3 mb-0 text-sm">
-        Club actuel :
-        <a
-          [routerLink]="['/clubs', p.competitionCode, p.team.shortName]"
-          class="font-medium text-foreground no-underline hover:text-primary"
+      @if (showsPhoto()) {
+        <img
+          [src]="p.photoUrl || ''"
+          [alt]="p.name"
+          class="h-36 w-28 shrink-0 rounded object-cover object-top"
+          (error)="onPhotoError()"
+        />
+      } @else {
+        <div
+          class="flex h-36 w-28 shrink-0 items-center justify-center rounded bg-muted font-display text-3xl tracking-wide text-muted-foreground"
+          aria-hidden="true"
         >
-          {{ p.team.name }}
-        </a>
-        <span class="text-muted-foreground">({{ p.team.shortName }})</span>
-      </p>
+          {{ initials() }}
+        </div>
+      }
+      <div class="min-w-0 flex-1">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {{ p.competitionName }}
+        </p>
+        <div class="flex flex-wrap items-center gap-3">
+          <h2 class="m-0 font-display text-4xl uppercase tracking-wide text-foreground">
+            {{ p.name }}
+          </h2>
+          @if (showsJiff()) {
+            <span
+              class="rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
+              >{{ jiffLabel() }}</span
+            >
+          }
+        </div>
+        <p class="mt-3 mb-0 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+          @if (p.position) {
+            <span>{{ p.position }}</span>
+          }
+          @if (p.age) {
+            <span>{{ p.age }} ans</span>
+          }
+          @if (p.nationality) {
+            <span>{{ p.nationality }}</span>
+          }
+          @if (p.heightCm) {
+            <span>{{ p.heightCm }} cm</span>
+          }
+          @if (p.weightKg) {
+            <span>{{ p.weightKg }} kg</span>
+          }
+        </p>
+        <p class="mt-3 mb-0 text-sm">
+          Club actuel :
+          <a
+            [routerLink]="['/clubs', p.competitionCode, p.team.shortName]"
+            class="font-medium text-foreground no-underline hover:text-primary"
+          >
+            {{ p.team.name }}
+          </a>
+          <span class="text-muted-foreground">({{ p.team.shortName }})</span>
+        </p>
+      </div>
     </header>
 
     <section class="mb-10">
-      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Totaux</h3>
+      <h3 class="mb-1 font-display text-2xl uppercase tracking-wide text-foreground">Totaux</h3>
+      <p class="mb-4 text-sm text-muted-foreground">{{ seasonLabel() }}</p>
       <ul class="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
         <li class="rounded-lg border border-border/70 bg-card/60 px-4 py-3">
           <span class="block text-xs uppercase tracking-[0.12em] text-muted-foreground"
@@ -96,9 +126,10 @@
     </section>
 
     <section class="mb-10">
-      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">
+      <h3 class="mb-1 font-display text-2xl uppercase tracking-wide text-foreground">
         Feuilles de match
       </h3>
+      <p class="mb-4 text-sm text-muted-foreground">{{ seasonLabel() }}</p>
       @if (p.appearances.length === 0) {
         <p class="text-sm text-muted-foreground">
           Aucune feuille de match importée pour ce joueur.
@@ -161,9 +192,11 @@
       }
     </section>
 
-    @if (careerEntries().length > 0) {
-      <section class="mb-10">
-        <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Parcours</h3>
+    <section>
+      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Parcours</h3>
+      @if (careerEntries().length === 0) {
+        <p class="text-sm text-muted-foreground">Aucun parcours connu pour ce joueur.</p>
+      } @else {
         <ul
           class="m-0 list-none divide-y divide-border/40 overflow-hidden rounded-lg border border-border/70 bg-card/60 p-0"
         >
@@ -171,70 +204,6 @@
             <li class="px-4 py-3 text-sm">{{ entry }}</li>
           }
         </ul>
-      </section>
-    }
-
-    <section>
-      <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">Transferts</h3>
-      @if (p.transfers.length === 0) {
-        <p class="text-sm text-muted-foreground">Aucun mouvement enregistré.</p>
-      } @else {
-        <div class="overflow-x-auto rounded-lg border border-border/70 bg-card/60">
-          <table class="w-full min-w-[36rem] border-collapse text-left text-sm">
-            <thead>
-              <tr
-                class="border-b border-border text-xs uppercase tracking-[0.1em] text-muted-foreground"
-              >
-                <th class="px-4 py-3 font-semibold">Date</th>
-                <th class="px-4 py-3 font-semibold">Championnat</th>
-                <th class="px-4 py-3 font-semibold">Mouvement</th>
-                @if (showTransferDuration()) {
-                  <th class="px-4 py-3 font-semibold">Durée</th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @for (t of p.transfers; track t.id) {
-                <tr class="border-b border-border/50 last:border-0 odd:bg-white/[0.02]">
-                  <td class="px-4 py-3 text-muted-foreground tabular-nums">
-                    {{ t.transferDate | date: 'dd/MM/yyyy' }}
-                  </td>
-                  <td class="px-4 py-3 text-muted-foreground">{{ t.competitionName }}</td>
-                  <td class="px-4 py-3">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span class="inline-flex items-center gap-1">
-                        @if (clubShort(t, 'from'); as fromShort) {
-                          <app-team-logo [shortName]="fromShort" size="sm" />
-                        } @else {
-                          <span class="text-xs text-muted-foreground">{{
-                            clubFallback(t, 'from')
-                          }}</span>
-                        }
-                      </span>
-                      <span class="text-muted-foreground" aria-hidden="true">→</span>
-                      <span class="inline-flex items-center gap-1">
-                        @if (clubShort(t, 'to'); as toShort) {
-                          <app-team-logo [shortName]="toShort" size="sm" />
-                        } @else {
-                          <span class="text-xs text-muted-foreground">{{
-                            clubFallback(t, 'to')
-                          }}</span>
-                        }
-                      </span>
-                      <span
-                        class="rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
-                        >{{ typeLabel(t.type) }}</span
-                      >
-                    </div>
-                  </td>
-                  @if (showTransferDuration()) {
-                    <td class="px-4 py-3 text-muted-foreground">{{ t.contractLength }}</td>
-                  }
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
       }
     </section>
   }

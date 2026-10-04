@@ -1,11 +1,13 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { DatePipe, ViewportScroller } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Team, Transfer } from '../models';
 import { resolveClubShort } from '../team-branding';
 import { competitionSortRank } from '../competition-display';
+import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
 
 type TransfersTab = 'journal' | 'clubs';
@@ -38,19 +40,47 @@ export class TransfersPage implements OnInit {
     this.journalTransfers().some((transfer) => !!transfer.contractLength?.trim()),
   );
 
-  constructor(private api: CompetitionApi) {}
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly navBack = inject(NavBack);
+  private readonly viewport = inject(ViewportScroller);
+  private booted = false;
+
+  constructor(
+    private api: CompetitionApi,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.api.getCompetitions().subscribe({
       next: (competitions) => {
         const ordered = this.orderCompetitions(competitions);
         this.competitions.set(ordered);
-        const preferred =
-          ordered.find((c) => c.code === 'TOP14') ?? ordered[0];
-        if (preferred) {
-          this.selectedCode.set(preferred.code);
-        }
-        this.loadJournal();
+        this.route.queryParamMap
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((params) => {
+            const tab = params.get('tab') === 'clubs' ? 'clubs' : 'journal';
+            const fromQuery = params.get('competition');
+            const preferred =
+              ordered.find((c) => c.code === fromQuery) ??
+              ordered.find((c) => c.code === 'TOP14') ??
+              ordered[0];
+            const code = preferred?.code ?? 'TOP14';
+            const tabChanged = this.tab() !== tab;
+            const codeChanged = this.selectedCode() !== code;
+            this.tab.set(tab);
+            this.selectedCode.set(code);
+            if (!this.booted || tabChanged || (tab === 'clubs' && codeChanged)) {
+              this.booted = true;
+              this.errorMessage.set('');
+              this.loading.set(true);
+              if (tab === 'journal') {
+                this.loadJournal();
+              } else {
+                this.loadClubs(code);
+              }
+            }
+          });
       },
       error: () => {
         this.errorMessage.set('Impossible de charger les compétitions.');
@@ -61,22 +91,11 @@ export class TransfersPage implements OnInit {
 
   onCompetitionChange(code: string): void {
     this.selectedCode.set(code);
-    if (this.tab() === 'clubs') {
-      this.loading.set(true);
-      this.errorMessage.set('');
-      this.loadClubs(code);
-    }
+    this.syncQuery('clubs', code);
   }
 
   setTab(tab: TransfersTab): void {
-    this.tab.set(tab);
-    this.errorMessage.set('');
-    this.loading.set(true);
-    if (tab === 'journal') {
-      this.loadJournal();
-    } else {
-      this.loadClubs(this.selectedCode());
-    }
+    this.syncQuery(tab, this.selectedCode());
   }
 
   typeLabel(type: string): string {
@@ -114,11 +133,23 @@ export class TransfersPage implements OnInit {
     return label?.trim() || '—';
   }
 
+  private syncQuery(tab: TransfersTab, competition: string): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams:
+        tab === 'clubs'
+          ? { tab: 'clubs', competition }
+          : { tab: 'journal', competition: null },
+      replaceUrl: true,
+    });
+  }
+
   private loadJournal(): void {
     this.api.getTransferJournal().subscribe({
       next: (transfers) => {
         this.journalTransfers.set(transfers);
         this.loading.set(false);
+        this.restoreScroll();
       },
       error: () => {
         this.errorMessage.set('Impossible de charger le journal des transferts.');
@@ -136,11 +167,25 @@ export class TransfersPage implements OnInit {
         this.clubTransfers.set(transfers);
         this.teams.set(teams);
         this.loading.set(false);
+        this.restoreScroll();
       },
       error: () => {
         this.errorMessage.set('Impossible de charger les transferts du championnat.');
         this.loading.set(false);
       },
+    });
+  }
+
+  private restoreScroll(): void {
+    const y = this.navBack.consumeRestoreScroll('/transfers');
+    if (y <= 0) {
+      return;
+    }
+    const apply = () => this.viewport.scrollToPosition([0, y]);
+    requestAnimationFrame(() => {
+      apply();
+      setTimeout(apply, 0);
+      setTimeout(apply, 100);
     });
   }
 
@@ -153,24 +198,21 @@ export class TransfersPage implements OnInit {
   }
 
   private buildClubBoards(teams: Team[], transfers: Transfer[]): ClubTransferBoard[] {
-    return teams
-      .map((team) => {
-        const arrivals = transfers.filter(
-          (t) =>
-            t.toTeamId === team.id &&
-            (t.type === 'JOIN' || t.type === 'LOAN'),
-        );
-        const departures = transfers.filter(
-          (t) =>
-            t.fromTeamId === team.id &&
-            (t.type === 'LEAVE' || t.type === 'LOAN'),
-        );
-        const extensions = transfers.filter(
-          (t) =>
-            t.type === 'EXTENSION' &&
-            (t.toTeamId === team.id || t.fromTeamId === team.id),
-        );
-        return { team, arrivals, departures, extensions };
-      });
+    return teams.map((team) => {
+      const arrivals = transfers.filter(
+        (t) =>
+          t.toTeamId === team.id && (t.type === 'JOIN' || t.type === 'LOAN'),
+      );
+      const departures = transfers.filter(
+        (t) =>
+          t.fromTeamId === team.id && (t.type === 'LEAVE' || t.type === 'LOAN'),
+      );
+      const extensions = transfers.filter(
+        (t) =>
+          t.type === 'EXTENSION' &&
+          (t.toTeamId === team.id || t.fromTeamId === team.id),
+      );
+      return { team, arrivals, departures, extensions };
+    });
   }
 }

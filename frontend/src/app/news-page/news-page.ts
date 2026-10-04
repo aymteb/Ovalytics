@@ -7,7 +7,7 @@ import {
   competitionBadgeClass,
   competitionLabel,
 } from '../competition-display';
-import { NewsNav } from '../news-nav';
+import { NavBack } from '../nav-back';
 
 @Component({
   selector: 'app-news-page',
@@ -21,7 +21,7 @@ export class NewsPage implements OnInit {
   loading = signal(true);
 
   private readonly api = inject(CompetitionApi);
-  private readonly newsNav = inject(NewsNav);
+  private readonly navBack = inject(NavBack);
   private readonly viewport = inject(ViewportScroller);
 
   ngOnInit(): void {
@@ -38,20 +38,19 @@ export class NewsPage implements OnInit {
     });
   }
 
-  openArticle(): void {
-    this.newsNav.leaveFromList();
-  }
-
   readonly competitionLabel = competitionLabel;
   readonly badgeClass = competitionBadgeClass;
 
   private restoreScroll(): void {
-    const y = this.newsNav.consumeRestoreScroll();
+    const y = this.navBack.consumeRestoreScroll('/news');
     if (y <= 0) {
       return;
     }
+    const apply = () => this.viewport.scrollToPosition([0, y]);
     requestAnimationFrame(() => {
-      this.viewport.scrollToPosition([0, y]);
+      apply();
+      setTimeout(apply, 0);
+      setTimeout(apply, 100);
     });
   }
 }

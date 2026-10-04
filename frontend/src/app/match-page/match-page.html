@@ -1,19 +1,11 @@
 <section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
   <p class="mb-6">
-    @if (match(); as m) {
-      <a
-        [routerLink]="backPath(m)"
-        [queryParams]="{ competition: m.competitionCode }"
-        class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
-        >← Retour</a
-      >
-    } @else {
-      <a
-        routerLink="/fixtures"
-        class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
-        >← Retour</a
-      >
-    }
+    <a
+      href="#"
+      (click)="goBack($event)"
+      class="text-sm text-muted-foreground no-underline transition duration-200 hover:text-primary"
+      >{{ backLabel() }}</a
+    >
   </p>
 
   @if (loading()) {

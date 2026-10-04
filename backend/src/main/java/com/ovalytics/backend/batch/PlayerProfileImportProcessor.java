@@ -40,6 +40,9 @@ public class PlayerProfileImportProcessor implements ItemProcessor<PlayerProfile
 		if (isPresent(row.profileUrl())) {
 			player.setAllRugbyProfileUrl(row.profileUrl().trim());
 		}
+		if (isPresent(row.photoUrl())) {
+			player.setPhotoUrl(row.photoUrl().trim());
+		}
 		player.setSeasonMatches(parseInt(row.seasonMatches()));
 		player.setSeasonStarts(parseInt(row.seasonStarts()));
 		player.setSeasonMinutes(parseInt(row.seasonMinutes()));

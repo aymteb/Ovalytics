@@ -1,11 +1,10 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval, startWith, switchMap } from 'rxjs';
+import { forkJoin, interval, startWith, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Match, NewsItem, StandingRow } from '../models';
-import { NewsNav } from '../news-nav';
 import {
   competitionBadgeClass,
   competitionLabel,
@@ -21,7 +20,7 @@ import { TeamLogo } from '../team-logo/team-logo';
 export class HomePage implements OnInit {
   news = signal<NewsItem[]>([]);
   liveMatches = signal<Match[]>([]);
-  weekendFixtures = signal<Match[]>([]);
+  upcomingMatches = signal<Match[]>([]);
   standingsTop = signal<StandingRow[]>([]);
   standingsBottom = signal<StandingRow[]>([]);
   errorMessage = signal('');
@@ -29,13 +28,17 @@ export class HomePage implements OnInit {
   fixturesLoading = signal(true);
 
   private readonly destroyRef = inject(DestroyRef);
-  private readonly newsNav = inject(NewsNav);
+
+  hasLive = computed(() => this.liveMatches().length > 0);
+
+  spotlightMatches = computed(() => {
+    const live = this.liveMatches();
+    const liveIds = new Set(live.map((match) => match.id));
+    const upcoming = this.upcomingMatches().filter((match) => !liveIds.has(match.id));
+    return [...live, ...upcoming].slice(0, 3);
+  });
 
   constructor(private api: CompetitionApi) {}
-
-  openArticle(): void {
-    this.newsNav.leaveFromHome();
-  }
 
   ngOnInit(): void {
     this.api.getNews(4).subscribe({
@@ -60,34 +63,47 @@ export class HomePage implements OnInit {
       },
     });
 
-    this.api.getAllMatches('SCHEDULED').subscribe({
-      next: (matches) => {
-        const sorted = [...matches].sort((a, b) =>
-          a.kickoffAt.localeCompare(b.kickoffAt),
-        );
-        this.weekendFixtures.set(sorted.slice(0, 3));
-        this.fixturesLoading.set(false);
-      },
-      error: () => {
-        this.weekendFixtures.set([]);
-        this.fixturesLoading.set(false);
-      },
-    });
-
     interval(30_000)
       .pipe(
         startWith(0),
-        switchMap(() => this.api.getAllMatches('LIVE')),
+        switchMap(() =>
+          forkJoin({
+            live: this.api.getAllMatches('LIVE'),
+            scheduled: this.api.getAllMatches('SCHEDULED'),
+          }),
+        ),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (matches) => {
+        next: ({ live, scheduled }) => {
           this.liveMatches.set(
-            [...matches].sort((a, b) => a.kickoffAt.localeCompare(b.kickoffAt)),
+            [...live].sort((a, b) => a.kickoffAt.localeCompare(b.kickoffAt)),
           );
+          this.upcomingMatches.set(
+            scheduled
+              .filter((match) => this.isUpcoming(match))
+              .sort((a, b) => a.kickoffAt.localeCompare(b.kickoffAt)),
+          );
+          this.fixturesLoading.set(false);
         },
-        error: () => this.liveMatches.set([]),
+        error: () => {
+          this.liveMatches.set([]);
+          this.upcomingMatches.set([]);
+          this.fixturesLoading.set(false);
+        },
       });
+  }
+
+  isLive(match: Match): boolean {
+    return match.status === 'LIVE';
+  }
+
+  private isUpcoming(match: Match): boolean {
+    const kickoff = Date.parse(match.kickoffAt);
+    if (Number.isNaN(kickoff)) {
+      return false;
+    }
+    return kickoff > Date.now();
   }
 
   readonly competitionLabel = competitionLabel;

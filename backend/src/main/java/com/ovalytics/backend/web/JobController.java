@@ -7,6 +7,7 @@ import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -256,6 +257,12 @@ public class JobController {
 	public ResponseEntity<String> runMatchSheetSync() {
 		int synced = matchSheetSyncService.catchUp();
 		return ResponseEntity.ok("Feuilles synchronisees: " + synced);
+	}
+
+	@PostMapping("/match-sheet-sync/{matchId}")
+	public ResponseEntity<String> runMatchSheetSyncOne(@PathVariable long matchId) {
+		boolean ok = matchSheetSyncService.syncSheetById(matchId);
+		return ResponseEntity.ok(ok ? "Feuille synchronisee" : "Aucune donnee");
 	}
 
 	@PostMapping("/scrape-player-profiles")

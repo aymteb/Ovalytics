@@ -5,6 +5,7 @@ public record PlayerProfileCsvRow(
 		String teamShortName,
 		String playerName,
 		String profileUrl,
+		String photoUrl,
 		String seasonMatches,
 		String seasonStarts,
 		String seasonMinutes,

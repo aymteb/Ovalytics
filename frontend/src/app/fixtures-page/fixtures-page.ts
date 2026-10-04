@@ -1,9 +1,10 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { DatePipe, ViewportScroller } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match } from '../models';
 import { competitionSortRank } from '../competition-display';
+import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
 
 type FixturesView = 'hub' | 'competition';
@@ -37,6 +38,9 @@ export class FixturesPage implements OnInit {
   matchdayGroups = computed(() =>
     this.buildMatchdayGroups(this.competitionMatches()),
   );
+
+  private readonly navBack = inject(NavBack);
+  private readonly viewport = inject(ViewportScroller);
 
   constructor(
     private api: CompetitionApi,
@@ -108,11 +112,25 @@ export class FixturesPage implements OnInit {
           }),
         );
         this.loading.set(false);
+        this.restoreScroll();
       },
       error: () => {
         this.errorMessage.set('Impossible de charger les matchs à venir.');
         this.loading.set(false);
       },
+    });
+  }
+
+  private restoreScroll(): void {
+    const y = this.navBack.consumeRestoreScroll('/fixtures');
+    if (y <= 0) {
+      return;
+    }
+    const apply = () => this.viewport.scrollToPosition([0, y]);
+    requestAnimationFrame(() => {
+      apply();
+      setTimeout(apply, 0);
+      setTimeout(apply, 100);
     });
   }
 

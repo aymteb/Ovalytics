@@ -65,6 +65,9 @@ public class Player {
 	@Column(length = 1000)
 	private String careerHistory;
 
+	@Column(length = 255)
+	private String photoUrl;
+
 	protected Player() {
 	}
 
@@ -248,5 +251,13 @@ public class Player {
 
 	public void setCareerHistory(String careerHistory) {
 		this.careerHistory = careerHistory;
+	}
+
+	public String getPhotoUrl() {
+		return photoUrl;
+	}
+
+	public void setPhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
 	}
 }

@@ -254,10 +254,6 @@ public class CompetitionQueryService {
 		Player player = playerRepository.findByIdWithTeam(playerId)
 				.orElseThrow(() -> new ResponseStatusException(
 						HttpStatus.NOT_FOUND, "Player not found: " + playerId));
-		List<TransferResponse> transfers = mergePlayerTransfers(playerId, player.getName())
-				.stream()
-				.map(this::toTransferResponse)
-				.toList();
 		List<PlayerAppearanceResponse> appearances = matchAppearanceRepository
 				.findByPlayerIdOrderByKickoffDesc(playerId)
 				.stream()
@@ -269,14 +265,16 @@ public class CompetitionQueryService {
 				toTeamResponse(player.getTeam()),
 				player.getTeam().getCompetition().getCode(),
 				player.getTeam().getCompetition().getName(),
+				player.getTeam().getCompetition().getSeason(),
 				player.getPosition(),
 				player.getAge(),
 				player.getHeightCm(),
 				player.getWeightKg(),
 				player.getNationality(),
+				player.getJiffStatus(),
+				player.getPhotoUrl(),
 				resolveTotals(player, appearances),
 				appearances,
-				transfers,
 				player.getCareerHistory());
 	}
 

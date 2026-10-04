@@ -1,8 +1,11 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, NgStyle, NgTemplateOutlet } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Match, MatchEvent, TeamForm, VenueRecord } from '../models';
+import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
 
 export interface MatchScorer {
@@ -61,6 +64,31 @@ export class MatchPage implements OnInit {
   sheetTab = signal<'resume' | 'compositions'>('resume');
   readonly pitchNumbers = PITCH_NUMBERS;
 
+  private readonly navBack = inject(NavBack);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private matchId = 0;
+
+  backPath = computed(() => {
+    this.navBack.revision();
+    if (this.navBack.hasOrigin(this.router.url)) {
+      return this.navBack.originFor(this.router.url).path;
+    }
+    return this.fallbackBackPath(this.match());
+  });
+
+  backLabel = computed(() => {
+    this.navBack.revision();
+    if (this.navBack.hasOrigin(this.router.url)) {
+      return this.navBack.originFor(this.router.url).label;
+    }
+    const match = this.match();
+    if (match?.status === 'LIVE') {
+      return '← Direct';
+    }
+    return '← Retour';
+  });
+
   constructor(
     private route: ActivatedRoute,
     private api: CompetitionApi,
@@ -73,17 +101,13 @@ export class MatchPage implements OnInit {
       this.loading.set(false);
       return;
     }
+    this.matchId = id;
 
     this.api.getMatch(id).subscribe({
       next: (match) => {
-        this.match.set({
-          ...match,
-          events: match.events ?? [],
-          homeTries: match.homeTries ?? null,
-          awayTries: match.awayTries ?? null,
-          lineups: match.lineups ?? [],
-        });
+        this.applyMatch(match);
         this.loading.set(false);
+        this.startLivePolling();
       },
       error: () => {
         this.errorMessage.set('Impossible de charger ce match.');
@@ -92,15 +116,63 @@ export class MatchPage implements OnInit {
     });
   }
 
+  private startLivePolling(): void {
+    interval(30_000)
+      .pipe(
+        filter(() => this.shouldRefreshMatch()),
+        switchMap(() => this.api.getMatch(this.matchId)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (match) => this.applyMatch(match),
+      });
+  }
+
+  private shouldRefreshMatch(): boolean {
+    const match = this.match();
+    if (!match || !this.matchId) {
+      return false;
+    }
+    if (match.status === 'LIVE') {
+      return true;
+    }
+    if (match.status === 'SCHEDULED') {
+      return Date.parse(match.kickoffAt) <= Date.now();
+    }
+    return false;
+  }
+
+  private applyMatch(match: Match): void {
+    this.match.set({
+      ...match,
+      events: match.events ?? [],
+      homeTries: match.homeTries ?? null,
+      awayTries: match.awayTries ?? null,
+      lineups: match.lineups ?? [],
+    });
+  }
+
+  goBack(event: Event): void {
+    event.preventDefault();
+    this.navBack.prepareBack(this.router.url);
+    void this.router.navigateByUrl(this.backPath());
+  }
+
   selectSheetTab(tab: 'resume' | 'compositions'): void {
     this.sheetTab.set(tab);
   }
 
-  backPath(match: Match): string {
-    if (match.status === 'FINISHED' || match.status === 'LIVE') {
-      return '/results';
+  private fallbackBackPath(match: Match | null): string {
+    if (!match) {
+      return '/fixtures';
     }
-    return '/fixtures';
+    if (match.status === 'LIVE') {
+      return '/live';
+    }
+    if (match.status === 'FINISHED') {
+      return `/results?competition=${match.competitionCode}`;
+    }
+    return `/fixtures?competition=${match.competitionCode}`;
   }
 
   hasLineups(match: Match): boolean {
