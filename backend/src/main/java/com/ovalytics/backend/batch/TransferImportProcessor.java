@@ -1,7 +1,6 @@
 package com.ovalytics.backend.batch;
 
 import java.time.LocalDate;
-import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.batch.infrastructure.item.ItemProcessor;
@@ -13,27 +12,23 @@ import com.ovalytics.backend.domain.Team;
 import com.ovalytics.backend.domain.Transfer;
 import com.ovalytics.backend.domain.TransferType;
 import com.ovalytics.backend.repository.CompetitionRepository;
-import com.ovalytics.backend.repository.PlayerRepository;
-import com.ovalytics.backend.repository.TeamRepository;
 import com.ovalytics.backend.repository.TransferRepository;
+import com.ovalytics.backend.service.TransferPlayerLinker;
 
 @Component
 public class TransferImportProcessor implements ItemProcessor<TransferCsvRow, Transfer> {
 
 	private final CompetitionRepository competitionRepository;
-	private final TeamRepository teamRepository;
 	private final TransferRepository transferRepository;
-	private final PlayerRepository playerRepository;
+	private final TransferPlayerLinker transferPlayerLinker;
 
 	public TransferImportProcessor(
 			CompetitionRepository competitionRepository,
-			TeamRepository teamRepository,
 			TransferRepository transferRepository,
-			PlayerRepository playerRepository) {
+			TransferPlayerLinker transferPlayerLinker) {
 		this.competitionRepository = competitionRepository;
-		this.teamRepository = teamRepository;
 		this.transferRepository = transferRepository;
-		this.playerRepository = playerRepository;
+		this.transferPlayerLinker = transferPlayerLinker;
 	}
 
 	@Override
@@ -46,13 +41,19 @@ public class TransferImportProcessor implements ItemProcessor<TransferCsvRow, Tr
 		LocalDate transferDate = LocalDate.parse(row.transferDate());
 		String fromClubKey = clubKey(row.fromClub());
 		String toClubKey = clubKey(row.toClub());
-		Team fromTeam = resolveTeam(row.competitionCode(), row.fromClub());
-		Team toTeam = resolveTeam(row.competitionCode(), row.toClub());
+		Team fromTeam = transferPlayerLinker.resolveTeam(row.competitionCode(), row.fromClub());
+		Team toTeam = transferPlayerLinker.resolveTeam(row.competitionCode(), row.toClub());
 		String contractLength = blankToNull(row.contractLength());
-		Player player = resolvePlayer(fromTeam, toTeam, row.playerName());
+		Player player = transferPlayerLinker.resolveOrCreatePlayer(
+				type,
+				row.competitionCode(),
+				fromTeam,
+				toTeam,
+				row.playerName());
 
 		return findExisting(row.competitionCode(), row.playerName(), transferDate, type, fromClubKey, toClubKey)
 				.map(existing -> {
+					existing.setTransferDate(transferDate);
 					existing.setFromTeam(fromTeam);
 					existing.setToTeam(toTeam);
 					existing.setFromClubName(fromClubKey);
@@ -94,13 +95,25 @@ public class TransferImportProcessor implements ItemProcessor<TransferCsvRow, Tr
 		if (byClubs.isPresent()) {
 			return byClubs;
 		}
-		return transferRepository
+		Optional<Transfer> byDate = transferRepository
 				.findByCompetitionCodeAndPlayerNameAndTransferDateAndType(
 						competitionCode,
 						playerName,
 						transferDate,
 						type)
 				.filter(existing -> matchesLegacyImport(existing, fromClubKey, toClubKey));
+		if (byDate.isPresent()) {
+			return byDate;
+		}
+		return transferRepository
+				.findByCompetitionCodeAndPlayerNameAndTypeAndClubs(
+						competitionCode,
+						playerName,
+						type,
+						fromClubKey,
+						toClubKey)
+				.stream()
+				.findFirst();
 	}
 
 	private boolean matchesLegacyImport(Transfer existing, String fromClubKey, String toClubKey) {
@@ -118,44 +131,6 @@ public class TransferImportProcessor implements ItemProcessor<TransferCsvRow, Tr
 			return team.getShortName();
 		}
 		return "";
-	}
-
-	private Team resolveTeam(String competitionCode, String club) {
-		if (club == null || club.isBlank()) {
-			return null;
-		}
-		String value = club.trim();
-		if (value.length() <= 5 && value.equals(value.toUpperCase(Locale.ROOT))) {
-			return teamRepository
-					.findByCompetitionCodeAndShortName(competitionCode, value)
-					.orElse(null);
-		}
-		return teamRepository.findByCompetitionCodeOrderByNameAsc(competitionCode).stream()
-				.filter(team -> team.getName().equalsIgnoreCase(value)
-						|| team.getShortName().equalsIgnoreCase(value))
-				.findFirst()
-				.orElse(null);
-	}
-
-	private Player resolvePlayer(Team fromTeam, Team toTeam, String playerName) {
-		String name = cleanName(playerName);
-		if (toTeam != null) {
-			Optional<Player> player = playerRepository.findByTeamIdAndNameIgnoreCase(toTeam.getId(), name);
-			if (player.isPresent()) {
-				return player.get();
-			}
-		}
-		if (fromTeam != null) {
-			return playerRepository.findByTeamIdAndNameIgnoreCase(fromTeam.getId(), name).orElse(null);
-		}
-		return null;
-	}
-
-	private static String cleanName(String value) {
-		if (value == null) {
-			return "";
-		}
-		return value.replace("&#039;", "'").replace("&amp;", "&").trim();
 	}
 
 	private static String clubKey(String value) {

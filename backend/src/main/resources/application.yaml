@@ -100,6 +100,13 @@ ovalytics:
     repo-root: ..
     python-command: python3
     output: data/import/absences.csv
+  transfer-sync:
+    enabled: false
+    cron: "0 0 8,12,16,20 * * *"
+    scrape-enabled: true
+    repo-root: ..
+    python-command: python3
+    output: data/import/transfers.csv
   h2h-sync:
     enabled: false
     cron: "0 0 7 * * *"

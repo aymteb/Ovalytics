@@ -24,6 +24,8 @@ import com.ovalytics.backend.service.MatchSheetSyncService;
 import com.ovalytics.backend.service.NewsSyncScheduler;
 import com.ovalytics.backend.service.TeamRefreshScraperService;
 import com.ovalytics.backend.service.TeamRefreshScheduler;
+import com.ovalytics.backend.service.TransferPlayerLinker;
+import com.ovalytics.backend.service.TransferSyncScheduler;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -57,6 +59,8 @@ public class JobController {
 	private final CalendarSyncScheduler calendarSyncScheduler;
 	private final NewsSyncScheduler newsSyncScheduler;
 	private final AbsenceSyncScheduler absenceSyncScheduler;
+	private final TransferSyncScheduler transferSyncScheduler;
+	private final TransferPlayerLinker transferPlayerLinker;
 	private final H2hSyncScheduler h2hSyncScheduler;
 	private final MatchAnalysisService matchAnalysisService;
 	private final MatchAnalysisLlmClient matchAnalysisLlmClient;
@@ -91,6 +95,8 @@ public class JobController {
 			CalendarSyncScheduler calendarSyncScheduler,
 			NewsSyncScheduler newsSyncScheduler,
 			AbsenceSyncScheduler absenceSyncScheduler,
+			TransferSyncScheduler transferSyncScheduler,
+			TransferPlayerLinker transferPlayerLinker,
 			H2hSyncScheduler h2hSyncScheduler,
 			MatchAnalysisService matchAnalysisService,
 			MatchAnalysisLlmClient matchAnalysisLlmClient,
@@ -123,6 +129,8 @@ public class JobController {
 		this.calendarSyncScheduler = calendarSyncScheduler;
 		this.newsSyncScheduler = newsSyncScheduler;
 		this.absenceSyncScheduler = absenceSyncScheduler;
+		this.transferSyncScheduler = transferSyncScheduler;
+		this.transferPlayerLinker = transferPlayerLinker;
 		this.h2hSyncScheduler = h2hSyncScheduler;
 		this.matchAnalysisService = matchAnalysisService;
 		this.matchAnalysisLlmClient = matchAnalysisLlmClient;
@@ -245,6 +253,18 @@ public class JobController {
 	public ResponseEntity<String> runAbsenceSync() {
 		absenceSyncScheduler.runSync();
 		return ResponseEntity.ok("Sync absences lance");
+	}
+
+	@PostMapping("/transfer-sync")
+	public ResponseEntity<String> runTransferSync() {
+		transferSyncScheduler.runSync();
+		return ResponseEntity.ok("Sync transferts lance");
+	}
+
+	@PostMapping("/transfer-player-backfill")
+	public ResponseEntity<String> runTransferPlayerBackfill() {
+		int linked = transferPlayerLinker.backfillUnlinked();
+		return ResponseEntity.ok("Transferts rattaches: " + linked);
 	}
 
 	@PostMapping("/h2h-sync")

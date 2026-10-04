@@ -111,6 +111,10 @@ public class Transfer {
 		return transferDate;
 	}
 
+	public void setTransferDate(LocalDate transferDate) {
+		this.transferDate = transferDate;
+	}
+
 	public Team getFromTeam() {
 		return fromTeam;
 	}

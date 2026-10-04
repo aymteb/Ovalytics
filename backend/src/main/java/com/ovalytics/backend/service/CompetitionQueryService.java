@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,8 +201,8 @@ public class CompetitionQueryService {
 		Team team = teamRepository.findByCompetitionCodeAndShortName(competitionCode, shortName)
 				.orElseThrow(() -> new ResponseStatusException(
 						HttpStatus.NOT_FOUND, "Club not found: " + shortName));
-		List<Transfer> transfers = transferRepository
-				.findByCompetitionCodeOrderByTransferDateDesc(competitionCode);
+		List<Transfer> transfers = dedupeJournalTransfers(
+				transferRepository.findByCompetitionCodeOrderByTransferDateDesc(competitionCode));
 
 		List<TransferResponse> arrivals = transfers.stream()
 				.filter(this::keepForPublicMercato)
@@ -599,10 +600,12 @@ public class CompetitionQueryService {
 			Team team,
 			List<SquadPlayerResponse> squad,
 			int contractEndWatchYear) {
+		Set<String> leftOrExtended = playerNamesLeavingOrExtended(transfers, team);
 		List<SquadPlayerResponse> fromTransfers = transfers.stream()
 				.filter(t -> t.getType() == TransferType.CONTRACT_END)
 				.filter(t -> t.getFromTeam() != null && t.getFromTeam().getId().equals(team.getId()))
 				.filter(t -> matchesContractEndYear(t, contractEndWatchYear))
+				.filter(t -> !leftOrExtended.contains(normalizePlayerName(t.getPlayerName())))
 				.map(t -> toContractEndPlayer(t, team))
 				.sorted(Comparator.comparing(SquadPlayerResponse::name, String.CASE_INSENSITIVE_ORDER))
 				.toList();
@@ -612,8 +615,28 @@ public class CompetitionQueryService {
 		return squad.stream()
 				.filter(p -> p.contractEndDate() != null
 						&& p.contractEndDate().getYear() == contractEndWatchYear)
+				.filter(p -> !leftOrExtended.contains(normalizePlayerName(p.name())))
 				.sorted(Comparator.comparing(SquadPlayerResponse::name, String.CASE_INSENSITIVE_ORDER))
 				.toList();
+	}
+
+	private Set<String> playerNamesLeavingOrExtended(List<Transfer> transfers, Team team) {
+		Long teamId = team.getId();
+		Set<String> names = new HashSet<>();
+		for (Transfer transfer : transfers) {
+			if (transfer.getType() == TransferType.EXTENSION
+					&& ((transfer.getToTeam() != null && transfer.getToTeam().getId().equals(teamId))
+							|| (transfer.getFromTeam() != null && transfer.getFromTeam().getId().equals(teamId)))) {
+				names.add(normalizePlayerName(transfer.getPlayerName()));
+				continue;
+			}
+			if ((transfer.getType() == TransferType.LEAVE || transfer.getType() == TransferType.LOAN)
+					&& transfer.getFromTeam() != null
+					&& transfer.getFromTeam().getId().equals(teamId)) {
+				names.add(normalizePlayerName(transfer.getPlayerName()));
+			}
+		}
+		return names;
 	}
 
 	private SquadPlayerResponse toContractEndPlayer(Transfer transfer, Team team) {
@@ -666,23 +689,12 @@ public class CompetitionQueryService {
 		for (Transfer transfer : transfers) {
 			String key = normalizePlayerName(transfer.getPlayerName())
 					+ "|"
-					+ transfer.getTransferDate();
+					+ transfer.getType().name();
 			groups.computeIfAbsent(key, ignored -> new ArrayList<>()).add(transfer);
 		}
 		List<Transfer> kept = new ArrayList<>();
 		for (List<Transfer> group : groups.values()) {
-			if (group.size() == 1) {
-				kept.add(group.get(0));
-				continue;
-			}
-			Transfer chosen = group.stream()
-					.filter(t -> t.getType() == TransferType.JOIN)
-					.findFirst()
-					.orElseGet(() -> group.stream()
-							.filter(t -> t.getType() == TransferType.LOAN)
-							.findFirst()
-							.orElse(group.get(0)));
-			kept.add(chosen);
+			kept.add(pickJournalTransfer(group));
 		}
 		kept.sort(Comparator
 				.comparing(Transfer::getTransferDate)
@@ -690,6 +702,15 @@ public class CompetitionQueryService {
 				.thenComparing(t -> normalizePlayerName(t.getPlayerName()))
 				.thenComparing(Transfer::getId, Comparator.reverseOrder()));
 		return kept;
+	}
+
+	private Transfer pickJournalTransfer(List<Transfer> group) {
+		return group.stream()
+				.max(Comparator
+						.comparing((Transfer t) -> t.getPlayer() != null)
+						.thenComparing(Transfer::getTransferDate)
+						.thenComparing(Transfer::getId))
+				.orElse(group.get(0));
 	}
 
 	private boolean keepForPublicMercato(Transfer transfer) {

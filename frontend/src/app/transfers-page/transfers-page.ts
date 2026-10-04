@@ -133,6 +133,53 @@ export class TransfersPage implements OnInit {
     return label?.trim() || '—';
   }
 
+  extensionClubShort(transfer: Transfer): string | null {
+    return this.clubShort(transfer, 'to') ?? this.clubShort(transfer, 'from');
+  }
+
+  journalBadge(transfer: Transfer): { label: string; tone: 'extend' | 'move' | 'leave' } {
+    if (transfer.type === 'EXTENSION') {
+      return { label: 'Prolongation', tone: 'extend' };
+    }
+    if (this.isRetirement(transfer.toClub)) {
+      return { label: 'Retraite', tone: 'leave' };
+    }
+    const fromKnown = this.isKnownClub(transfer, 'from');
+    const toKnown = this.isKnownClub(transfer, 'to');
+    if (fromKnown && toKnown) {
+      return { label: 'Transfert', tone: 'move' };
+    }
+    if (toKnown && !fromKnown) {
+      return { label: 'Arrivée', tone: 'move' };
+    }
+    return { label: 'Départ', tone: 'leave' };
+  }
+
+  badgeClass(tone: 'extend' | 'move' | 'leave'): string {
+    const base =
+      'rounded px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide';
+    switch (tone) {
+      case 'extend':
+        return `${base} bg-emerald-500/10 text-emerald-300`;
+      case 'move':
+        return `${base} bg-sky-500/10 text-sky-300`;
+      case 'leave':
+        return `${base} bg-rose-500/10 text-rose-300`;
+    }
+  }
+
+  private isKnownClub(transfer: Transfer, side: 'from' | 'to'): boolean {
+    if (this.clubShort(transfer, side)) {
+      return true;
+    }
+    return side === 'from' ? transfer.fromTeamId != null : transfer.toTeamId != null;
+  }
+
+  private isRetirement(label: string | null | undefined): boolean {
+    const value = label?.trim().toLowerCase() ?? '';
+    return value.includes('retraite');
+  }
+
   private syncQuery(tab: TransfersTab, competition: string): void {
     void this.router.navigate([], {
       relativeTo: this.route,
