@@ -37,6 +37,45 @@ const TEAM_BRANDS: Record<string, TeamBrand> = {
   AGE: { bg: '#003366', text: '#FFFFFF' },
   BRI: { bg: '#FFD700', text: '#1A1A1A' },
   VAL: { bg: '#C8102E', text: '#FFFFFF' },
+  MAS: { bg: '#1A1A1A', text: '#FFFFFF' },
+  CAR: { bg: '#FFD700', text: '#1A1A1A' },
+  ALB: { bg: '#E30613', text: '#FFFFFF' },
+  MDM: { bg: '#FFD700', text: '#1A1A1A' },
+  ROU: { bg: '#E30613', text: '#FFFFFF' },
+  SUR: { bg: '#003DA5', text: '#FFFFFF' },
+  BOU: { bg: '#006633', text: '#FFFFFF' },
+  ORL: { bg: '#003366', text: '#FFFFFF' },
+  PER: { bg: '#8B0000', text: '#FFFFFF' },
+  REN: { bg: '#E30613', text: '#FFFFFF' },
+  VIE: { bg: '#0054A6', text: '#FFFFFF' },
+  USB: { bg: '#1A1A1A', text: '#FFFFFF' },
+  MAR: { bg: '#003DA5', text: '#FFFFFF' },
+  NOR: { bg: '#006633', text: '#FFFFFF' },
+  GLO: { bg: '#8B0000', text: '#FFFFFF' },
+  BAT: { bg: '#003DA5', text: '#FFFFFF' },
+  BRS: { bg: '#003366', text: '#FFFFFF' },
+  SAR: { bg: '#1A1A1A', text: '#FFFFFF' },
+  LEIC: { bg: '#006633', text: '#FFFFFF' },
+  EXE: { bg: '#1A1A1A', text: '#FFFFFF' },
+  NEW: { bg: '#1A1A1A', text: '#FFFFFF' },
+  SAL: { bg: '#003DA5', text: '#FFFFFF' },
+  HAR: { bg: '#5C068C', text: '#FFFFFF' },
+  BUL: { bg: '#E30613', text: '#FFFFFF' },
+  SHA: { bg: '#1A1A1A', text: '#FFFFFF' },
+  STO: { bg: '#003366', text: '#FFFFFF' },
+  GLA: { bg: '#003DA5', text: '#FFFFFF' },
+  EDI: { bg: '#E30613', text: '#FFFFFF' },
+  CDF: { bg: '#003366', text: '#FFFFFF' },
+  LIO: { bg: '#E30613', text: '#FFFFFF' },
+  DRA: { bg: '#FFD700', text: '#1A1A1A' },
+  TRE: { bg: '#006633', text: '#FFFFFF' },
+  LEI: { bg: '#003DA5', text: '#FFFFFF' },
+  ULS: { bg: '#E30613', text: '#FFFFFF' },
+  MUN: { bg: '#E30613', text: '#FFFFFF' },
+  SCA: { bg: '#E30613', text: '#FFFFFF' },
+  OSP: { bg: '#1A1A1A', text: '#FFFFFF' },
+  CON: { bg: '#006633', text: '#FFFFFF' },
+  ZEB: { bg: '#FFD700', text: '#1A1A1A' },
 };
 
 export function getTeamBrand(shortName: string): TeamBrand {
@@ -97,7 +136,56 @@ const CLUB_LABEL_TO_SHORT: Record<string, string> = {
   montauban: 'MTB',
   valence: 'VAL',
   'valence romans': 'VAL',
+  massy: 'MAS',
+  carcassonne: 'CAR',
+  albi: 'ALB',
+  'mont de marsan': 'MDM',
+  'mont-de-marsan': 'MDM',
+  chambery: 'CHA',
+  chambéry: 'CHA',
+  rouen: 'ROU',
+  suresnes: 'SUR',
+  bourgoin: 'BOU',
+  orleans: 'ORL',
+  orléans: 'ORL',
+  perigueux: 'PER',
+  périgueux: 'PER',
+  rennes: 'REN',
+  vienne: 'VIE',
+  'bourg en bresse': 'USB',
+  'bourg-en-bresse': 'USB',
+  'marcq en baroeul': 'MAR',
+  'marcq-en-baroeul': 'MAR',
+  northampton: 'NOR',
+  gloucester: 'GLO',
+  bath: 'BAT',
+  bristol: 'BRS',
+  saracens: 'SAR',
+  leicester: 'LEIC',
+  exeter: 'EXE',
+  newcastle: 'NEW',
+  sale: 'SAL',
+  harlequins: 'HAR',
+  bulls: 'BUL',
+  sharks: 'SHA',
+  stormers: 'STO',
+  glasgow: 'GLA',
+  edinburgh: 'EDI',
+  cardiff: 'CDF',
+  lions: 'LIO',
+  dragons: 'DRA',
+  benetton: 'TRE',
+  treviso: 'TRE',
+  leinster: 'LEI',
+  ulster: 'ULS',
+  munster: 'MUN',
+  scarlets: 'SCA',
+  ospreys: 'OSP',
+  connacht: 'CON',
+  zebre: 'ZEB',
 };
+
+const SHORT_CODE = /^[A-Z][A-Z0-9]{1,4}$/;
 
 function normalizeClubLabel(label: string): string {
   return label
@@ -105,6 +193,7 @@ function normalizeClubLabel(label: string): string {
     .toLowerCase()
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
+    .replace(/[-_/]+/g, ' ')
     .replace(/\s+/g, ' ');
 }
 
@@ -121,6 +210,9 @@ export function resolveClubShort(label: string | null | undefined): string | nul
   }
   const upper = trimmed.toUpperCase();
   if (TEAM_BRANDS[upper]) {
+    return upper;
+  }
+  if (SHORT_CODE.test(upper)) {
     return upper;
   }
   const normalized = normalizeClubLabel(trimmed);

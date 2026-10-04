@@ -89,39 +89,58 @@
                 <td class="px-4 py-3 text-muted-foreground">{{ t.competitionName }}</td>
                 <td class="px-4 py-3 font-medium">
                   @if (playerLink(t); as link) {
-                    <a [routerLink]="link" class="text-foreground no-underline hover:text-primary">{{
-                      t.playerName
-                    }}</a>
+                    <a
+                      [routerLink]="link"
+                      class="cursor-pointer text-foreground hover:text-primary"
+                      >{{ t.playerName }}</a
+                    >
                   } @else {
                     {{ t.playerName }}
                   }
                 </td>
                 <td class="px-4 py-3">
                   <div class="flex flex-wrap items-center gap-2">
-                    <span class="inline-flex items-center gap-1">
-                      @if (clubShort(t, 'from'); as fromShort) {
-                        <app-team-logo [shortName]="fromShort" size="sm" />
-                      } @else {
-                        <span class="text-xs text-muted-foreground">{{
-                          clubFallback(t, 'from')
-                        }}</span>
-                      }
-                    </span>
-                    <span class="text-muted-foreground" aria-hidden="true">→</span>
-                    <span class="inline-flex items-center gap-1">
-                      @if (clubShort(t, 'to'); as toShort) {
-                        <app-team-logo [shortName]="toShort" size="sm" />
+                    @if (t.type === 'EXTENSION') {
+                      @if (extensionClubShort(t); as club) {
+                        <app-team-logo [shortName]="club" size="sm" />
                       } @else {
                         <span class="text-xs text-muted-foreground">{{
                           clubFallback(t, 'to')
                         }}</span>
                       }
-                    </span>
-                    <span
-                      class="rounded border border-border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground"
-                      [attr.data-type]="t.type"
-                      >{{ typeLabel(t.type) }}</span
-                    >
+                    } @else {
+                      <span class="inline-flex items-center gap-1">
+                        @if (clubShort(t, 'from'); as fromShort) {
+                          <app-team-logo [shortName]="fromShort" size="sm" />
+                        } @else {
+                          <span class="text-xs text-muted-foreground">{{
+                            clubFallback(t, 'from')
+                          }}</span>
+                        }
+                      </span>
+                      <svg
+                        class="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M11.3 3.3a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 1 1-1.4-1.4L14.58 11H3a1 1 0 1 1 0-2h11.58l-3.28-3.3a1 1 0 0 1 0-1.4Z"
+                        />
+                      </svg>
+                      <span class="inline-flex items-center gap-1">
+                        @if (clubShort(t, 'to'); as toShort) {
+                          <app-team-logo [shortName]="toShort" size="sm" />
+                        } @else {
+                          <span class="text-xs text-muted-foreground">{{
+                            clubFallback(t, 'to')
+                          }}</span>
+                        }
+                      </span>
+                    }
+                    @if (journalBadge(t); as badge) {
+                      <span [class]="badgeClass(badge.tone)">{{ badge.label }}</span>
+                    }
                   </div>
                 </td>
                 @if (showDurationColumn()) {
@@ -175,7 +194,7 @@
                         @if (playerLink(t); as link) {
                           <a
                             [routerLink]="link"
-                            class="font-medium text-foreground no-underline hover:text-primary"
+                            class="cursor-pointer font-medium text-foreground hover:text-primary"
                             >{{ t.playerName }}</a
                           >
                         } @else {
@@ -205,7 +224,7 @@
                         @if (playerLink(t); as link) {
                           <a
                             [routerLink]="link"
-                            class="font-medium text-foreground no-underline hover:text-primary"
+                            class="cursor-pointer font-medium text-foreground hover:text-primary"
                             >{{ t.playerName }}</a
                           >
                         } @else {
@@ -235,7 +254,7 @@
                         @if (playerLink(t); as link) {
                           <a
                             [routerLink]="link"
-                            class="font-medium text-foreground no-underline hover:text-primary"
+                            class="cursor-pointer font-medium text-foreground hover:text-primary"
                             >{{ t.playerName }}</a
                           >
                         } @else {

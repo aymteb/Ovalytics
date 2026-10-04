@@ -6,9 +6,12 @@ import html
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from datetime import date
 from pathlib import Path
+
+from clubs_config import CLUBS
 
 BASE_URL = "https://www.allrugby.com"
 CSV_HEADERS = [
@@ -21,39 +24,6 @@ CSV_HEADERS = [
     "contractLength",
 ]
 
-CLUB_DOSSIERS = [
-    ("TOP14", "TOU", "transferts-stade-toulousain"),
-    ("TOP14", "UBB", "transferts-union-bordeaux-begles"),
-    ("TOP14", "RAC", "transferts-racing-92"),
-    ("TOP14", "SFP", "transferts-stade-francais-paris"),
-    ("TOP14", "TOL", "transferts-rugby-club-toulonnais"),
-    ("TOP14", "LAR", "transferts-la-rochelle"),
-    ("TOP14", "ASM", "transferts-asm-clermont-auvergne"),
-    ("TOP14", "LOU", "transferts-lou"),
-    ("TOP14", "MHR", "transferts-montpellier"),
-    ("TOP14", "CAS", "transferts-castres-olympique"),
-    ("TOP14", "PAU", "transferts-pau"),
-    ("TOP14", "BAY", "transferts-aviron-bayonnais"),
-    ("TOP14", "USAP", "transferts-usap"),
-    ("TOP14", "VAN", "transferts-rcvannes"),
-    ("PROD2", "BEZ", "transferts-asbh"),
-    ("PROD2", "OYO", "transferts-us-oyonnax-rugby"),
-    ("PROD2", "COL", "transferts-colomiers"),
-    ("PROD2", "NEV", "transferts-uson-nevers-rugby"),
-    ("PROD2", "AIX", "transferts-provence-rugby"),
-    ("PROD2", "GRE", "transferts-grenoble-rugby"),
-    ("PROD2", "BIA", "transferts-biarritz-olympique"),
-    ("PROD2", "AGE", "transferts-agen"),
-    ("PROD2", "BRI", "transferts-ca-brive-correze-limousin"),
-    ("PROD2", "NIC", "transferts-stade-nicois"),
-    ("PROD2", "ANG", "transferts-saxv"),
-    ("PROD2", "DAX", "transferts-us-dax-rugby-landes"),
-    ("PROD2", "NAR", "transferts-narbonne"),
-    ("PROD2", "AUR", "transferts-aurillac"),
-    ("PROD2", "MTB", "transferts-montauban"),
-    ("PROD2", "VAL", "transferts-valence-romans"),
-]
-
 SECTION_TYPES = {
     "Arrivées": "JOIN",
     "Départs": "LEAVE",
@@ -62,14 +32,11 @@ SECTION_TYPES = {
     "En Fin de contrat": "CONTRACT_END",
 }
 
-TOP14_SHORTS = frozenset(short for code, short, _ in CLUB_DOSSIERS if code == "TOP14")
-PROD2_SHORTS = frozenset(short for code, short, _ in CLUB_DOSSIERS if code == "PROD2")
-
 
 def competition_shorts(competition_code: str) -> frozenset[str]:
-    if competition_code == "TOP14":
-        return TOP14_SHORTS
-    return PROD2_SHORTS
+    return frozenset(
+        short for code, short, _club_slug, _mercato in CLUBS if code == competition_code
+    )
 
 
 def row_relevance_score(row: dict) -> int:
@@ -198,7 +165,12 @@ def dossier_url(dossier: str, today: date | None = None) -> str:
     return f"{BASE_URL}/dossiers/{dossier}{suffix}.html"
 
 
-def scrape_club(competition_code: str, short_name: str, dossier: str, transfer_date: str) -> list[dict]:
+def scrape_club(
+    competition_code: str,
+    short_name: str,
+    dossier: str,
+    transfer_date: str,
+) -> list[dict]:
     url = dossier_url(dossier)
     html_text = fetch(url)
     rows = []
@@ -248,19 +220,45 @@ def write_csv(rows: list[dict], output: Path) -> None:
             writer.writerow({key: row.get(key, "") for key in CSV_HEADERS})
 
 
+def selected_clubs(team_filter: set[str]) -> list[tuple[str, str, str, str]]:
+    clubs = [
+        club
+        for club in CLUBS
+        if club[3]
+    ]
+    if not team_filter:
+        return clubs
+    return [club for club in clubs if club[1] in team_filter]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Scrap les mercatos All Rugby (saison suivante)")
     parser.add_argument("--output", default="data/import/transfers.csv")
     parser.add_argument("--delay", type=float, default=0.2)
+    parser.add_argument(
+        "--teams",
+        default="",
+        help="Codes clubs à scraper (ex: BAT,ALB). Vide = tous.",
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent
     output = (root / args.output).resolve()
     transfer_date = date.today().isoformat()
     suffix = mercato_path_suffix()
-    print(f"Mercato AllRugby suffix={suffix or '(aucun)'}", file=sys.stderr)
+    team_filter = {
+        code.strip().upper()
+        for code in args.teams.split(",")
+        if code.strip()
+    }
+    clubs = selected_clubs(team_filter)
+    if not clubs:
+        print("Aucun club correspondant.", file=sys.stderr)
+        return 1
+
+    print(f"Mercato AllRugby suffix={suffix or '(aucun)'} clubs={len(clubs)}", file=sys.stderr)
     rows = []
-    for competition_code, short_name, dossier in CLUB_DOSSIERS:
+    for competition_code, short_name, _club_slug, dossier in clubs:
         print(f"  {short_name} ({competition_code})...", file=sys.stderr)
         try:
             rows.extend(scrape_club(competition_code, short_name, dossier, transfer_date))
@@ -273,7 +271,12 @@ def main() -> int:
 
     rows = dedupe_rows(rows)
     write_csv(rows, output)
+    by_comp: dict[str, int] = {}
+    for row in rows:
+        by_comp[row["competitionCode"]] = by_comp.get(row["competitionCode"], 0) + 1
     print(f"{len(rows)} lignes -> {output}")
+    for code in sorted(by_comp):
+        print(f"  {code}: {by_comp[code]}", file=sys.stderr)
     return 0
 
 

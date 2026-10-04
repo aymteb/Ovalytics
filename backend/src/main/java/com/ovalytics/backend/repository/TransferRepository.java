@@ -1,6 +1,7 @@
 package com.ovalytics.backend.repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,4 +93,30 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
 			@Param("playerName") String playerName,
 			@Param("transferDate") LocalDate transferDate,
 			@Param("type") TransferType type);
+
+	@Query("""
+			select t from Transfer t
+			where t.competition.code = :code
+			  and t.playerName = :playerName
+			  and t.type = :type
+			  and coalesce(t.fromClubName, '') = :fromClub
+			  and coalesce(t.toClubName, '') = :toClub
+			order by t.transferDate desc, t.id desc
+			""")
+	List<Transfer> findByCompetitionCodeAndPlayerNameAndTypeAndClubs(
+			@Param("code") String code,
+			@Param("playerName") String playerName,
+			@Param("type") TransferType type,
+			@Param("fromClub") String fromClub,
+			@Param("toClub") String toClub);
+
+	@Query("""
+			select t from Transfer t
+			join fetch t.competition
+			left join fetch t.fromTeam
+			left join fetch t.toTeam
+			where t.player is null
+			  and t.type in :types
+			""")
+	List<Transfer> findUnlinkedByTypes(@Param("types") Collection<TransferType> types);
 }
