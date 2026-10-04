@@ -165,14 +165,16 @@ export interface PlayerDetail {
   team: Team;
   competitionCode: string;
   competitionName: string;
+  season: string | null;
   position: string | null;
   age: number | null;
   heightCm: number | null;
   weightKg: number | null;
   nationality: string | null;
+  jiffStatus: string | null;
+  photoUrl: string | null;
   totals: PlayerTotals;
   appearances: PlayerAppearance[];
-  transfers: Transfer[];
   careerHistory: string | null;
 }
 

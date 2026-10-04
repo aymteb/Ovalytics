@@ -1,0 +1,147 @@
+<section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+  <h2
+    class="mb-2 border-l-4 border-primary pl-4 font-display text-3xl uppercase tracking-wide text-foreground"
+  >
+    Direct
+  </h2>
+  <p class="mb-8 text-sm text-muted-foreground">
+    Scores et temps forts en temps réel.
+  </p>
+
+  @if (loading()) {
+    <p class="text-muted-foreground">Chargement…</p>
+  } @else if (errorMessage()) {
+    <p class="font-semibold text-primary">{{ errorMessage() }}</p>
+  } @else if (hasLive()) {
+    <div class="flex flex-col gap-10">
+      @for (group of groups(); track group.competitionCode) {
+        <section>
+          <h3 class="mb-4 font-display text-2xl uppercase tracking-wide text-foreground">
+            {{ group.competitionName || competitionLabel(group.competitionCode) }}
+          </h3>
+          <ul class="m-0 list-none space-y-2 p-0">
+            @for (match of group.matches; track match.id) {
+              <li>
+                <a
+                  [routerLink]="['/matches', match.id]"
+                  class="flex flex-wrap items-center gap-4 rounded-lg border border-primary/40 bg-card/90 px-4 py-3 text-foreground no-underline transition duration-200 hover:border-primary"
+                >
+                  <span
+                    class="rounded bg-primary px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider text-on-primary"
+                    >Live</span
+                  >
+                  <span class="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+                    <span class="flex items-center gap-2">
+                      <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+                      <span class="font-display text-lg tracking-wide">{{
+                        match.homeTeam.shortName
+                      }}</span>
+                    </span>
+                    <span class="font-display text-xl tabular-nums text-primary">
+                      {{ match.homeScore ?? 0 }} – {{ match.awayScore ?? 0 }}
+                    </span>
+                    <span class="flex items-center gap-2">
+                      <span class="font-display text-lg tracking-wide">{{
+                        match.awayTeam.shortName
+                      }}</span>
+                      <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+                    </span>
+                  </span>
+                  <span class="text-xs text-muted-foreground">
+                    J{{ match.matchday }} · {{ match.kickoffAt | date: 'HH:mm' }}
+                  </span>
+                </a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+  } @else {
+    <div class="waiting-state">
+      <div class="waiting-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="22" stroke="currentColor" stroke-width="1.5" />
+          <path
+            d="M32 18v15l10 6"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <circle cx="32" cy="32" r="2" fill="currentColor" />
+        </svg>
+      </div>
+
+      <p class="waiting-eyebrow">Prochains lives</p>
+      <p class="waiting-copy">
+        Aucun match en cours. Rendez-vous au prochain coup d’envoi.
+      </p>
+
+      @if (featuredMatch(); as featured) {
+        <a
+          [routerLink]="['/matches', featured.id]"
+          class="featured-card no-underline"
+        >
+          <div class="featured-meta">
+            <span>{{ competitionLabel(featured.competitionCode) }} · J{{ featured.matchday }}</span>
+            <span class="featured-countdown">{{ countdownLabel() }}</span>
+          </div>
+          <div class="featured-teams">
+            <span class="featured-team">
+              <app-team-logo [shortName]="featured.homeTeam.shortName" size="md" />
+              {{ featured.homeTeam.shortName }}
+            </span>
+            <span class="featured-vs">VS</span>
+            <span class="featured-team">
+              {{ featured.awayTeam.shortName }}
+              <app-team-logo [shortName]="featured.awayTeam.shortName" size="md" />
+            </span>
+          </div>
+          <p class="featured-kickoff">
+            <span class="featured-kickoff-label">Coup d’envoi</span>
+            <time [attr.datetime]="featured.kickoffAt">{{
+              featured.kickoffAt | date: 'EEEE HH:mm'
+            }}</time>
+          </p>
+        </a>
+
+        @if (slotOthers().length > 0) {
+          <div class="slot-row">
+            @for (match of slotOthers(); track match.id) {
+              <a
+                [routerLink]="['/matches', match.id]"
+                class="slot-card no-underline"
+              >
+                <div class="slot-meta">
+                  <span>{{ competitionLabel(match.competitionCode) }} · J{{ match.matchday }}</span>
+                  <time [attr.datetime]="match.kickoffAt">
+                    {{ match.kickoffAt | date: 'EEE HH:mm' }}
+                  </time>
+                </div>
+                <div class="slot-teams">
+                  <span class="flex items-center gap-2">
+                    <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
+                    {{ match.homeTeam.shortName }}
+                  </span>
+                  <span class="text-muted-foreground">VS</span>
+                  <span class="flex items-center gap-2">
+                    {{ match.awayTeam.shortName }}
+                    <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+      } @else {
+        <p class="text-sm text-muted-foreground">
+          Pas encore d’affiche à venir.
+          <a routerLink="/fixtures" class="text-primary no-underline hover:underline"
+            >Voir le calendrier</a
+          >
+        </p>
+      }
+    </div>
+  }
+</section>

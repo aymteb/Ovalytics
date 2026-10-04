@@ -1,15 +1,13 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
-import { PlayerDetail, Transfer } from '../models';
-import { PlayerNav } from '../player-nav';
-import { resolveClubShort } from '../team-branding';
-import { TeamLogo } from '../team-logo/team-logo';
+import { PlayerDetail } from '../models';
+import { NavBack } from '../nav-back';
 
 @Component({
   selector: 'app-player-page',
-  imports: [DatePipe, RouterLink, TeamLogo],
+  imports: [DatePipe, RouterLink],
   templateUrl: './player-page.html',
   styleUrl: './player-page.css',
 })
@@ -17,8 +15,29 @@ export class PlayerPage implements OnInit {
   player = signal<PlayerDetail | null>(null);
   errorMessage = signal('');
   loading = signal(true);
+  photoBroken = signal(false);
 
-  private readonly playerNav = inject(PlayerNav);
+  private readonly navBack = inject(NavBack);
+  private readonly router = inject(Router);
+
+  initials = computed(() => {
+    const name = this.player()?.name?.trim() ?? '';
+    if (!name) {
+      return '?';
+    }
+    const parts = name.split(/\s+/).filter((part) => part.length > 0);
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    const first = parts[0][0] ?? '';
+    const last = parts[parts.length - 1][0] ?? '';
+    return (first + last).toUpperCase();
+  });
+
+  showsPhoto = computed(() => {
+    const url = this.player()?.photoUrl?.trim();
+    return Boolean(url) && !this.photoBroken();
+  });
 
   careerEntries = computed(() => {
     const history = this.player()?.careerHistory;
@@ -31,31 +50,52 @@ export class PlayerPage implements OnInit {
       .filter((entry) => entry.length > 0);
   });
 
-  showTransferDuration = computed(() =>
-    (this.player()?.transfers ?? []).some((transfer) => !!transfer.contractLength?.trim()),
-  );
+  showsJiff = computed(() => {
+    const player = this.player();
+    if (!player?.jiffStatus) {
+      return false;
+    }
+    return player.competitionCode === 'TOP14' || player.competitionCode === 'PROD2';
+  });
+
+  jiffLabel = computed(() => {
+    const status = this.player()?.jiffStatus;
+    if (status === 'JIFF') {
+      return 'JIFF';
+    }
+    if (status === 'NON_JIFF') {
+      return 'NON-JIFF';
+    }
+    if (status === 'ESPOIR_NON_JIFF') {
+      return 'Espoir non-JIFF';
+    }
+    return status ?? '';
+  });
+
+  seasonLabel = computed(() => {
+    const season = this.player()?.season?.trim();
+    return season ? `Saison ${season}` : 'Saison en cours';
+  });
 
   backPath = computed(() => {
-    if (this.playerNav.backTo === 'transfers') {
-      return '/transfers';
-    }
-    if (this.playerNav.clubCode && this.playerNav.clubShortName) {
-      return [
-        '/clubs',
-        this.playerNav.clubCode,
-        this.playerNav.clubShortName,
-      ];
+    this.navBack.revision();
+    if (this.navBack.hasOrigin(this.router.url)) {
+      return this.navBack.originFor(this.router.url).path;
     }
     const player = this.player();
     if (player) {
-      return ['/clubs', player.competitionCode, player.team.shortName];
+      return `/clubs/${player.competitionCode}/${player.team.shortName}`;
     }
-    return '/transfers';
+    return '/';
   });
 
-  backLabel = computed(() =>
-    this.playerNav.backTo === 'transfers' ? '← Transferts' : '← Effectif',
-  );
+  backLabel = computed(() => {
+    this.navBack.revision();
+    if (this.navBack.hasOrigin(this.router.url)) {
+      return this.navBack.originFor(this.router.url).label;
+    }
+    return this.player() ? '← Effectif' : '← Accueil';
+  });
 
   constructor(
     private route: ActivatedRoute,
@@ -72,6 +112,7 @@ export class PlayerPage implements OnInit {
 
     this.api.getPlayer(id).subscribe({
       next: (player) => {
+        this.photoBroken.set(false);
         this.player.set(player);
         this.loading.set(false);
       },
@@ -82,30 +123,13 @@ export class PlayerPage implements OnInit {
     });
   }
 
-  typeLabel(type: string): string {
-    switch (type) {
-      case 'JOIN':
-        return 'Arrivée';
-      case 'LEAVE':
-        return 'Départ';
-      case 'LOAN':
-        return 'Prêt';
-      case 'EXTENSION':
-        return 'Prolongation';
-      case 'CONTRACT_END':
-        return 'Fin de contrat';
-      default:
-        return type;
-    }
+  onPhotoError(): void {
+    this.photoBroken.set(true);
   }
 
-  clubShort(transfer: Transfer, side: 'from' | 'to'): string | null {
-    const label = side === 'from' ? transfer.fromClub : transfer.toClub;
-    return resolveClubShort(label);
-  }
-
-  clubFallback(transfer: Transfer, side: 'from' | 'to'): string {
-    const label = side === 'from' ? transfer.fromClub : transfer.toClub;
-    return label?.trim() || '—';
+  goBack(event: Event): void {
+    event.preventDefault();
+    this.navBack.prepareBack(this.router.url);
+    void this.router.navigateByUrl(this.backPath());
   }
 }

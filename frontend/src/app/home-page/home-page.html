@@ -14,66 +14,65 @@
 </section>
 
 <section class="relative z-20 mx-auto -mt-16 mb-20 max-w-5xl px-6 lg:px-8">
-  <p
-    class="mb-6 font-display text-sm uppercase tracking-[0.22em] text-muted-foreground sm:text-base"
-  >
-    Prochains matchs
-  </p>
-
-  @if (liveMatches().length > 0) {
-    <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      @for (match of liveMatches().slice(0, 3); track match.id) {
-        <a
-          [routerLink]="['/matches', match.id]"
-          class="block rounded-lg border border-primary/40 bg-card/95 p-5 no-underline backdrop-blur transition duration-200 hover:border-primary"
-        >
-          <div
-            class="mb-4 flex items-center justify-between text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
-          >
-            <span class="text-primary">Live</span>
-            <span>J{{ match.matchday }}</span>
-          </div>
-          <div
-            class="flex items-center justify-between gap-2 font-display text-2xl tracking-wide text-foreground"
-          >
-            <span class="flex items-center gap-2">
-              <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
-              {{ match.homeTeam.shortName }}
-            </span>
-            <span class="text-lg text-muted-foreground tabular-nums">
-              {{ match.homeScore }} – {{ match.awayScore }}
-            </span>
-            <span class="flex items-center gap-2">
-              {{ match.awayTeam.shortName }}
-              <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
-            </span>
-          </div>
-        </a>
-      }
-    </div>
-  }
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <p
+      class="m-0 font-display text-sm uppercase tracking-[0.22em] text-muted-foreground sm:text-base"
+    >
+      Prochains matchs
+    </p>
+    @if (hasLive()) {
+      <a
+        routerLink="/live"
+        class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-foreground no-underline transition hover:text-primary"
+      >
+        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>
+        Voir les matchs en direct
+      </a>
+    } @else {
+      <a
+        routerLink="/fixtures"
+        class="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground no-underline transition hover:text-primary"
+      >
+        Voir tout le calendrier
+      </a>
+    }
+  </div>
 
   @if (fixturesLoading()) {
     <p class="text-sm text-muted-foreground">Chargement des affiches…</p>
-  } @else if (weekendFixtures().length === 0 && liveMatches().length === 0) {
+  } @else if (spotlightMatches().length === 0) {
     <p class="text-sm text-muted-foreground">
       Aucune affiche à venir pour le moment.
-      <a routerLink="/fixtures" class="text-primary no-underline hover:underline">Voir le calendrier</a>
+      <a routerLink="/fixtures" class="text-primary no-underline hover:underline"
+        >Voir le calendrier</a
+      >
     </p>
-  } @else if (weekendFixtures().length > 0) {
+  } @else {
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      @for (match of weekendFixtures(); track match.id) {
+      @for (match of spotlightMatches(); track match.id) {
         <a
           [routerLink]="['/matches', match.id]"
-          class="block rounded-lg border border-border/80 bg-card/95 p-5 no-underline backdrop-blur transition duration-200 hover:border-primary/50"
+          class="block rounded-lg border bg-card/95 p-5 no-underline backdrop-blur transition duration-200"
+          [ngClass]="
+            isLive(match)
+              ? 'border-primary/50 hover:border-primary'
+              : 'border-border/80 hover:border-primary/50'
+          "
         >
           <div
             class="mb-4 flex items-center justify-between text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
           >
-            <span>{{ competitionLabel(match.competitionCode) }} · J{{ match.matchday }}</span>
-            <time [attr.datetime]="match.kickoffAt">
-              {{ match.kickoffAt | date: 'EEE HH:mm' }}
-            </time>
+            @if (isLive(match)) {
+              <span class="text-primary">Live</span>
+              <span>J{{ match.matchday }}</span>
+            } @else {
+              <span
+                >{{ competitionLabel(match.competitionCode) }} · J{{ match.matchday }}</span
+              >
+              <time [attr.datetime]="match.kickoffAt">
+                {{ match.kickoffAt | date: 'EEE HH:mm' }}
+              </time>
+            }
           </div>
           <div
             class="flex items-center justify-between gap-2 font-display text-2xl tracking-wide text-foreground"
@@ -82,7 +81,13 @@
               <app-team-logo [shortName]="match.homeTeam.shortName" size="sm" />
               {{ match.homeTeam.shortName }}
             </span>
-            <span class="text-base text-muted-foreground">VS</span>
+            @if (isLive(match)) {
+              <span class="text-lg text-primary tabular-nums">
+                {{ match.homeScore ?? 0 }} – {{ match.awayScore ?? 0 }}
+              </span>
+            } @else {
+              <span class="text-base text-muted-foreground">VS</span>
+            }
             <span class="flex items-center gap-2">
               {{ match.awayTeam.shortName }}
               <app-team-logo [shortName]="match.awayTeam.shortName" size="sm" />
@@ -90,13 +95,6 @@
           </div>
         </a>
       }
-    </div>
-    <div class="mt-4 text-right">
-      <a
-        routerLink="/fixtures"
-        class="text-xs font-semibold uppercase tracking-[0.14em] text-primary no-underline hover:underline"
-        >Tous les matchs</a
-      >
     </div>
   }
 </section>
@@ -129,7 +127,6 @@
             <li class="border-b border-white/10 pb-8 last:border-0 last:pb-0">
               <a
                 [routerLink]="['/news', item.id]"
-                (click)="openArticle()"
                 class="group flex flex-col gap-4 no-underline transition duration-200 hover:translate-x-1 sm:flex-row sm:gap-4"
               >
                 <div

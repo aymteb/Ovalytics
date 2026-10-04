@@ -27,7 +27,9 @@ import com.ovalytics.backend.service.flashscore.FlashscoreClient;
 import com.ovalytics.backend.service.flashscore.FlashscoreLineupParser;
 import com.ovalytics.backend.service.flashscore.FlashscoreMatchUpdate;
 import com.ovalytics.backend.service.flashscore.FlashscoreSummaryParser;
+import com.ovalytics.backend.service.incrowd.IncrowdLineupClient;
 import com.ovalytics.backend.service.lnr.LnrMatchSheetClient;
+import com.ovalytics.backend.service.rugbyrama.RugbyramaNationaleLineupClient;
 
 @Service
 public class MatchSheetSyncService {
@@ -36,6 +38,8 @@ public class MatchSheetSyncService {
 
 	private final LiveScoreProperties properties;
 	private final FlashscoreClient flashscoreClient;
+	private final IncrowdLineupClient incrowdLineupClient;
+	private final RugbyramaNationaleLineupClient rugbyramaNationaleLineupClient;
 	private final LnrMatchSheetClient lnrMatchSheetClient;
 	private final RugbyMatchRepository rugbyMatchRepository;
 	private final MatchEventRepository matchEventRepository;
@@ -45,6 +49,8 @@ public class MatchSheetSyncService {
 	public MatchSheetSyncService(
 			LiveScoreProperties properties,
 			FlashscoreClient flashscoreClient,
+			IncrowdLineupClient incrowdLineupClient,
+			RugbyramaNationaleLineupClient rugbyramaNationaleLineupClient,
 			LnrMatchSheetClient lnrMatchSheetClient,
 			RugbyMatchRepository rugbyMatchRepository,
 			MatchEventRepository matchEventRepository,
@@ -52,6 +58,8 @@ public class MatchSheetSyncService {
 			@Lazy MatchSheetSyncService self) {
 		this.properties = properties;
 		this.flashscoreClient = flashscoreClient;
+		this.incrowdLineupClient = incrowdLineupClient;
+		this.rugbyramaNationaleLineupClient = rugbyramaNationaleLineupClient;
 		this.lnrMatchSheetClient = lnrMatchSheetClient;
 		this.rugbyMatchRepository = rugbyMatchRepository;
 		this.matchEventRepository = matchEventRepository;
@@ -167,7 +175,7 @@ public class MatchSheetSyncService {
 	public boolean syncSheet(RugbyMatch match) {
 		String eventId = match.getFlashscoreEventId();
 		boolean flashOk = false;
-		boolean flashLineupsOk = false;
+		boolean lineupsOk = false;
 		if (eventId != null && !eventId.isBlank()) {
 			try {
 				List<FlashscoreSummaryParser.SummaryEvent> summary =
@@ -207,13 +215,33 @@ public class MatchSheetSyncService {
 				log.warn("Resume Flashscore indisponible pour {}: {}", eventId, ex.getMessage());
 			}
 			try {
-				flashLineupsOk = saveFlashscoreLineups(match, eventId);
+				lineupsOk = saveFlashscoreLineups(match, eventId);
 			} catch (RuntimeException ex) {
 				log.warn("Compositions Flashscore indisponibles pour {}: {}", eventId, ex.getMessage());
 			}
 		}
-		boolean lnrOk = syncLnrSheet(match, flashLineupsOk);
-		return flashOk || flashLineupsOk || lnrOk;
+		if (!lineupsOk) {
+			try {
+				lineupsOk = saveIncrowdLineups(match);
+			} catch (RuntimeException ex) {
+				log.warn(
+						"Compositions Incrowd indisponibles pour match {}: {}",
+						match.getId(),
+						ex.getMessage());
+			}
+		}
+		if (!lineupsOk && "NAT".equals(match.getCompetition().getCode())) {
+			try {
+				lineupsOk = saveRugbyramaNationaleLineups(match);
+			} catch (RuntimeException ex) {
+				log.warn(
+						"Compositions Rugbyrama indisponibles pour match {}: {}",
+						match.getId(),
+						ex.getMessage());
+			}
+		}
+		boolean lnrOk = syncLnrSheet(match, lineupsOk);
+		return flashOk || lineupsOk || lnrOk;
 	}
 
 	private boolean saveFlashscoreLineups(RugbyMatch match, String eventId) {
@@ -222,21 +250,68 @@ public class MatchSheetSyncService {
 		if (players.isEmpty()) {
 			return false;
 		}
+		replaceLineups(match, players.stream()
+				.map(player -> new MatchLineup(
+						match,
+						player.teamSide(),
+						player.jerseyNumber(),
+						player.position(),
+						player.playerName(),
+						player.starter(),
+						player.captain()))
+				.toList());
+		return true;
+	}
+
+	private boolean saveIncrowdLineups(RugbyMatch match) {
+		List<IncrowdLineupClient.LineupPlayer> players = incrowdLineupClient.fetchLineups(
+				match.getCompetition().getCode(),
+				match.getKickoffAt(),
+				match.getHomeTeam().getName(),
+				match.getAwayTeam().getName(),
+				match.getHomeTeam().getShortName(),
+				match.getAwayTeam().getShortName());
+		if (players.isEmpty()) {
+			return false;
+		}
+		replaceLineups(match, players.stream()
+				.map(player -> new MatchLineup(
+						match,
+						player.teamSide(),
+						player.jerseyNumber(),
+						player.position(),
+						player.playerName(),
+						player.starter(),
+						player.captain()))
+				.toList());
+		return true;
+	}
+
+	private boolean saveRugbyramaNationaleLineups(RugbyMatch match) {
+		List<RugbyramaNationaleLineupClient.LineupPlayer> players =
+				rugbyramaNationaleLineupClient.fetchLineups(
+						match.getHomeTeam().getShortName(),
+						match.getAwayTeam().getShortName());
+		if (players.isEmpty()) {
+			return false;
+		}
+		replaceLineups(match, players.stream()
+				.map(player -> new MatchLineup(
+						match,
+						player.teamSide(),
+						player.jerseyNumber(),
+						player.position(),
+						player.playerName(),
+						player.starter(),
+						player.captain()))
+				.toList());
+		return true;
+	}
+
+	private void replaceLineups(RugbyMatch match, List<MatchLineup> rows) {
 		matchLineupRepository.deleteByMatchId(match.getId());
 		matchLineupRepository.flush();
-		List<MatchLineup> rows = new ArrayList<>();
-		for (FlashscoreLineupParser.LineupPlayer player : players) {
-			rows.add(new MatchLineup(
-					match,
-					player.teamSide(),
-					player.jerseyNumber(),
-					player.position(),
-					player.playerName(),
-					player.starter(),
-					player.captain()));
-		}
 		matchLineupRepository.saveAll(rows);
-		return true;
 	}
 
 	@Transactional

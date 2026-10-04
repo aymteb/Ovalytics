@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ovalytics.backend.config.LiveScoreProperties;
+import com.ovalytics.backend.config.OverdueMatchPromoter;
 import com.ovalytics.backend.domain.MatchStatus;
 import com.ovalytics.backend.domain.RugbyMatch;
 import com.ovalytics.backend.repository.RugbyMatchRepository;
@@ -29,18 +30,21 @@ public class LiveScoreSyncService {
 	private final RugbyMatchRepository rugbyMatchRepository;
 	private final PendingTeamRefreshService pendingTeamRefreshService;
 	private final MatchSheetSyncService matchSheetSyncService;
+	private final OverdueMatchPromoter overdueMatchPromoter;
 
 	public LiveScoreSyncService(
 			LiveScoreProperties properties,
 			FlashscoreClient flashscoreClient,
 			RugbyMatchRepository rugbyMatchRepository,
 			PendingTeamRefreshService pendingTeamRefreshService,
-			MatchSheetSyncService matchSheetSyncService) {
+			MatchSheetSyncService matchSheetSyncService,
+			OverdueMatchPromoter overdueMatchPromoter) {
 		this.properties = properties;
 		this.flashscoreClient = flashscoreClient;
 		this.rugbyMatchRepository = rugbyMatchRepository;
 		this.pendingTeamRefreshService = pendingTeamRefreshService;
 		this.matchSheetSyncService = matchSheetSyncService;
+		this.overdueMatchPromoter = overdueMatchPromoter;
 	}
 
 	@Scheduled(fixedDelayString = "${ovalytics.live-scores.poll-interval-ms:60000}")
@@ -49,6 +53,7 @@ public class LiveScoreSyncService {
 		if (!properties.isEnabled()) {
 			return;
 		}
+		overdueMatchPromoter.promoteOverdueScheduled();
 		if (!shouldPoll()) {
 			return;
 		}

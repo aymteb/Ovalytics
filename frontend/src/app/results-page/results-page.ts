@@ -1,11 +1,12 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, ViewportScroller } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match } from '../models';
 import { competitionSortRank } from '../competition-display';
+import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
 
 interface MatchdayGroup {
@@ -28,6 +29,8 @@ export class ResultsPage implements OnInit {
 
   private matches = signal<Match[]>([]);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly navBack = inject(NavBack);
+  private readonly viewport = inject(ViewportScroller);
 
   matchdayGroups = computed(() => this.buildMatchdayGroups(this.matches()));
 
@@ -118,6 +121,20 @@ export class ResultsPage implements OnInit {
     );
     this.matches.set(data.finished);
     this.loading.set(false);
+    this.restoreScroll();
+  }
+
+  private restoreScroll(): void {
+    const y = this.navBack.consumeRestoreScroll('/results');
+    if (y <= 0) {
+      return;
+    }
+    const apply = () => this.viewport.scrollToPosition([0, y]);
+    requestAnimationFrame(() => {
+      apply();
+      setTimeout(apply, 0);
+      setTimeout(apply, 100);
+    });
   }
 
   private buildMatchdayGroups(matches: Match[]): MatchdayGroup[] {

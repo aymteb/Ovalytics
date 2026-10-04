@@ -1,8 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
 import { ClubMercato, SquadPlayer, Transfer } from '../models';
-import { PlayerNav } from '../player-nav';
+import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
 
 interface SquadGroup {
@@ -56,11 +56,28 @@ export class ClubPage implements OnInit {
   errorMessage = signal('');
   loading = signal(true);
 
-  private readonly playerNav = inject(PlayerNav);
-  private clubCode = '';
-  private clubShortName = '';
+  private readonly navBack = inject(NavBack);
+  private readonly router = inject(Router);
+
+  backPath = computed(() => {
+    this.navBack.revision();
+    return this.navBack.originFor(this.router.url).path;
+  });
+
+  backLabel = computed(() => {
+    this.navBack.revision();
+    return this.navBack.originFor(this.router.url).label;
+  });
 
   squadGroups = computed(() => this.buildSquadGroups(this.mercato()?.squad ?? []));
+
+  showsJiff = computed(() => this.mercato()?.jiffSummary != null);
+
+  squadHint = computed(() =>
+    this.showsJiff()
+      ? 'Effectif projeté. Couleurs = statut JIFF. Tri par âge dans chaque poste.'
+      : 'Effectif projeté. Tri par âge dans chaque poste.',
+  );
 
   constructor(
     private route: ActivatedRoute,
@@ -75,8 +92,6 @@ export class ClubPage implements OnInit {
       this.loading.set(false);
       return;
     }
-    this.clubCode = code;
-    this.clubShortName = shortName;
 
     this.api.getClubMercato(code, shortName).subscribe({
       next: (mercato) => {
@@ -90,8 +105,10 @@ export class ClubPage implements OnInit {
     });
   }
 
-  leaveToPlayer(): void {
-    this.playerNav.leaveFromClub(this.clubCode, this.clubShortName);
+  goBack(event: Event): void {
+    event.preventDefault();
+    this.navBack.prepareBack(this.router.url);
+    void this.router.navigateByUrl(this.backPath());
   }
 
   typeLabel(type: string): string {
@@ -121,6 +138,9 @@ export class ClubPage implements OnInit {
   }
 
   playerStatusClass(player: SquadPlayer): string {
+    if (!this.showsJiff()) {
+      return 'plain';
+    }
     if (player.jiffStatus === 'ESPOIR_NON_JIFF') {
       return 'espoir-non-jiff';
     }

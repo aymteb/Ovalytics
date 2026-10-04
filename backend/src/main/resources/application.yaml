@@ -66,6 +66,9 @@ ovalytics:
     enabled: true
     poll-interval-ms: 60000
     user-agent: Ovalytics/1.0
+    incrowd-api-key: zDiLQ9o18oVrwn30etwT
+    incrowd-realm: prl
+    incrowd-app-id: web
   team-refresh:
     enabled: true
     cron: "0 0 23 * * *"

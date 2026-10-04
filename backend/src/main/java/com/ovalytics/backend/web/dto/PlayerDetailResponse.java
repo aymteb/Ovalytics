@@ -8,13 +8,15 @@ public record PlayerDetailResponse(
 		TeamResponse team,
 		String competitionCode,
 		String competitionName,
+		String season,
 		String position,
 		Integer age,
 		Integer heightCm,
 		Integer weightKg,
 		String nationality,
+		String jiffStatus,
+		String photoUrl,
 		PlayerTotalsResponse totals,
 		List<PlayerAppearanceResponse> appearances,
-		List<TransferResponse> transfers,
 		String careerHistory) {
 }

@@ -6,6 +6,7 @@ import html
 import re
 import sys
 import time
+import unicodedata
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -14,6 +15,7 @@ from urllib.parse import quote, urlsplit, urlunsplit
 from clubs_config import ALL_RUGBY_LABEL_TO_SHORT, CLUBS, PARCOURS_KEYWORDS
 
 BASE_URL = "https://www.allrugby.com"
+RUGBYRAMA_BASE = "https://www.rugbyrama.fr"
 USER_AGENT = "OvalyticsScraper/1.0"
 DEFAULT_OUTPUT = Path(__file__).resolve().parent.parent / "data" / "import" / "player-profiles.csv"
 
@@ -26,6 +28,7 @@ CSV_HEADERS = [
     "teamShortName",
     "playerName",
     "profileUrl",
+    "photoUrl",
     "seasonMatches",
     "seasonStarts",
     "seasonMinutes",
@@ -52,12 +55,16 @@ APPEARANCE_HEADERS = [
 
 
 def fetch(url: str) -> str:
+    return fetch_with_final_url(url)[0]
+
+
+def fetch_with_final_url(url: str) -> tuple[str, str]:
     parts = urlsplit(url)
     safe_path = quote(parts.path, safe="/:%")
     safe_url = urlunsplit((parts.scheme, parts.netloc, safe_path, parts.query, parts.fragment))
     request = urllib.request.Request(safe_url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(request, timeout=30) as response:
-        return response.read().decode("utf-8")
+        return response.read().decode("utf-8"), response.geturl()
 
 
 def clean_name(raw: str) -> str:
@@ -81,23 +88,35 @@ def parse_minutes(value: str) -> str:
 
 def parse_effectif_links(html_text: str) -> list[dict]:
     players: list[dict] = []
-    for row_html in re.findall(r'<tr data-pays="[^"]*"[^>]*>.*?</tr>', html_text, re.S):
-        link_match = re.search(r'href="(/joueurs/[^"]+\.html)"', row_html)
-        name_match = re.search(
-            r'class="nom"[^>]*>\s*(?:<a[^>]+>)?\s*([^<]+)',
-            row_html,
-        )
-        if link_match is None or name_match is None:
+    seen: set[str] = set()
+    for table_match in re.finditer(r"<table\b([^>]*)>(.*?)</table>", html_text, re.S | re.I):
+        attrs = table_match.group(1)
+        body = table_match.group(2)
+        if "eff" not in attrs:
             continue
-        name = clean_name(name_match.group(1))
-        if not name:
+        if "espoir" in attrs.lower():
             continue
-        players.append(
-            {
-                "playerName": name,
-                "profileUrl": BASE_URL + link_match.group(1),
-            }
-        )
+        for row_html in re.findall(r"<tr[^>]*>.*?</tr>", body, re.S):
+            link_match = re.search(r'href="(/joueurs/[^"]+\.html)"', row_html)
+            name_match = re.search(
+                r'class="nom"[^>]*>\s*(?:<a[^>]+>)?\s*([^<]+)',
+                row_html,
+            )
+            if link_match is None or name_match is None:
+                continue
+            name = clean_name(name_match.group(1))
+            if not name:
+                continue
+            key = name.casefold()
+            if key in seen:
+                continue
+            seen.add(key)
+            players.append(
+                {
+                    "playerName": name,
+                    "profileUrl": BASE_URL + link_match.group(1),
+                }
+            )
     return players
 
 
@@ -119,6 +138,120 @@ def parse_cartons(cell_html: str) -> tuple[int, int]:
             elif "jaune" in clean or "orange" in clean:
                 yellow += 1
     return yellow, red
+
+
+def parse_photo_url(html_text: str, profile_url: str = "") -> str:
+    photos = re.findall(r'src="(/photos/[^"]+)"', html_text, re.I)
+    if not photos:
+        return ""
+    slug = profile_url.rstrip("/").split("/")[-1].removesuffix(".html")
+    slug = re.sub(r"-\d+$", "", slug).lower()
+    slug_compact = slug.replace("-", "")
+    for photo in photos:
+        photo_lower = photo.lower()
+        if slug and (slug in photo_lower or slug_compact in photo_lower.replace("-", "")):
+            return BASE_URL + photo
+    return ""
+
+
+def fold_name(value: str) -> str:
+    text = html.unescape(value or "")
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(char for char in text if not unicodedata.combining(char))
+    return re.sub(r"[^a-z0-9]+", "", text.lower())
+
+
+def rugbyrama_slug(player_name: str) -> str:
+    text = unicodedata.normalize("NFKD", player_name or "")
+    text = "".join(char for char in text if not unicodedata.combining(char))
+    text = text.lower().strip()
+    return re.sub(r"[^a-z0-9]+", "-", text).strip("-")
+
+
+def names_match(player_name: str, candidate: str) -> bool:
+    player_key = fold_name(player_name)
+    candidate_key = fold_name(candidate)
+    if not player_key or not candidate_key:
+        return False
+    if player_key == candidate_key:
+        return True
+    tokens = [token for token in re.split(r"\s+", player_name.strip()) if token]
+    return bool(tokens) and all(fold_name(token) in candidate_key for token in tokens)
+
+
+def parse_rugbyrama_photo(html_text: str, player_name: str) -> str:
+    player_key = fold_name(player_name)
+    if not player_key:
+        return ""
+    for tag in re.findall(r"<img\b[^>]*>", html_text, re.I):
+        alt_match = re.search(r'alt="([^"]*)"', tag, re.I)
+        src_match = re.search(
+            r'(?:src|data-src)="(https://images\.rugbyrama\.fr[^"]+)"',
+            tag,
+            re.I,
+        )
+        if alt_match is None or src_match is None:
+            continue
+        alt = html.unescape(alt_match.group(1)).strip()
+        if not alt or len(alt) > 80:
+            continue
+        alt_key = fold_name(alt)
+        if alt_key == player_key or alt_key.startswith(player_key):
+            return src_match.group(1).replace("&amp;", "&")
+    return ""
+
+
+def fetch_rugbyrama_photo(player_name: str) -> str:
+    slug = rugbyrama_slug(player_name)
+    if not slug:
+        return ""
+    url = f"{RUGBYRAMA_BASE}/joueur/{slug}"
+    try:
+        page, final_url = fetch_with_final_url(url)
+    except urllib.error.URLError:
+        return ""
+    if "/joueur/" not in final_url:
+        return ""
+    heading_match = re.search(r"<h1[^>]*>(.*?)</h1>", page, re.S | re.I)
+    heading = clean_name(heading_match.group(1)) if heading_match else ""
+    if not names_match(player_name, heading):
+        return ""
+    return parse_rugbyrama_photo(page, player_name)
+
+
+def enrich_missing_photos(csv_path: Path, delay: float) -> int:
+    with csv_path.open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    if not rows:
+        print("CSV vide.", file=sys.stderr)
+        return 0
+
+    missing = [
+        index
+        for index, row in enumerate(rows)
+        if not (row.get("photoUrl") or "").strip() and (row.get("playerName") or "").strip()
+    ]
+    print(f"photos manquantes: {len(missing)}/{len(rows)}", file=sys.stderr)
+    filled = 0
+    for offset, index in enumerate(missing, start=1):
+        name = rows[index]["playerName"]
+        photo = fetch_rugbyrama_photo(name)
+        if photo:
+            rows[index]["photoUrl"] = photo
+            filled += 1
+            print(f"  + {name}", file=sys.stderr)
+        if offset % 200 == 0:
+            print(f"  {offset}/{len(missing)} (filled {filled})", file=sys.stderr)
+        if delay > 0:
+            time.sleep(delay)
+
+    fieldnames = list(rows[0].keys())
+    with csv_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"enrichies: {filled}/{len(missing)} -> {csv_path}")
+    return filled
 
 
 def parse_current_season_row(html_text: str) -> dict[str, str]:
@@ -160,6 +293,120 @@ def parse_full_parcours(html_text: str) -> str:
         if item:
             entries.append(item)
     return " | ".join(entries)
+
+
+def season_bounds(label: str) -> tuple[int, int] | None:
+    match = re.match(r"^(\d{2})/(\d{2})$", (label or "").strip())
+    if match is None:
+        return None
+    start = int(match.group(1))
+    end = int(match.group(2))
+    start += 2000 if start < 100 else 0
+    end += 2000 if end < 100 else 0
+    if end < start:
+        end += 100
+    return start, end
+
+
+def club_merge_key(name: str) -> str:
+    short = resolve_team_short(name)
+    if short:
+        return short
+    key = name.casefold()
+    for noise in (
+        " rugby",
+        " stade",
+        " fc",
+        " olympique",
+        " club",
+        " union",
+        " sporting",
+    ):
+        key = key.replace(noise, " ")
+    return re.sub(r"[^a-z0-9]+", "", key)
+
+
+def parse_parcours_spans(html_text: str) -> list[tuple[str, int, int]]:
+    spans: list[tuple[str, int, int]] = []
+    for entry in parse_full_parcours(html_text).split("|"):
+        item = entry.strip()
+        if not item:
+            continue
+        years = re.search(r"^(.*?)\s*\((\d{4})\s*-\s*(\d{4})\)$", item)
+        if years is None:
+            continue
+        club = years.group(1).strip()
+        if club:
+            spans.append((club, int(years.group(2)), int(years.group(3))))
+    return spans
+
+
+def parse_stats_spans(html_text: str) -> list[tuple[str, int, int]]:
+    table = re.search(
+        r'<table class="rtable JOverall"[^>]*>(.*?)</table>',
+        html_text,
+        re.S,
+    )
+    if table is None:
+        return []
+
+    seasons: list[tuple[int, int, str]] = []
+    for row_html in re.findall(r"<tr[^>]*>(.*?)</tr>", table.group(1), re.S):
+        cells = re.findall(r"<td[^>]*>(.*?)</td>", row_html, re.S)
+        if len(cells) < 4:
+            continue
+        bounds = season_bounds(cell_text(cells[0]))
+        club = cell_text(cells[2])
+        if bounds is None or not club:
+            continue
+        seasons.append((bounds[0], bounds[1], club))
+
+    if not seasons:
+        return []
+
+    seasons.sort(key=lambda item: (item[0], item[1], item[2]))
+    spans: list[tuple[str, int, int]] = []
+    for start, end, club in seasons:
+        if spans and club_merge_key(spans[-1][0]) == club_merge_key(club) and start <= spans[-1][2] + 1:
+            prev_club, prev_start, prev_end = spans[-1]
+            spans[-1] = (prev_club, prev_start, max(prev_end, end))
+        else:
+            spans.append((club, start, end))
+    return spans
+
+
+def merge_career_spans(spans: list[tuple[str, int, int]]) -> str:
+    if not spans:
+        return ""
+
+    merged: dict[str, tuple[str, int, int]] = {}
+    order: list[str] = []
+    for club, start, end in sorted(spans, key=lambda item: (item[1], item[2], item[0])):
+        key = club_merge_key(club) or club.casefold()
+        if key not in merged:
+            merged[key] = (club, start, end)
+            order.append(key)
+            continue
+        prev_club, prev_start, prev_end = merged[key]
+        display = prev_club if len(prev_club) >= len(club) else club
+        merged[key] = (display, min(prev_start, start), max(prev_end, end))
+
+    ordered = sorted((merged[key] for key in order), key=lambda item: (item[1], item[2], item[0]))
+    collapsed: list[tuple[str, int, int]] = []
+    for club, start, end in ordered:
+        if collapsed and club_merge_key(collapsed[-1][0]) == club_merge_key(club) and start <= collapsed[-1][2] + 1:
+            prev_club, prev_start, prev_end = collapsed[-1]
+            display = prev_club if len(prev_club) >= len(club) else club
+            collapsed[-1] = (display, prev_start, max(prev_end, end))
+        else:
+            collapsed.append((club, start, end))
+
+    return " | ".join(f"{club} ({start} - {end})" for club, start, end in collapsed)
+
+
+def parse_career_history(html_text: str) -> str:
+    spans = parse_stats_spans(html_text) + parse_parcours_spans(html_text)
+    return merge_career_spans(spans)
 
 
 def resolve_team_short(label: str) -> str:
@@ -272,13 +519,17 @@ def scrape_profile(
 
     stats = parse_current_season_row(page)
     contract_end = parse_parcours_contract(page, short_name)
-    career_history = parse_full_parcours(page)
+    career_history = parse_career_history(page)
+    photo_url = parse_photo_url(page, profile_url)
+    if not photo_url:
+        photo_url = fetch_rugbyrama_photo(player_name)
     appearances = parse_match_appearances(page, competition_code, short_name, player_name)
     profile = {
         "competitionCode": competition_code,
         "teamShortName": short_name,
         "playerName": player_name,
         "profileUrl": profile_url,
+        "photoUrl": photo_url,
         "contractEndDate": contract_end,
         "careerHistory": career_history,
         **stats,
@@ -350,7 +601,16 @@ def main() -> int:
         help="Codes clubs à enrichir (ex: BRI,VAL). Fiches joueurs uniquement, pas les scores match.",
     )
     parser.add_argument("--delay", type=float, default=0.15)
+    parser.add_argument(
+        "--enrich-missing-photos",
+        action="store_true",
+        help="Complete photoUrl vides via Rugbyrama (CSV existant, sans re-scrap AllRugby).",
+    )
     args = parser.parse_args()
+
+    if args.enrich_missing_photos:
+        enrich_missing_photos(args.output.resolve(), args.delay)
+        return 0
 
     team_filter = {
         code.strip().upper()
