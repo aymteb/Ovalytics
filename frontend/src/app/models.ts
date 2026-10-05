@@ -110,6 +110,7 @@ export interface StandingRow {
   pointsDifference: number;
   bonus: number;
   points: number;
+  pool?: string | null;
 }
 
 export interface Transfer {

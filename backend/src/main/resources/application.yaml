@@ -72,9 +72,12 @@ ovalytics:
   team-refresh:
     enabled: true
     cron: "0 0 23 * * *"
+    full-squad-cron: "0 0 4 * * MON"
     scrape-enabled: true
     repo-root: ..
     profiles-output: data/import/player-profiles.csv
+    appearances-output: data/import/player-appearances.csv
+    squads-output: data/import/squads.csv
     python-command: python3
   calendar-sync:
     enabled: false

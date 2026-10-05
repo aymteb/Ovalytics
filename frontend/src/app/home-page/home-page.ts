@@ -18,11 +18,15 @@ import { TeamLogo } from '../team-logo/team-logo';
   styleUrl: './home-page.css',
 })
 export class HomePage implements OnInit {
+  readonly standingsCodes = ['TOP14', 'PROD2', 'NAT'] as const;
+
   news = signal<NewsItem[]>([]);
   liveMatches = signal<Match[]>([]);
   upcomingMatches = signal<Match[]>([]);
+  selectedStandingsCode = signal('TOP14');
   standingsTop = signal<StandingRow[]>([]);
   standingsBottom = signal<StandingRow[]>([]);
+  standingsLoading = signal(true);
   errorMessage = signal('');
   loading = signal(true);
   fixturesLoading = signal(true);
@@ -52,16 +56,7 @@ export class HomePage implements OnInit {
       },
     });
 
-    this.api.getStandings('TOP14').subscribe({
-      next: (rows) => {
-        this.standingsTop.set(rows.slice(0, 3));
-        this.standingsBottom.set(rows.length > 5 ? rows.slice(-2) : []);
-      },
-      error: () => {
-        this.standingsTop.set([]);
-        this.standingsBottom.set([]);
-      },
-    });
+    this.loadStandings(this.selectedStandingsCode());
 
     interval(30_000)
       .pipe(
@@ -96,6 +91,36 @@ export class HomePage implements OnInit {
 
   isLive(match: Match): boolean {
     return match.status === 'LIVE';
+  }
+
+  selectStandings(code: string): void {
+    if (this.selectedStandingsCode() === code) {
+      return;
+    }
+    this.selectedStandingsCode.set(code);
+    this.loadStandings(code);
+  }
+
+  private loadStandings(code: string): void {
+    this.standingsLoading.set(true);
+    this.api.getStandings(code).subscribe({
+      next: (rows) => {
+        if (this.selectedStandingsCode() !== code) {
+          return;
+        }
+        this.standingsTop.set(rows.slice(0, 3));
+        this.standingsBottom.set(rows.length > 5 ? rows.slice(-2) : []);
+        this.standingsLoading.set(false);
+      },
+      error: () => {
+        if (this.selectedStandingsCode() !== code) {
+          return;
+        }
+        this.standingsTop.set([]);
+        this.standingsBottom.set([]);
+        this.standingsLoading.set(false);
+      },
+    });
   }
 
   private isUpcoming(match: Match): boolean {

@@ -34,16 +34,23 @@ public class CalendarScraperService {
 	private boolean scrapeForeignCalendars() {
 		Path repoRoot = Path.of(properties.getRepoRoot()).toAbsolutePath().normalize();
 		Path script = repoRoot.resolve("scripts/scrape_allrugby_calendar.py");
+		Path outputDir = Path.of(properties.getTop14Output());
+		if (!outputDir.isAbsolute()) {
+			outputDir = repoRoot.resolve(properties.getTop14Output()).normalize();
+		}
+		outputDir = outputDir.getParent();
 		ProcessBuilder processBuilder = new ProcessBuilder(
 				properties.getPythonCommand(),
 				script.toString(),
 				"--competition",
-				"ALL");
+				"ALL",
+				"--output-dir",
+				outputDir.toString());
 		processBuilder.directory(repoRoot.toFile());
 		processBuilder.redirectErrorStream(true);
 
 		try {
-			log.info("Scrape calendriers etrangers (ERCC, ERCH, URC, PREM, INT)");
+			log.info("Scrape calendriers etrangers (ERCC, ERCH, URC, PREM, INT) -> {}", outputDir);
 			Process process = processBuilder.start();
 			String outputLog = new String(process.getInputStream().readAllBytes());
 			if (!outputLog.isBlank()) {

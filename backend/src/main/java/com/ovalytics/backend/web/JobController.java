@@ -237,6 +237,12 @@ public class JobController {
 		return ResponseEntity.ok("Refresh equipes lance");
 	}
 
+	@PostMapping("/squad-sync")
+	public ResponseEntity<String> runSquadSync() {
+		teamRefreshScheduler.runFullSquadSync();
+		return ResponseEntity.ok("Sync effectifs lance");
+	}
+
 	@PostMapping("/calendar-sync")
 	public ResponseEntity<String> runCalendarSync() {
 		calendarSyncScheduler.runSync();

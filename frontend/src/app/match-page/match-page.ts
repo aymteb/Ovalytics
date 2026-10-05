@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
+import { clubRoute } from '../competition-display';
 import { Match, MatchEvent, TeamForm, VenueRecord } from '../models';
 import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
@@ -63,6 +64,7 @@ export class MatchPage implements OnInit {
   loading = signal(true);
   sheetTab = signal<'resume' | 'compositions'>('resume');
   readonly pitchNumbers = PITCH_NUMBERS;
+  readonly clubRoute = clubRoute;
 
   private readonly navBack = inject(NavBack);
   private readonly router = inject(Router);
@@ -71,15 +73,24 @@ export class MatchPage implements OnInit {
 
   backPath = computed(() => {
     this.navBack.revision();
+    const match = this.match();
     if (this.navBack.hasOrigin(this.router.url)) {
-      return this.navBack.originFor(this.router.url).path;
+      const originPath = this.navBack.originFor(this.router.url).path;
+      if (this.shouldPreferMatchFixtures(originPath, match)) {
+        return this.fallbackBackPath(match);
+      }
+      return originPath;
     }
-    return this.fallbackBackPath(this.match());
+    return this.fallbackBackPath(match);
   });
 
   backLabel = computed(() => {
     this.navBack.revision();
     if (this.navBack.hasOrigin(this.router.url)) {
+      const originPath = this.navBack.originFor(this.router.url).path;
+      if (this.shouldPreferMatchFixtures(originPath, this.match())) {
+        return '← Matchs';
+      }
       return this.navBack.originFor(this.router.url).label;
     }
     const match = this.match();
@@ -173,6 +184,20 @@ export class MatchPage implements OnInit {
       return `/results?competition=${match.competitionCode}`;
     }
     return `/fixtures?competition=${match.competitionCode}`;
+  }
+
+  private shouldPreferMatchFixtures(
+    originPath: string,
+    match: Match | null,
+  ): boolean {
+    if (!match || match.status !== 'SCHEDULED') {
+      return false;
+    }
+    const [path, query = ''] = originPath.split('?');
+    if (path !== '/fixtures') {
+      return false;
+    }
+    return !query.includes('competition=');
   }
 
   hasLineups(match: Match): boolean {

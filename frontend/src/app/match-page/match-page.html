@@ -35,16 +35,28 @@
       </div>
 
       <div class="grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
-        <a
-          [routerLink]="['/clubs', m.competitionCode, m.homeTeam.shortName]"
-          class="flex flex-col items-center gap-2 text-center text-foreground no-underline transition duration-200 hover:text-primary sm:items-end sm:text-right"
-        >
-          <app-team-logo [shortName]="m.homeTeam.shortName" size="lg" />
-          <span class="font-display text-2xl tracking-wide">{{ m.homeTeam.name }}</span>
-          <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
-            m.homeTeam.shortName
-          }}</span>
-        </a>
+        @if (clubRoute(m.competitionCode, m.homeTeam.shortName); as homeClub) {
+          <a
+            [routerLink]="homeClub"
+            class="flex flex-col items-center gap-2 text-center text-foreground no-underline transition duration-200 hover:text-primary sm:items-end sm:text-right"
+          >
+            <app-team-logo [shortName]="m.homeTeam.shortName" size="lg" />
+            <span class="font-display text-2xl tracking-wide">{{ m.homeTeam.name }}</span>
+            <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
+              m.homeTeam.shortName
+            }}</span>
+          </a>
+        } @else {
+          <div
+            class="flex flex-col items-center gap-2 text-center text-foreground sm:items-end sm:text-right"
+          >
+            <app-team-logo [shortName]="m.homeTeam.shortName" size="lg" />
+            <span class="font-display text-2xl tracking-wide">{{ m.homeTeam.name }}</span>
+            <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
+              m.homeTeam.shortName
+            }}</span>
+          </div>
+        }
 
         <div class="text-center">
           @if (m.status === 'FINISHED' || m.status === 'LIVE') {
@@ -68,16 +80,28 @@
           }
         </div>
 
-        <a
-          [routerLink]="['/clubs', m.competitionCode, m.awayTeam.shortName]"
-          class="flex flex-col items-center gap-2 text-center text-foreground no-underline transition duration-200 hover:text-primary sm:items-start sm:text-left"
-        >
-          <app-team-logo [shortName]="m.awayTeam.shortName" size="lg" />
-          <span class="font-display text-2xl tracking-wide">{{ m.awayTeam.name }}</span>
-          <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
-            m.awayTeam.shortName
-          }}</span>
-        </a>
+        @if (clubRoute(m.competitionCode, m.awayTeam.shortName); as awayClub) {
+          <a
+            [routerLink]="awayClub"
+            class="flex flex-col items-center gap-2 text-center text-foreground no-underline transition duration-200 hover:text-primary sm:items-start sm:text-left"
+          >
+            <app-team-logo [shortName]="m.awayTeam.shortName" size="lg" />
+            <span class="font-display text-2xl tracking-wide">{{ m.awayTeam.name }}</span>
+            <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
+              m.awayTeam.shortName
+            }}</span>
+          </a>
+        } @else {
+          <div
+            class="flex flex-col items-center gap-2 text-center text-foreground sm:items-start sm:text-left"
+          >
+            <app-team-logo [shortName]="m.awayTeam.shortName" size="lg" />
+            <span class="font-display text-2xl tracking-wide">{{ m.awayTeam.name }}</span>
+            <span class="text-xs uppercase tracking-wide text-muted-foreground">{{
+              m.awayTeam.shortName
+            }}</span>
+          </div>
+        }
       </div>
     </div>
 

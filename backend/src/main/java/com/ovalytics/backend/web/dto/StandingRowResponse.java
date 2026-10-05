@@ -13,5 +13,6 @@ public record StandingRowResponse(
 		int pointsAgainst,
 		int pointsDifference,
 		int bonus,
-		int points) {
+		int points,
+		String pool) {
 }

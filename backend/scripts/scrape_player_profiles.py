@@ -451,10 +451,17 @@ def parse_match_appearances(
             matchday = parse_matchday(texts[1])
             if not matchday:
                 continue
-            home_short = resolve_team_short(texts[2])
-            away_short = resolve_team_short(texts[3])
-            if not home_short or not away_short:
+            club_short = resolve_team_short(texts[2])
+            opponent_short = resolve_team_short(texts[3])
+            if not club_short or not opponent_short:
                 continue
+            venue = (texts[4] or "").strip().upper()
+            if venue.startswith("EXT"):
+                home_short = opponent_short
+                away_short = club_short
+            else:
+                home_short = club_short
+                away_short = opponent_short
             minutes = parse_minutes(texts[-1])
             rows.append(
                 {

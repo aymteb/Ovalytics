@@ -32,6 +32,7 @@ public class PlayerProfileImportProcessor implements ItemProcessor<PlayerProfile
 
 		String name = cleanName(row.playerName());
 		return playerRepository.findByTeamIdAndNameIgnoreCase(team.getId(), name)
+				.or(() -> playerRepository.findFirstByNameIgnoreCase(name))
 				.map(player -> enrich(player, row))
 				.orElse(null);
 	}

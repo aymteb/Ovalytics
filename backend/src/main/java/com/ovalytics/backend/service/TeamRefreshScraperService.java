@@ -29,7 +29,8 @@ public class TeamRefreshScraperService {
 
 		Path repoRoot = Path.of(properties.getRepoRoot()).toAbsolutePath().normalize();
 		Path script = repoRoot.resolve("scripts/scrape_player_profiles.py");
-		Path output = repoRoot.resolve(properties.getProfilesOutput());
+		Path output = resolvePath(repoRoot, properties.getProfilesOutput());
+		Path appearances = resolvePath(repoRoot, properties.getAppearancesOutput());
 		String teams = String.join(",", teamShortNames);
 
 		ProcessBuilder processBuilder = new ProcessBuilder(
@@ -38,7 +39,9 @@ public class TeamRefreshScraperService {
 				"--teams",
 				teams,
 				"--output",
-				output.toString());
+				output.toString(),
+				"--appearances-output",
+				appearances.toString());
 		processBuilder.directory(repoRoot.toFile());
 		processBuilder.redirectErrorStream(true);
 
@@ -65,5 +68,63 @@ public class TeamRefreshScraperService {
 			log.error("Scrape fiches joueurs impossible: {}", ex.getMessage());
 			return false;
 		}
+	}
+
+	public boolean scrapeSquads(List<String> teamShortNames) {
+		if (!properties.isScrapeEnabled()) {
+			return false;
+		}
+
+		Path repoRoot = Path.of(properties.getRepoRoot()).toAbsolutePath().normalize();
+		Path script = repoRoot.resolve("scripts/scrape_squads.py");
+		Path output = resolvePath(repoRoot, properties.getSquadsOutput());
+
+		ProcessBuilder processBuilder = new ProcessBuilder(
+				properties.getPythonCommand(),
+				script.toString(),
+				"--output",
+				output.toString());
+		if (teamShortNames != null && !teamShortNames.isEmpty()) {
+			processBuilder.command().add("--teams");
+			processBuilder.command().add(String.join(",", teamShortNames));
+		}
+		processBuilder.directory(repoRoot.toFile());
+		processBuilder.redirectErrorStream(true);
+
+		try {
+			log.info(
+					"Scrape effectifs: {}",
+					teamShortNames == null || teamShortNames.isEmpty()
+							? "tous"
+							: String.join(",", teamShortNames));
+			Process process = processBuilder.start();
+			String outputLog = new String(process.getInputStream().readAllBytes());
+			if (!outputLog.isBlank()) {
+				log.info(outputLog.trim());
+			}
+			boolean finished = process.waitFor(45, TimeUnit.MINUTES);
+			if (!finished) {
+				process.destroyForcibly();
+				log.error("Scrape effectifs interrompu (timeout)");
+				return false;
+			}
+			if (process.exitValue() != 0) {
+				log.error("Scrape effectifs en echec (code {})", process.exitValue());
+				return false;
+			}
+			return true;
+		} catch (IOException | InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			log.error("Scrape effectifs impossible: {}", ex.getMessage());
+			return false;
+		}
+	}
+
+	private static Path resolvePath(Path repoRoot, String configured) {
+		Path output = Path.of(configured);
+		if (!output.isAbsolute()) {
+			output = repoRoot.resolve(configured).normalize();
+		}
+		return output;
 	}
 }
