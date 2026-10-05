@@ -54,8 +54,8 @@ ovalytics:
   team-refresh:
     enabled: true
     scrape-enabled: true
-    cron: "0 0 23 * * *"
-    full-squad-cron: "0 0 4 * * MON"
+    cron: "0 0 23 * * FRI,SAT,SUN"
+    full-squad-cron: "-"
     repo-root: /app
     python-command: python3
     profiles-output: /import/player-profiles.csv
@@ -95,7 +95,7 @@ ovalytics:
   h2h-sync:
     enabled: true
     scrape-enabled: true
-    cron: "0 0 7 * * *"
+    cron: "0 0 7 * * MON"
     repo-root: /app
     python-command: python3
     top14-output: /import/top14-h2h.csv

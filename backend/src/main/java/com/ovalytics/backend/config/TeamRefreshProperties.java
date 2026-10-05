@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class TeamRefreshProperties {
 
 	private boolean enabled = true;
-	private String cron = "0 0 23 * * *";
-	private String fullSquadCron = "0 0 4 * * MON";
+	private String cron = "0 0 23 * * FRI,SAT,SUN";
+	private String fullSquadCron = "-";
 	private boolean scrapeEnabled = true;
 	private String repoRoot = "..";
 	private String profilesOutput = "data/import/player-profiles.csv";
