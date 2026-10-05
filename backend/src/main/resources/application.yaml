@@ -71,8 +71,8 @@ ovalytics:
     incrowd-app-id: web
   team-refresh:
     enabled: true
-    cron: "0 0 23 * * *"
-    full-squad-cron: "0 0 4 * * MON"
+    cron: "0 0 23 * * FRI,SAT,SUN"
+    full-squad-cron: "-"
     scrape-enabled: true
     repo-root: ..
     profiles-output: data/import/player-profiles.csv
@@ -112,7 +112,7 @@ ovalytics:
     output: data/import/transfers.csv
   h2h-sync:
     enabled: false
-    cron: "0 0 7 * * *"
+    cron: "0 0 7 * * MON"
     scrape-enabled: true
     repo-root: ..
     python-command: python3

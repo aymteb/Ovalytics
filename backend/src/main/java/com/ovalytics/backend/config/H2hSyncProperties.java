@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class H2hSyncProperties {
 
 	private boolean enabled = false;
-	private String cron = "0 0 7 * * *";
+	private String cron = "0 0 7 * * MON";
 	private boolean scrapeEnabled = true;
 	private String repoRoot = "..";
 	private String pythonCommand = "python3";
