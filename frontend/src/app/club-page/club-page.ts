@@ -1,7 +1,9 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CompetitionApi } from '../competition-api';
 import { ClubMercato, SquadPlayer, Transfer } from '../models';
+import { resolveClubCompetition } from '../competition-display';
 import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
 
@@ -58,6 +60,7 @@ export class ClubPage implements OnInit {
 
   private readonly navBack = inject(NavBack);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   backPath = computed(() => {
     this.navBack.revision();
@@ -85,23 +88,40 @@ export class ClubPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const code = this.route.snapshot.paramMap.get('code');
-    const shortName = this.route.snapshot.paramMap.get('shortName');
-    if (!code || !shortName) {
-      this.errorMessage.set('Club introuvable.');
-      this.loading.set(false);
-      return;
-    }
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const code = params.get('code');
+      const shortName = params.get('shortName');
+      if (!code || !shortName) {
+        this.errorMessage.set('Club introuvable.');
+        this.loading.set(false);
+        return;
+      }
 
-    this.api.getClubMercato(code, shortName).subscribe({
-      next: (mercato) => {
-        this.mercato.set(mercato);
+      const clubCode = resolveClubCompetition(code, shortName);
+      if (!clubCode) {
+        this.mercato.set(null);
+        this.errorMessage.set('Pas de fiche club pour cette équipe.');
         this.loading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('Impossible de charger ce club.');
-        this.loading.set(false);
-      },
+        return;
+      }
+      if (clubCode !== code) {
+        void this.router.navigate(['/clubs', clubCode, shortName], { replaceUrl: true });
+        return;
+      }
+
+      this.loading.set(true);
+      this.errorMessage.set('');
+      this.api.getClubMercato(clubCode, shortName).subscribe({
+        next: (mercato) => {
+          this.mercato.set(mercato);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.mercato.set(null);
+          this.errorMessage.set('Impossible de charger ce club.');
+          this.loading.set(false);
+        },
+      });
     });
   }
 

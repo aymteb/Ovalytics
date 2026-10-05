@@ -6,7 +6,7 @@ import { forkJoin } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Team, Transfer } from '../models';
 import { resolveClubShort } from '../team-branding';
-import { competitionSortRank } from '../competition-display';
+import { competitionSortRank, isLeagueCompetition } from '../competition-display';
 import { NavBack } from '../nav-back';
 import { TeamLogo } from '../team-logo/team-logo';
 
@@ -237,11 +237,13 @@ export class TransfersPage implements OnInit {
   }
 
   private orderCompetitions(competitions: Competition[]): Competition[] {
-    return [...competitions].sort(
-      (a, b) =>
-        competitionSortRank(a.code) - competitionSortRank(b.code) ||
-        a.name.localeCompare(b.name, 'fr'),
-    );
+    return [...competitions]
+      .filter((c) => isLeagueCompetition(c.code))
+      .sort(
+        (a, b) =>
+          competitionSortRank(a.code) - competitionSortRank(b.code) ||
+          a.name.localeCompare(b.name, 'fr'),
+      );
   }
 
   private buildClubBoards(teams: Team[], transfers: Transfer[]): ClubTransferBoard[] {

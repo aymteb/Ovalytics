@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CompetitionApi } from '../competition-api';
+import { clubRoute, resolveClubCompetition } from '../competition-display';
 import { PlayerDetail } from '../models';
 import { NavBack } from '../nav-back';
 
@@ -19,6 +20,7 @@ export class PlayerPage implements OnInit {
 
   private readonly navBack = inject(NavBack);
   private readonly router = inject(Router);
+  readonly clubRoute = clubRoute;
 
   initials = computed(() => {
     const name = this.player()?.name?.trim() ?? '';
@@ -84,7 +86,10 @@ export class PlayerPage implements OnInit {
     }
     const player = this.player();
     if (player) {
-      return `/clubs/${player.competitionCode}/${player.team.shortName}`;
+      const code = resolveClubCompetition(player.competitionCode, player.team.shortName);
+      if (code) {
+        return `/clubs/${code}/${player.team.shortName}`;
+      }
     }
     return '/';
   });

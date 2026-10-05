@@ -7,9 +7,12 @@ public class TeamRefreshProperties {
 
 	private boolean enabled = true;
 	private String cron = "0 0 23 * * *";
+	private String fullSquadCron = "0 0 4 * * MON";
 	private boolean scrapeEnabled = true;
 	private String repoRoot = "..";
 	private String profilesOutput = "data/import/player-profiles.csv";
+	private String appearancesOutput = "data/import/player-appearances.csv";
+	private String squadsOutput = "data/import/squads.csv";
 	private String pythonCommand = "python3";
 
 	public boolean isEnabled() {
@@ -26,6 +29,14 @@ public class TeamRefreshProperties {
 
 	public void setCron(String cron) {
 		this.cron = cron;
+	}
+
+	public String getFullSquadCron() {
+		return fullSquadCron;
+	}
+
+	public void setFullSquadCron(String fullSquadCron) {
+		this.fullSquadCron = fullSquadCron;
 	}
 
 	public boolean isScrapeEnabled() {
@@ -50,6 +61,22 @@ public class TeamRefreshProperties {
 
 	public void setProfilesOutput(String profilesOutput) {
 		this.profilesOutput = profilesOutput;
+	}
+
+	public String getAppearancesOutput() {
+		return appearancesOutput;
+	}
+
+	public void setAppearancesOutput(String appearancesOutput) {
+		this.appearancesOutput = appearancesOutput;
+	}
+
+	public String getSquadsOutput() {
+		return squadsOutput;
+	}
+
+	public void setSquadsOutput(String squadsOutput) {
+		this.squadsOutput = squadsOutput;
 	}
 
 	public String getPythonCommand() {

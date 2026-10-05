@@ -108,11 +108,18 @@
         >
           À la une
         </h2>
-        <a
-          routerLink="/news"
-          class="pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary no-underline hover:underline"
-          >Voir tout</a
-        >
+        <div class="flex flex-wrap items-center gap-4 pb-1">
+          <a
+            routerLink="/transfers"
+            class="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground no-underline hover:text-primary"
+            >Mercato</a
+          >
+          <a
+            routerLink="/news"
+            class="text-xs font-semibold uppercase tracking-[0.12em] text-primary no-underline hover:underline"
+            >Voir tout</a
+          >
+        </div>
       </div>
 
       @if (loading()) {
@@ -175,7 +182,7 @@
     </div>
 
     <div>
-      <div class="mb-10 flex items-end justify-between gap-4">
+      <div class="mb-4 flex items-end justify-between gap-4">
         <h2
           class="m-0 border-l-4 border-primary pl-4 font-display text-3xl uppercase tracking-wide text-foreground"
         >
@@ -183,19 +190,44 @@
         </h2>
         <a
           routerLink="/standings"
+          [queryParams]="{ competition: selectedStandingsCode() }"
           class="pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary no-underline hover:underline"
           >Voir tout</a
         >
       </div>
 
-      @if (standingsTop().length === 0) {
+      <nav
+        class="mb-8 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs font-semibold uppercase tracking-[0.1em]"
+        aria-label="Championnat du classement"
+      >
+        @for (code of standingsCodes; track code; let last = $last) {
+          <button
+            type="button"
+            (click)="selectStandings(code)"
+            class="cursor-pointer border-0 bg-transparent px-1 py-1 transition-colors"
+            [class.text-primary]="selectedStandingsCode() === code"
+            [class.text-muted-foreground]="selectedStandingsCode() !== code"
+            [class.hover:text-foreground]="selectedStandingsCode() !== code"
+            [attr.aria-pressed]="selectedStandingsCode() === code"
+          >
+            {{ competitionLabel(code) }}
+          </button>
+          @if (!last) {
+            <span class="text-muted-foreground/50" aria-hidden="true">|</span>
+          }
+        }
+      </nav>
+
+      @if (standingsLoading()) {
+        <p class="text-sm text-muted-foreground">Chargement…</p>
+      } @else if (standingsTop().length === 0) {
         <p class="text-sm text-muted-foreground">Classement indisponible.</p>
       } @else {
         <ol class="m-0 list-none space-y-1 p-0">
           @for (row of standingsTop(); track row.teamId) {
             <li>
               <a
-                [routerLink]="['/clubs', 'TOP14', row.teamShortName]"
+                [routerLink]="['/clubs', selectedStandingsCode(), row.teamShortName]"
                 class="flex items-center gap-4 rounded-md px-2 py-3 text-foreground no-underline transition-colors hover:bg-muted/60"
               >
                 <span class="w-6 text-sm text-muted-foreground tabular-nums">{{
@@ -218,7 +250,7 @@
             @for (row of standingsBottom(); track row.teamId) {
               <li>
                 <a
-                  [routerLink]="['/clubs', 'TOP14', row.teamShortName]"
+                  [routerLink]="['/clubs', selectedStandingsCode(), row.teamShortName]"
                   class="flex items-center gap-4 rounded-md px-2 py-3 text-foreground no-underline transition-colors hover:bg-muted/60"
                 >
                   <span class="w-6 text-sm text-muted-foreground tabular-nums">{{

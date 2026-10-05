@@ -1,11 +1,20 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, interval, switchMap } from 'rxjs';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match, StandingRow } from '../models';
-import { competitionSortRank } from '../competition-display';
+import {
+  clubRoute,
+  competitionSortRank,
+  hasStandingsCompetition,
+} from '../competition-display';
 import { TeamLogo } from '../team-logo/team-logo';
+
+interface StandingPool {
+  name: string | null;
+  rows: StandingRow[];
+}
 
 @Component({
   selector: 'app-standings-page',
@@ -20,23 +29,41 @@ export class StandingsPage implements OnInit {
   errorMessage = signal('');
   loading = signal(true);
   hasLiveMatches = signal(false);
+  readonly clubRoute = clubRoute;
+
+  pools = computed(() => this.buildPools(this.rows()));
 
   private readonly destroyRef = inject(DestroyRef);
 
-  constructor(private api: CompetitionApi) {}
+  constructor(
+    private api: CompetitionApi,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.api.getCompetitions().subscribe({
       next: (competitions) => {
         const ordered = this.orderCompetitions(competitions);
         this.competitions.set(ordered);
-        const preferred =
-          ordered.find((c) => c.code === 'TOP14') ?? ordered[0];
-        if (preferred) {
+        this.startPolling();
+        this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+          const fromQuery = params.get('competition');
+          const preferred =
+            ordered.find((c) => c.code === fromQuery) ??
+            ordered.find((c) => c.code === 'TOP14') ??
+            ordered[0];
+          if (!preferred) {
+            return;
+          }
+          if (this.selectedCode() === preferred.code && this.rows().length > 0) {
+            return;
+          }
           this.selectedCode.set(preferred.code);
-          this.startPolling();
+          this.loading.set(true);
+          this.errorMessage.set('');
           this.loadStandings(preferred.code);
-        }
+        });
       },
       error: () => {
         this.errorMessage.set('Impossible de charger les compétitions.');
@@ -49,6 +76,11 @@ export class StandingsPage implements OnInit {
     this.selectedCode.set(code);
     this.loading.set(true);
     this.errorMessage.set('');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { competition: code },
+      replaceUrl: true,
+    });
     this.loadStandings(code);
   }
 
@@ -93,11 +125,31 @@ export class StandingsPage implements OnInit {
     this.loading.set(false);
   }
 
+  private buildPools(rows: StandingRow[]): StandingPool[] {
+    const named = rows.some((row) => !!row.pool?.trim());
+    if (!named) {
+      return [{ name: null, rows }];
+    }
+    const byPool = new Map<string, StandingRow[]>();
+    for (const row of rows) {
+      const name = row.pool?.trim() || 'Poule';
+      const list = byPool.get(name) ?? [];
+      list.push(row);
+      byPool.set(name, list);
+    }
+    return [...byPool.entries()].map(([name, poolRows]) => ({
+      name,
+      rows: poolRows,
+    }));
+  }
+
   private orderCompetitions(competitions: Competition[]): Competition[] {
-    return [...competitions].sort(
-      (a, b) =>
-        competitionSortRank(a.code) - competitionSortRank(b.code) ||
-        a.name.localeCompare(b.name, 'fr'),
-    );
+    return [...competitions]
+      .filter((c) => hasStandingsCompetition(c.code))
+      .sort(
+        (a, b) =>
+          competitionSortRank(a.code) - competitionSortRank(b.code) ||
+          a.name.localeCompare(b.name, 'fr'),
+      );
   }
 }

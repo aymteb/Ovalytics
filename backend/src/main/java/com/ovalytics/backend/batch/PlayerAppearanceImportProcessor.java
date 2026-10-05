@@ -40,8 +40,10 @@ public class PlayerAppearanceImportProcessor implements ItemProcessor<PlayerAppe
 			return null;
 		}
 
+		String playerName = cleanName(row.playerName());
 		Player player = playerRepository
-				.findByTeamIdAndNameIgnoreCase(team.getId(), cleanName(row.playerName()))
+				.findByTeamIdAndNameIgnoreCase(team.getId(), playerName)
+				.or(() -> playerRepository.findFirstByNameIgnoreCase(playerName))
 				.orElse(null);
 		if (player == null) {
 			return null;

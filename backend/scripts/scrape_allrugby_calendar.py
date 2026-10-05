@@ -152,6 +152,10 @@ def main() -> int:
         default="ALL",
     )
     parser.add_argument("--output", help="Fichier CSV (obligatoire si une seule competition)")
+    parser.add_argument(
+        "--output-dir",
+        help="Dossier CSV (mode ALL). Sinon data/import relatif au repo.",
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent
@@ -161,6 +165,8 @@ def main() -> int:
     for code in codes:
         if args.output and len(codes) == 1:
             output = Path(args.output)
+        elif args.output_dir:
+            output = Path(args.output_dir) / Path(COMPETITIONS[code]["csv"]).name
         else:
             output = root / COMPETITIONS[code]["csv"]
         if not output.is_absolute():

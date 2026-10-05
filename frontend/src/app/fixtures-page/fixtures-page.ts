@@ -1,6 +1,7 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, ViewportScroller } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CompetitionApi } from '../competition-api';
 import { Competition, Match } from '../models';
 import { competitionSortRank } from '../competition-display';
@@ -41,10 +42,13 @@ export class FixturesPage implements OnInit {
 
   private readonly navBack = inject(NavBack);
   private readonly viewport = inject(ViewportScroller);
+  private readonly destroyRef = inject(DestroyRef);
+  private hubLoaded = false;
 
   constructor(
     private api: CompetitionApi,
     private route: ActivatedRoute,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -52,18 +56,37 @@ export class FixturesPage implements OnInit {
       next: (competitions) => {
         const ordered = this.orderCompetitions(competitions);
         this.competitions.set(ordered);
-        const fromQuery = this.route.snapshot.queryParamMap.get('competition');
-        const preferred =
-          ordered.find((c) => c.code === fromQuery) ??
-          ordered.find((c) => c.code === 'TOP14') ??
-          ordered[0];
-        if (preferred) {
-          this.selectedCode.set(preferred.code);
-          if (fromQuery && ordered.some((c) => c.code === fromQuery)) {
-            this.view.set('competition');
-          }
-        }
-        this.loadMatches();
+        this.route.queryParamMap
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((params) => {
+            const fromQuery = params.get('competition');
+            const preferred =
+              ordered.find((c) => c.code === fromQuery) ??
+              ordered.find((c) => c.code === 'TOP14') ??
+              ordered[0];
+            if (!preferred) {
+              return;
+            }
+            const nextView: FixturesView =
+              fromQuery && ordered.some((c) => c.code === fromQuery)
+                ? 'competition'
+                : 'hub';
+            const codeChanged = this.selectedCode() !== preferred.code;
+            const viewChanged = this.view() !== nextView;
+            this.selectedCode.set(preferred.code);
+            this.view.set(nextView);
+            if (!this.hubLoaded) {
+              this.hubLoaded = true;
+              this.loadMatches(preferred.code);
+              return;
+            }
+            if (nextView === 'competition' && (codeChanged || viewChanged)) {
+              this.loadCompetitionMatches(preferred.code);
+            } else if (viewChanged) {
+              this.loading.set(false);
+              this.restoreScroll();
+            }
+          });
       },
       error: () => {
         this.errorMessage.set('Impossible de charger les compétitions.');
@@ -73,25 +96,41 @@ export class FixturesPage implements OnInit {
   }
 
   setView(view: FixturesView): void {
-    this.view.set(view);
+    if (view === 'hub') {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {},
+        replaceUrl: true,
+      });
+      return;
+    }
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { competition: this.selectedCode() },
+      replaceUrl: true,
+    });
   }
 
   onCompetitionChange(code: string): void {
     this.selectedCode.set(code);
-    this.loadCompetitionMatches(code);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { competition: code },
+      replaceUrl: true,
+    });
   }
 
   roundLabel(match: Match): string {
     return `${match.competitionName} · J${match.matchday}`;
   }
 
-  private loadMatches(): void {
+  private loadMatches(competitionCode: string): void {
     this.loading.set(true);
     this.errorMessage.set('');
     this.api.getAllMatches('SCHEDULED').subscribe({
       next: (matches) => {
         this.allMatches.set(this.onlyUpcoming(matches));
-        this.loadCompetitionMatches(this.selectedCode());
+        this.loadCompetitionMatches(competitionCode);
       },
       error: () => {
         this.errorMessage.set('Impossible de charger les matchs à venir.');
@@ -101,6 +140,8 @@ export class FixturesPage implements OnInit {
   }
 
   private loadCompetitionMatches(code: string): void {
+    this.loading.set(true);
+    this.errorMessage.set('');
     this.api.getMatches('SCHEDULED', code).subscribe({
       next: (matches) => {
         this.competitionMatches.set(

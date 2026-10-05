@@ -53,7 +53,14 @@ ovalytics:
     enabled: true
   team-refresh:
     enabled: true
-    scrape-enabled: false
+    scrape-enabled: true
+    cron: "0 0 23 * * *"
+    full-squad-cron: "0 0 4 * * MON"
+    repo-root: /app
+    python-command: python3
+    profiles-output: /import/player-profiles.csv
+    appearances-output: /import/player-appearances.csv
+    squads-output: /import/squads.csv
   calendar-sync:
     enabled: true
     scrape-enabled: true

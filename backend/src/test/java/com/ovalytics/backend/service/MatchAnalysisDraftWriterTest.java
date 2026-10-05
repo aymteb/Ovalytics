@@ -66,8 +66,8 @@ class MatchAnalysisDraftWriterTest {
 				List.of());
 
 		MatchAnalysisContext context = new MatchAnalysisContext(
-				new StandingRowResponse(15, 18L, "USON Nevers", "NEV", 3, 0, 0, 3, 67, 74, -7, 3, 3),
-				new StandingRowResponse(4, 21L, "Biarritz Olympique", "BIA", 3, 2, 0, 1, 99, 72, 27, 2, 10),
+				new StandingRowResponse(15, 18L, "USON Nevers", "NEV", 3, 0, 0, 3, 67, 74, -7, 3, 3, null),
+				new StandingRowResponse(4, 21L, "Biarritz Olympique", "BIA", 3, 2, 0, 1, 99, 72, 27, 2, 10, null),
 				List.of(
 						new MatchAnalysisContext.NarrowLoss(1),
 						new MatchAnalysisContext.NarrowLoss(2),
@@ -121,8 +121,8 @@ class MatchAnalysisDraftWriterTest {
 				List.of());
 
 		MatchAnalysisContext context = new MatchAnalysisContext(
-				new StandingRowResponse(8, 28L, "US Montauban", "MTB", 3, 2, 0, 1, 70, 55, 15, 1, 9),
-				new StandingRowResponse(10, 15L, "AS Béziers", "BEZ", 3, 1, 0, 2, 60, 65, -5, 1, 5),
+				new StandingRowResponse(8, 28L, "US Montauban", "MTB", 3, 2, 0, 1, 70, 55, 15, 1, 9, null),
+				new StandingRowResponse(10, 15L, "AS Béziers", "BEZ", 3, 1, 0, 2, 60, 65, -5, 1, 5, null),
 				List.of(),
 				null,
 				1,

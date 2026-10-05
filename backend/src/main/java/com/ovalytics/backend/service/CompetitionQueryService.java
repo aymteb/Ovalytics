@@ -305,11 +305,117 @@ public class CompetitionQueryService {
 		int offensiveBonusThreshold = competition.getOffensiveBonusThreshold();
 		LocalDateTime seasonStart = competition.getSeasonStart().atStartOfDay();
 		List<Team> teams = teamRepository.findByCompetitionCodeOrderByNameAsc(competitionCode);
-		List<RugbyMatch> finished = rugbyMatchRepository.findByCompetitionCodeAndStatus(
-				competitionCode, MatchStatus.FINISHED).stream()
-				.filter(m -> !m.getKickoffAt().isBefore(seasonStart))
+		List<RugbyMatch> seasonMatches = rugbyMatchRepository.findByCompetitionCode(competitionCode).stream()
+				.filter(match -> !match.getKickoffAt().isBefore(seasonStart))
 				.toList();
+		List<RugbyMatch> groupStage = seasonMatches.stream()
+				.filter(match -> match.getMatchday() >= 1 && match.getMatchday() <= 4)
+				.toList();
+		List<RugbyMatch> finished = seasonMatches.stream()
+				.filter(match -> match.getStatus() == MatchStatus.FINISHED)
+				.toList();
+		List<List<Team>> pools = inferPools(groupStage);
 
+		if (pools.isEmpty()) {
+			return buildStandingRows(
+					null,
+					teams,
+					finished,
+					defensiveBonusLimit,
+					offensiveBonusRule,
+					offensiveBonusThreshold);
+		}
+
+		List<StandingRowResponse> result = new ArrayList<>();
+		char poolLetter = 'A';
+		for (List<Team> poolTeams : pools) {
+			Set<Long> poolIds = new HashSet<>();
+			for (Team team : poolTeams) {
+				poolIds.add(team.getId());
+			}
+			List<RugbyMatch> poolFinished = finished.stream()
+					.filter(match -> poolIds.contains(match.getHomeTeam().getId())
+							&& poolIds.contains(match.getAwayTeam().getId()))
+					.toList();
+			result.addAll(buildStandingRows(
+					"Poule " + poolLetter,
+					poolTeams,
+					poolFinished,
+					defensiveBonusLimit,
+					offensiveBonusRule,
+					offensiveBonusThreshold));
+			poolLetter++;
+		}
+		return result;
+	}
+
+	private static List<List<Team>> inferPools(List<RugbyMatch> groupStage) {
+		if (groupStage.isEmpty()) {
+			return List.of();
+		}
+
+		Map<Long, Team> teamsById = new HashMap<>();
+		Map<Long, Long> parent = new HashMap<>();
+		for (RugbyMatch match : groupStage) {
+			Team home = match.getHomeTeam();
+			Team away = match.getAwayTeam();
+			teamsById.put(home.getId(), home);
+			teamsById.put(away.getId(), away);
+			parent.putIfAbsent(home.getId(), home.getId());
+			parent.putIfAbsent(away.getId(), away.getId());
+			union(parent, home.getId(), away.getId());
+		}
+
+		Map<Long, List<Team>> byRoot = new HashMap<>();
+		for (Long teamId : teamsById.keySet()) {
+			Long root = findRoot(parent, teamId);
+			byRoot.computeIfAbsent(root, ignored -> new ArrayList<>()).add(teamsById.get(teamId));
+		}
+
+		List<List<Team>> pools = byRoot.values().stream()
+				.filter(pool -> pool.size() >= 2)
+				.map(pool -> {
+					pool.sort(Comparator.comparing(Team::getName, String.CASE_INSENSITIVE_ORDER));
+					return pool;
+				})
+				.sorted(Comparator.comparing(
+						(List<Team> pool) -> pool.get(0).getName(),
+						String.CASE_INSENSITIVE_ORDER))
+				.toList();
+		if (pools.size() < 2) {
+			return List.of();
+		}
+		return pools;
+	}
+
+	private static void union(Map<Long, Long> parent, Long left, Long right) {
+		Long rootLeft = findRoot(parent, left);
+		Long rootRight = findRoot(parent, right);
+		if (!rootLeft.equals(rootRight)) {
+			parent.put(rootRight, rootLeft);
+		}
+	}
+
+	private static Long findRoot(Map<Long, Long> parent, Long id) {
+		Long root = parent.get(id);
+		if (root == null) {
+			parent.put(id, id);
+			return id;
+		}
+		if (!root.equals(id)) {
+			root = findRoot(parent, root);
+			parent.put(id, root);
+		}
+		return root;
+	}
+
+	private List<StandingRowResponse> buildStandingRows(
+			String pool,
+			List<Team> teams,
+			List<RugbyMatch> finished,
+			int defensiveBonusLimit,
+			OffensiveBonusRule offensiveBonusRule,
+			int offensiveBonusThreshold) {
 		Map<Long, MutableStanding> byTeamId = new HashMap<>();
 		for (Team team : teams) {
 			byTeamId.put(team.getId(), new MutableStanding(team));
@@ -318,6 +424,9 @@ public class CompetitionQueryService {
 		for (RugbyMatch match : finished) {
 			MutableStanding home = byTeamId.get(match.getHomeTeam().getId());
 			MutableStanding away = byTeamId.get(match.getAwayTeam().getId());
+			if (home == null || away == null) {
+				continue;
+			}
 			int homeScore = match.getHomeScore();
 			int awayScore = match.getAwayScore();
 
@@ -392,7 +501,8 @@ public class CompetitionQueryService {
 					s.pointsAgainst,
 					s.pointsFor - s.pointsAgainst,
 					s.bonus,
-					s.points));
+					s.points,
+					pool));
 		}
 		return result;
 	}

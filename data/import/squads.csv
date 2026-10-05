@@ -98,6 +98,7 @@ TOP14,TOU,Mathis CAPUS,Arrière,20,,,France,ESPOIR,,
 TOP14,TOU,Enzo TRAILLE,Arrière,18,,,France,ESPOIR,,
 TOP14,UBB,Carlü SADIE,Pilier,30,,,Afrique du sud,PRO,NON_JIFF,
 TOP14,UBB,Sipili FALATEA,Pilier,30,,,France,PRO,JIFF,
+TOP14,UBB,Matis PERCHAUD,Pilier,24,,,France,PRO,JIFF,
 TOP14,UBB,Lasha PKHAKADZE,Pilier,23,,,Géorgie,PRO,JIFF,
 TOP14,UBB,Ruben PARGADE,Pilier,21,,,France,ESPOIR,,
 TOP14,UBB,Lenny ALIFANETY,Pilier,20,,,France,ESPOIR,,
@@ -314,6 +315,7 @@ TOP14,TOL,Davit BARAMIA,2ème ligne,20,,,Géorgie,ESPOIR,ESPOIR_NON_JIFF,
 TOP14,TOL,Christian MENDES,2ème ligne,18,,,Espagne,ESPOIR,,
 TOP14,TOL,Heamani SUTA,2ème ligne,18,,,France,ESPOIR,,
 TOP14,TOL,Konrad FAUPALA,2ème ligne,18,,,France,ESPOIR,,
+TOP14,TOL,Lewis LUDLAM,3ème ligne,31,,,Angleterre,PRO,NON_JIFF,
 TOP14,TOL,Judicaël CANCORIET,3ème ligne,31,,,France,PRO,JIFF,
 TOP14,TOL,Zach MERCER,3ème ligne,30,,,Angleterre,PRO,NON_JIFF,
 TOP14,TOL,Esteban ABADIE,3ème ligne,29,,,France,PRO,JIFF,
@@ -356,64 +358,65 @@ TOP14,TOL,Noé LEBRUN,Ailier,20,,,France,ESPOIR,,
 TOP14,TOL,Melvyn JAMINET,Arrière,28,,,France,PRO,JIFF,
 TOP14,TOL,Marius DOMON,Arrière,25,,,France,PRO,JIFF,
 TOP14,TOL,Mathis FERTÉ,Arrière,23,,,France,PRO,JIFF,
-TOP14,LAR,Sione AHIO,Pilier,26,,117,Nouvelle-Zélande,PRO,NON_JIFF,2029-06-30
+TOP14,LAR,Sione AHIO,Pilier,26,,135,Nouvelle-Zélande,PRO,NON_JIFF,2029-06-30
 TOP14,LAR,Aleksandre KUNTELIA,Pilier,25,,128,Géorgie,PRO,JIFF,2029-06-30
-TOP14,LAR,Nathan FRAISSENON,Pilier,24,,140,France,PRO,JIFF,2030-06-30
-TOP14,LAR,Louis PENVERNE,Pilier,24,,115,France,PRO,JIFF,2029-06-30
+TOP14,LAR,Nathan FRAISSENON,Pilier,24,,126,France,PRO,JIFF,2029-06-30
+TOP14,LAR,Louis PENVERNE,Pilier,24,,120,France,PRO,JIFF,2029-06-30
 TOP14,LAR,Alexandre KADDOURI,Pilier,23,,101,France,PRO,JIFF,2030-06-30
 TOP14,LAR,Christian LUAKI,Pilier,23,,132,France,ESPOIR,,2028-06-30
+TOP14,LAR,Gael GALVÁN,Pilier,22,,143,Argentine,ESPOIR,,2028-06-30
 TOP14,LAR,Upaleto FEAO,Pilier,22,,,Tonga,ESPOIR,,2029-06-30
-TOP14,LAR,Toine OBIANG NGUEMA,Pilier,21,,138,Pays-Bas,ESPOIR,,2028-06-30
-TOP14,LAR,Zak PRICE,Pilier,19,,139,France,ESPOIR,,2030-06-30
-TOP14,LAR,Pierre BOURGARIT,Talonneur,29,,99,France,PRO,JIFF,2030-06-30
-TOP14,LAR,Nika SUTIDZE,Talonneur,23,,106,Géorgie,PRO,JIFF,2029-06-30
-TOP14,LAR,Gabin GARAULT,Talonneur,21,,121,France,ESPOIR,,2030-06-30
-TOP14,LAR,Seveci Naikalagi NAISILISILI,Talonneur,19,,,Fidji,ESPOIR,,2028-06-30
-TOP14,LAR,Will SKELTON,2ème ligne,35,,151,Nouvelle-Zélande,PRO,NON_JIFF,2030-06-30
-TOP14,LAR,Salmaan MOERAT,2ème ligne,29,,114,Afrique du sud,PRO,NON_JIFF,2030-06-30
-TOP14,LAR,Thomas LAVAULT,2ème ligne,28,,113,France,PRO,JIFF,2031-06-30
-TOP14,LAR,Thomas ADÉLAÏDE,2ème ligne,24,,132,France,PRO,JIFF,2031-06-30
-TOP14,LAR,Watisoni WAQANISARAVI,2ème ligne,24,,135,Fidji,PRO,NON_JIFF,2029-06-30
-TOP14,LAR,Charles KANTÉ-SAMBA,2ème ligne,22,,102,France,PRO,JIFF,2029-06-30
-TOP14,LAR,Christian GERMANÒ,2ème ligne,19,,121,Italie,ESPOIR,ESPOIR_NON_JIFF,2029-06-30
-TOP14,LAR,Sio KITE,2ème ligne,18,,135,Australie,ESPOIR,ESPOIR_NON_JIFF,2032-06-30
-TOP14,LAR,Theo MCFARLAND,3ème ligne,31,,117,Samoa,PRO,NON_JIFF,2029-06-30
-TOP14,LAR,Greg ALLDRITT,3ème ligne,30,,125,France,PRO,JIFF,2030-06-30
-TOP14,LAR,Paul BOUDEHENT,3ème ligne,27,,114,France,PRO,JIFF,2031-06-30
-TOP14,LAR,Matthias HADDAD,3ème ligne,26,,89,France,PRO,JIFF,2030-06-30
-TOP14,LAR,Sam TUIFUA,3ème ligne,25,,115,Nouvelle-Zélande,PRO,NON_JIFF,2030-06-30
-TOP14,LAR,Oscar JÉGOU,3ème ligne,24,,82,France,PRO,JIFF,2029-06-30
-TOP14,LAR,Andy TIMO,3ème ligne,23,,84,France,PRO,JIFF,2029-06-30
-TOP14,LAR,Lucas ANDJISSERAMATCHI,3ème ligne,21,,90,France,ESPOIR,,2029-06-30
-TOP14,LAR,Kirill FRAINDT,3ème ligne,20,,115,Russie,ESPOIR,ESPOIR_NON_JIFF,2030-06-30
-TOP14,LAR,Oscar BOUTEZ,3ème ligne,19,,,France,ESPOIR,,2029-06-30
-TOP14,LAR,Max WORSLEY,3ème ligne,19,,,Angleterre,ESPOIR,,2029-06-30
-TOP14,LAR,Charlie SHORTALL,3ème ligne,19,,,Belgique,ESPOIR,ESPOIR_NON_JIFF,2029-06-30
-TOP14,LAR,Bas BROEKS,3ème ligne,18,,,Belgique,ESPOIR,ESPOIR_NON_JIFF,2029-06-30
-TOP14,LAR,Thomas BERJON,Mêlée,29,,86,France,PRO,JIFF,2029-06-30
-TOP14,LAR,Nolann LE GARREC,Mêlée,25,,86,France,PRO,JIFF,2031-06-30
+TOP14,LAR,Toine OBIANG NGUEMA,Pilier,21,,129,Pays-Bas,ESPOIR,,2028-06-30
+TOP14,LAR,Zak PRICE,Pilier,19,,152,France,ESPOIR,,2030-06-30
+TOP14,LAR,Pierre BOURGARIT,Talonneur,29,,105,France,PRO,JIFF,2031-06-30
+TOP14,LAR,Nika SUTIDZE,Talonneur,23,,122,Géorgie,PRO,JIFF,2030-06-30
+TOP14,LAR,Gabin GARAULT,Talonneur,21,,103,France,ESPOIR,,2029-06-30
+TOP14,LAR,Seveci Naikalagi NAISILISILI,Talonneur,19,,,Fidji,ESPOIR,,2029-06-30
+TOP14,LAR,Will SKELTON,2ème ligne,35,,134,Nouvelle-Zélande,PRO,NON_JIFF,2029-06-30
+TOP14,LAR,Salmaan MOERAT,2ème ligne,29,,128,Afrique du sud,PRO,NON_JIFF,2030-06-30
+TOP14,LAR,Thomas LAVAULT,2ème ligne,28,,116,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Thomas ADÉLAÏDE,2ème ligne,24,,113,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Watisoni WAQANISARAVI,2ème ligne,24,,128,Fidji,PRO,NON_JIFF,2030-06-30
+TOP14,LAR,Charles KANTÉ-SAMBA,2ème ligne,22,,111,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Christian GERMANÒ,2ème ligne,19,,133,Italie,ESPOIR,ESPOIR_NON_JIFF,2028-06-30
+TOP14,LAR,Sio KITE,2ème ligne,18,,155,Australie,ESPOIR,ESPOIR_NON_JIFF,2032-06-30
+TOP14,LAR,Theo MCFARLAND,3ème ligne,31,,104,Samoa,PRO,NON_JIFF,2029-06-30
+TOP14,LAR,Greg ALLDRITT,3ème ligne,30,,118,France,PRO,JIFF,2031-06-30
+TOP14,LAR,Paul BOUDEHENT,3ème ligne,27,,117,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Matthias HADDAD,3ème ligne,26,,101,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Sam TUIFUA,3ème ligne,25,,111,Nouvelle-Zélande,PRO,NON_JIFF,2031-06-30
+TOP14,LAR,Oscar JÉGOU,3ème ligne,24,,98,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Andy TIMO,3ème ligne,23,,101,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Lucas ANDJISSERAMATCHI,3ème ligne,21,,99,France,ESPOIR,,2029-06-30
+TOP14,LAR,Kirill FRAINDT,3ème ligne,20,,101,Russie,ESPOIR,ESPOIR_NON_JIFF,2029-06-30
+TOP14,LAR,Oscar BOUTEZ,3ème ligne,19,,,France,ESPOIR,,2028-06-30
+TOP14,LAR,Max WORSLEY,3ème ligne,19,,,Angleterre,ESPOIR,,2028-06-30
+TOP14,LAR,Charlie SHORTALL,3ème ligne,19,,,Belgique,ESPOIR,ESPOIR_NON_JIFF,2028-06-30
+TOP14,LAR,Bas BROEKS,3ème ligne,18,,,Belgique,ESPOIR,ESPOIR_NON_JIFF,2028-06-30
+TOP14,LAR,Thomas BERJON,Mêlée,29,,100,France,PRO,JIFF,2029-06-30
+TOP14,LAR,Nolann LE GARREC,Mêlée,25,,76,France,PRO,JIFF,2031-06-30
 TOP14,LAR,Temanatua BOICHOT,Mêlée,21,,,France,ESPOIR,,2028-06-30
-TOP14,LAR,Valentin BOUJU,Mêlée,19,,,France,ESPOIR,,2029-06-30
-TOP14,LAR,Antoine HASTOY,Ouverture,30,,92,France,PRO,JIFF,2030-06-30
-TOP14,LAR,Ben HEALY,Ouverture,28,,114,Irlande,PRO,NON_JIFF,2029-06-30
-TOP14,LAR,Diego JURD,Ouverture,20,,83,France,ESPOIR,,2031-06-30
+TOP14,LAR,Valentin BOUJU,Mêlée,19,,,France,ESPOIR,,2030-06-30
+TOP14,LAR,Antoine HASTOY,Ouverture,30,,101,France,PRO,JIFF,2031-06-30
+TOP14,LAR,Ben HEALY,Ouverture,28,,85,Irlande,PRO,NON_JIFF,2029-06-30
+TOP14,LAR,Diego JURD,Ouverture,20,,84,France,ESPOIR,,2030-06-30
 TOP14,LAR,Sacha ELISSALDE,Ouverture,19,,,France,ESPOIR,,2029-06-30
-TOP14,LAR,Arthur VENDÉ,Ouverture,19,,,France,ESPOIR,,2028-06-30
-TOP14,LAR,Ulupano SEUTENI,Centre,33,,91,Australie,PRO,JIFF,2029-06-30
-TOP14,LAR,David KRIEL,Centre,28,,106,Afrique du sud,PRO,NON_JIFF,2029-06-30
-TOP14,LAR,Jules FAVRE,Centre,28,,104,France,PRO,JIFF,2030-06-30
-TOP14,LAR,Semi LAGIVALA,Centre,24,,90,Fidji,PRO,JIFF,2029-06-30
-TOP14,LAR,Simeli DAUNIVUCU,Centre,22,,90,Fidji,ESPOIR,,2030-06-30
+TOP14,LAR,Arthur VENDÉ,Ouverture,19,,,France,ESPOIR,,2029-06-30
+TOP14,LAR,Ulupano SEUTENI,Centre,33,,110,Australie,PRO,JIFF,2029-06-30
+TOP14,LAR,David KRIEL,Centre,28,,116,Afrique du sud,PRO,NON_JIFF,2029-06-30
+TOP14,LAR,Jules FAVRE,Centre,28,,88,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Semi LAGIVALA,Centre,24,,79,Fidji,PRO,JIFF,2029-06-30
+TOP14,LAR,Simeli DAUNIVUCU,Centre,22,,105,Fidji,ESPOIR,,2030-06-30
 TOP14,LAR,Oscar SHORTALL,Centre,21,,,Belgique,ESPOIR,ESPOIR_NON_JIFF,2028-06-30
-TOP14,LAR,Uwé KAMOTO,Centre,18,,,Tonga,ESPOIR,,2028-06-30
-TOP14,LAR,Nathan BOLLENGIER,Ailier,23,,78,France,PRO,JIFF,2030-06-30
-TOP14,LAR,Hugo BIZOTTO,Ailier,21,,,France,ESPOIR,,2028-06-30
+TOP14,LAR,Uwé KAMOTO,Centre,18,,,Tonga,ESPOIR,,2029-06-30
+TOP14,LAR,Nathan BOLLENGIER,Ailier,23,,95,France,PRO,JIFF,2030-06-30
+TOP14,LAR,Hugo BIZOTTO,Ailier,21,,,France,ESPOIR,,2029-06-30
 TOP14,LAR,Peni Torau VUETIMAIWAI,Ailier,21,,,Fidji,ESPOIR,,2028-06-30
 TOP14,LAR,Jurgen KAMOTO,Ailier,21,,,Tonga,ESPOIR,,2028-06-30
-TOP14,LAR,Ilian SONKO-BASIN,Ailier,18,,,France,ESPOIR,,2029-06-30
-TOP14,LAR,Davit NINIASHVILI,Arrière,24,,96,Géorgie,PRO,JIFF,2031-06-30
-TOP14,LAR,Martin BETSEN,Arrière,21,,,France,ESPOIR,ESPOIR_NON_JIFF,2029-06-30
-TOP14,LAR,Mark GRINDLAY,Arrière,20,,81,Afrique du sud,ESPOIR,ESPOIR_NON_JIFF,2030-06-30
+TOP14,LAR,Ilian SONKO-BASIN,Ailier,18,,,France,ESPOIR,,2030-06-30
+TOP14,LAR,Davit NINIASHVILI,Arrière,24,,104,Géorgie,PRO,JIFF,2031-06-30
+TOP14,LAR,Martin BETSEN,Arrière,21,,,France,ESPOIR,ESPOIR_NON_JIFF,2028-06-30
+TOP14,LAR,Mark GRINDLAY,Arrière,20,,73,Afrique du sud,ESPOIR,ESPOIR_NON_JIFF,2030-06-30
 TOP14,LAR,Jessy TAOFIFENUA,Arrière,18,,,France,ESPOIR,,2029-06-30
 TOP14,ASM,Cristian OJOVAN,Pilier,30,,134,Moldavie,PRO,JIFF,2030-06-30
 TOP14,ASM,Giorgi AKHALADZE,Pilier,28,,139,Géorgie,PRO,JIFF,2030-06-30
@@ -701,6 +704,7 @@ TOP14,CAS,Gabin RODIER,Ailier,18,,,France,ESPOIR,,
 TOP14,CAS,Théo CHABOUNI,Arrière,23,,,France,ESPOIR,,
 TOP14,CAS,Mathys FALGUÉRA,Arrière,23,,,France,ESPOIR,,
 TOP14,CAS,Axel NETH,Arrière,19,,,France,ESPOIR,,
+TOP14,PAU,Beno OBANO,Pilier,32,,,Angleterre,PRO,NON_JIFF,
 TOP14,PAU,Thomas LACLAYAT,Pilier,29,,,France,PRO,JIFF,
 TOP14,PAU,Hugo PARROU,Pilier,24,,,France,PRO,JIFF,
 TOP14,PAU,Alexandre ETCHEBÉHÈRE,Pilier,22,,,France,PRO,JIFF,
@@ -1098,6 +1102,7 @@ PROD2,NEV,Shamesdine HASNAOUI,Arrière,19,,,France,ESPOIR,,
 PROD2,AIX,Sébastien TAOFIFENUA,Pilier,35,,,France,PRO,JIFF,
 PROD2,AIX,Pascal COTET,Pilier,33,,,France,PRO,JIFF,
 PROD2,AIX,Aurélien AZAR,Pilier,33,,,France,PRO,JIFF,
+PROD2,AIX,Josh IOSEFA-SCOTT,Pilier,30,,,Nouvelle-Zélande,PRO,NON_JIFF,
 PROD2,AIX,Hugo N'DIAYE,Pilier,26,,,France,PRO,JIFF,
 PROD2,AIX,Andréa PONTANIER,Pilier,25,,,France,PRO,JIFF,
 PROD2,AIX,Eliott YEMSI,Pilier,25,,,France,PRO,JIFF,
@@ -1346,6 +1351,7 @@ PROD2,NIC,Nicolás CIANCIO,Pilier,25,,,Argentine,PRO,JIFF,
 PROD2,NIC,Zinédine AOUAD,Pilier,22,,,France,PRO,JIFF,
 PROD2,NIC,Nacho NAVARRETE,Pilier,20,,,Espagne,ESPOIR,ESPOIR_NON_JIFF,
 PROD2,NIC,Clément MARTINEZ,Talonneur,31,,,France,PRO,JIFF,
+PROD2,NIC,Pierre STRIPPOLI,Talonneur,26,,,France,PRO,JIFF,
 PROD2,NIC,Baptiste MORÉNO,Talonneur,24,,,France,PRO,JIFF,
 PROD2,NIC,Léo CHAUVIN,Talonneur,23,,,France,PRO,JIFF,
 PROD2,NIC,Adrian MOȚOC,2ème ligne,30,,,Roumanie,PRO,JIFF,
@@ -1644,7 +1650,7 @@ NAT,MAS,Gonzalo LOPEZ BONTEMPO,Centre,26,,112,Argentine,PRO,,2028-06-30
 NAT,MAS,Greg HUTLEY,Ouverture,25,,88,Irlande,PRO,,2028-06-30
 NAT,MAS,Ilian EL YAHYAOUI,Ailier,22,,60,France,PRO,,2028-06-30
 NAT,MAS,Jean-Baptiste DE CLERCQ,2ème ligne,32,,144,Belgique,PRO,,2028-06-30
-NAT,MAS,Julien BLANC,Mêlée,33,,68,France,PRO,,2029-06-30
+NAT,MAS,Julien BLANC,Mêlée,34,,68,France,PRO,,2029-06-30
 NAT,MAS,Lilian RINARDO,2ème ligne,22,,133,France,PRO,,2029-06-30
 NAT,MAS,Loris ROUET,Mêlée,23,,80,France,PRO,,2028-06-30
 NAT,MAS,Luca MIGNOT,Centre,26,,90,France,PRO,,2028-06-30
@@ -1691,7 +1697,7 @@ NAT,CAR,Dimitri TCHAPNGA,Pilier,39,,123,Cameroun,PRO,,2029-06-30
 NAT,CAR,Dino CASADEÏ,Pilier,25,,106,France,PRO,,2030-06-30
 NAT,CAR,Dorian LAVERNHE,Centre,27,,91,France,PRO,,2030-06-30
 NAT,CAR,Dylan JACQUOT,Talonneur,31,,111,France,PRO,,2028-06-30
-NAT,CAR,Elie DE FLEURIAN,Ailier,27,,68,France,PRO,,2029-06-30
+NAT,CAR,Elie DE FLEURIAN,Ailier,28,,68,France,PRO,,2029-06-30
 NAT,CAR,Etienne HERJEAN,3ème ligne,35,,96,France,PRO,,2029-06-30
 NAT,CAR,Fabien LORENZON,Pilier,29,,109,France,PRO,,2030-06-30
 NAT,CAR,Ferdinand DRÉNO,3ème ligne,24,,88,France,PRO,,2029-06-30
@@ -1727,7 +1733,6 @@ NAT,CAR,Théo SAUZARET,Pilier,29,,114,France,PRO,,2029-06-30
 NAT,CAR,Théo VASSALLO,Centre,22,,91,France,PRO,,2029-06-30
 NAT,CAR,Tomasi SERU,Ailier,22,,98,Fidji,PRO,,2028-06-30
 NAT,CAR,Tomás MUNILLA,Mêlée,28,,88,Espagne,PRO,,2029-06-30
-NAT,CAR,Yan TABAROT,Talonneur,27,,120,France,PRO,,2029-06-30
 NAT,CAR,Yanis HORVAT,Centre,23,,106,Roumanie,PRO,,2028-06-30
 NAT,CAR,Évrard Dion OULAI,Mêlée,33,,129,Côte d&#039;Ivoire,PRO,,2027-06-30
 NAT,ALB,Alex DOS SANTOS,Pilier,25,,111,France,PRO,,2030-06-30
@@ -1738,12 +1743,15 @@ NAT,ALB,Antoine FRAMBOURG,3ème ligne,26,,104,France,PRO,,2028-06-30
 NAT,ALB,Antoine MARTY-RYBAK,2ème ligne,26,,102,France,PRO,,2029-06-30
 NAT,ALB,Antoine SOAVE,Pilier,31,,115,France,PRO,,2028-06-30
 NAT,ALB,Arthur DIAZ,Mêlée,23,,71,France,PRO,,2029-06-30
+NAT,ALB,Aymeric LAGER,Pilier,22,,115,France,PRO,,2029-06-30
 NAT,ALB,Baptiste COLLET,Pilier,25,,139,France,PRO,,2028-06-30
 NAT,ALB,Baptiste COUCHINAVE,Centre,28,,90,France,PRO,,2028-06-30
 NAT,ALB,Corentin COULARIS,3ème ligne,24,,107,France,PRO,,2028-06-30
 NAT,ALB,Cédric SOULÉ,Centre,28,,100,France,PRO,,2029-06-30
 NAT,ALB,Davit MTCHEDLIDZE,Pilier,22,,115,Géorgie,PRO,,2029-06-30
 NAT,ALB,Dylan SÉLEUCIDE,3ème ligne,24,,,France,PRO,,2029-06-30
+NAT,ALB,Eliott ARANDIGA,Ouverture,22,,96,France,PRO,,2029-06-30
+NAT,ALB,Enzo MOREAU,3ème ligne,22,,116,France,PRO,,2029-06-30
 NAT,ALB,Enzo RIVIER,2ème ligne,24,,93,France,PRO,,2028-06-30
 NAT,ALB,Florian BERTRAND,2ème ligne,32,,122,France,PRO,,2029-06-30
 NAT,ALB,Florian LAMOTHE,Talonneur,26,,108,France,PRO,,2030-06-30
@@ -1902,7 +1910,7 @@ NAT,ROU,Jules MARGARIT,Ailier,25,,90,France,PRO,,2030-06-30
 NAT,ROU,Jérémie MUKANDA,3ème ligne,21,,,France,PRO,,2029-06-30
 NAT,ROU,Killian LAISNÉ,3ème ligne,20,,,France,PRO,,2030-06-30
 NAT,ROU,Kévin BLY,Ailier,30,,81,France,PRO,,2030-06-30
-NAT,ROU,Kévin FABIEN,Centre,23,,86,Haïti,PRO,,2030-06-30
+NAT,ROU,Kévin FABIEN,Centre,24,,86,Haïti,PRO,,2030-06-30
 NAT,ROU,Logan TABET,Centre,24,,86,France,PRO,,2029-06-30
 NAT,ROU,Lucas GUILLAUME,Ailier,35,,100,France,PRO,,2028-06-30
 NAT,ROU,Lucas PINDOR,2ème ligne,25,,105,France,PRO,,2027-06-30
@@ -1936,6 +1944,7 @@ NAT,ROU,Yaël MARUJO,Mêlée,20,,,France,PRO,,2028-06-30
 NAT,ROU,Évrard Dion OULAI,Centre,33,,122,Côte d&#039;Ivoire,PRO,,2029-06-30
 NAT,SUR,Abdelkarim FOFANA,3ème ligne,30,,112,France,PRO,,2029-06-30
 NAT,SUR,Alexis CLÉMENT,Ailier,26,,82,France,PRO,,2028-06-30
+NAT,SUR,Alovisio KOLIVAÏ,Pilier,22,,100,France,PRO,,2029-06-30
 NAT,SUR,Aloïs CHAYLA,Arrière,24,,93,France,PRO,,2029-06-30
 NAT,SUR,Anthime GOBEAUX,Mêlée,20,,,France,PRO,,2029-06-30
 NAT,SUR,Antoine MARTY-RYBAK,Talonneur,26,,116,France,PRO,,2029-06-30
@@ -1949,11 +1958,13 @@ NAT,SUR,Faraj FARTASS,Ailier,29,,85,France,PRO,,2029-06-30
 NAT,SUR,Florian DESBORDES,3ème ligne,30,,106,France,PRO,,2029-06-30
 NAT,SUR,Florian REMUE,Ailier,23,,98,Belgique,PRO,,2030-06-30
 NAT,SUR,Gela MURUSIDZE,Pilier,26,,110,Géorgie,PRO,,2030-06-30
+NAT,SUR,Guillem FERNÁNDEZ GRAU,Ouverture,21,,90,Belgique,PRO,,2030-06-30
 NAT,SUR,Guiterembi VICKOS,Pilier,34,,116,France,PRO,,2029-06-30
 NAT,SUR,Jean-Baptiste DE CLERCQ,2ème ligne,32,,127,Belgique,PRO,,2028-06-30
 NAT,SUR,Jorel PETER-KAMGA,Pilier,22,,116,France,PRO,,2030-06-30
 NAT,SUR,Joseph EXSHAW,Centre,23,,97,France,PRO,,2030-06-30
 NAT,SUR,Joshua POTDEVIN,Centre,23,,91,France,PRO,,2030-06-30
+NAT,SUR,Julian ROUX,Ailier,21,,60,France,PRO,,2030-06-30
 NAT,SUR,Jérémie BRASSEUR,3ème ligne,26,,87,France,PRO,,2030-06-30
 NAT,SUR,Kélian BOISSIER,Mêlée,24,,99,France,PRO,,2028-06-30
 NAT,SUR,Laki LEE,3ème ligne,32,,130,Samoa,PRO,,2028-06-30
@@ -1965,6 +1976,7 @@ NAT,SUR,Max AURIAC,Arrière,23,,74,France,PRO,,2029-06-30
 NAT,SUR,Maxime VACQUIER,Centre,23,,104,France,PRO,,2029-06-30
 NAT,SUR,Maximilien HENDRICKX,2ème ligne,29,,127,Belgique,PRO,,2030-06-30
 NAT,SUR,Nicola BOZZO,Centre,22,,96,Italie,PRO,,2030-06-30
+NAT,SUR,Ollie MCCREA,2ème ligne,21,,111,Australie,PRO,,2029-06-30
 NAT,SUR,Oumar MANÉ,Pilier,22,,,France,PRO,,2030-06-30
 NAT,SUR,Reinach VENTER,Ailier,31,,111,Afrique du sud,PRO,,2027-06-30
 NAT,SUR,Romain MAURICE,Ailier,32,,102,France,PRO,,2028-06-30
@@ -2077,20 +2089,21 @@ NAT,ORL,Yanis NYAZ,2ème ligne,28,,103,France,PRO,,2031-06-30
 NAT,ORL,Émilien TRÉZIÈRES,Centre,22,,,France,PRO,,2028-06-30
 NAT,ORL,Évrard Dion OULAI,Arrière,33,,139,Côte d&#039;Ivoire,PRO,,2027-06-30
 NAT,PER,Afa AMOSA,3ème ligne,35,,116,Australie,PRO,,2028-06-30
-NAT,PER,Anderson NEISEN,Arrière,33,,106,France,PRO,,2029-06-30
+NAT,PER,Anderson NEISEN,Arrière,33,,83,France,PRO,,2029-06-30
 NAT,PER,Anthony PELMARD,Pilier,31,,143,France,PRO,,2029-06-30
 NAT,PER,Antoine BOUTHIER,3ème ligne,22,,94,France,PRO,,2029-06-30
 NAT,PER,Antoine SOAVE,Pilier,31,,88,France,PRO,,2028-06-30
 NAT,PER,Arthur CASTANT,Mêlée,28,,105,France,PRO,,2028-06-30
 NAT,PER,Bastien GEST,3ème ligne,24,,91,France,PRO,,2028-06-30
 NAT,PER,Charles FOURÈS,2ème ligne,26,,97,France,PRO,,2029-06-30
+NAT,PER,Christa POWELL,Centre,29,,118,Fidji,PRO,,2028-06-30
 NAT,PER,Clément LANEN,3ème ligne,28,,105,France,PRO,,2029-06-30
 NAT,PER,Cole KEITH,Pilier,29,,115,Canada,PRO,,2029-06-30
 NAT,PER,Colin VIDAL,3ème ligne,20,,99,France,PRO,,2028-06-30
 NAT,PER,Dimitri TCHAPNGA,Pilier,39,,117,Cameroun,PRO,,2028-06-30
 NAT,PER,Dominic ROBERTSON-MCCOY,Pilier,32,,137,Nouvelle-Zélande,PRO,,2028-06-30
 NAT,PER,Dylan JACQUOT,Talonneur,31,,105,France,PRO,,2028-06-30
-NAT,PER,Frederick HICKES,Centre,34,,120,Fidji,PRO,,2028-06-30
+NAT,PER,Frederick HICKES,Centre,34,,110,Fidji,PRO,,2028-06-30
 NAT,PER,Henry SPRING,Talonneur,25,,112,Fidji,PRO,,2028-06-30
 NAT,PER,Jason TINDILIÈRE,Pilier,29,,96,France,PRO,,2029-06-30
 NAT,PER,Jean-Baptiste DE CLERCQ,Talonneur,32,,138,Belgique,PRO,,2028-06-30
@@ -2099,7 +2112,7 @@ NAT,PER,Josh PETERS,2ème ligne,30,,105,Angleterre,PRO,,2028-06-30
 NAT,PER,Kito FALATEA,Talonneur,28,,102,France,PRO,,2029-06-30
 NAT,PER,Kévin VIALLARD,Mêlée,25,,66,France,PRO,,2029-06-30
 NAT,PER,Lenny VIOLA,Mêlée,22,,86,France,PRO,,2028-06-30
-NAT,PER,Lucas GUILLAUME,Arrière,35,,101,France,PRO,,2028-06-30
+NAT,PER,Lucas GUILLAUME,Arrière,35,,108,France,PRO,,2029-06-30
 NAT,PER,Lucas PINDOR,2ème ligne,25,,115,France,PRO,,2028-06-30
 NAT,PER,Martin AUGEIX,Pilier,25,,116,France,PRO,,2029-06-30
 NAT,PER,Marvin WOKI,2ème ligne,29,,154,France,PRO,,2029-06-30
@@ -2107,23 +2120,23 @@ NAT,PER,Maxime LANÇON,Talonneur,25,,116,France,PRO,,2030-06-30
 NAT,PER,Maël AUGRY,Talonneur,22,,113,France,PRO,,2028-06-30
 NAT,PER,Milan FERREIRA,Pilier,23,,126,Afrique du sud,PRO,,2028-06-30
 NAT,PER,Nahum MERIGAN,3ème ligne,25,,124,Angleterre,PRO,,2030-06-30
-NAT,PER,Nathan VAN DE VEN,Centre,23,,97,France,PRO,,2030-06-30
-NAT,PER,Nicolas PIATON,Centre,23,,78,France,PRO,,2028-06-30
-NAT,PER,Quentin PILET,Arrière,33,,83,France,PRO,,2029-06-30
+NAT,PER,Nathan VAN DE VEN,Centre,23,,92,France,PRO,,2029-06-30
+NAT,PER,Nicolas PIATON,Centre,23,,97,France,PRO,,2028-06-30
+NAT,PER,Quentin PILET,Arrière,33,,92,France,PRO,,2029-06-30
 NAT,PER,Reinach VENTER,Centre,31,,132,Afrique du sud,PRO,,2027-06-30
 NAT,PER,Romain MAURICE,Centre,32,,103,France,PRO,,2029-06-30
-NAT,PER,Rory SCHOLES,Arrière,33,,97,Irlande,PRO,,2029-06-30
+NAT,PER,Rory SCHOLES,Arrière,33,,84,Irlande,PRO,,2029-06-30
 NAT,PER,Sacha ROSENBERG,3ème ligne,22,,110,France,PRO,,2029-06-30
-NAT,PER,Sam SPRING,Centre,24,,89,France,PRO,,2028-06-30
+NAT,PER,Sam SPRING,Centre,24,,81,France,PRO,,2029-06-30
 NAT,PER,Simon RENAUD,3ème ligne,27,,149,France,PRO,,2028-06-30
-NAT,PER,Sirilo LOVOKURO,Centre,24,,104,Fidji,PRO,,2029-06-30
+NAT,PER,Sirilo LOVOKURO,Centre,24,,121,Fidji,PRO,,2028-06-30
 NAT,PER,Thibaud SEBIRE,3ème ligne,25,,118,France,PRO,,2029-06-30
 NAT,PER,Théo FAUGUEROLLES,Ouverture,20,,88,France,PRO,,2030-06-30
-NAT,PER,Tim GIRESSE,Ailier,33,,83,France,PRO,,2029-06-30
+NAT,PER,Tim GIRESSE,Ailier,33,,101,France,PRO,,2029-06-30
 NAT,PER,Tom RAFFY,Ouverture,22,,81,France,PRO,,2028-06-30
 NAT,PER,Victor LEBAS,2ème ligne,33,,112,France,PRO,,2029-06-30
-NAT,PER,Yoan TÉJÉRINA,Centre,20,,105,France,PRO,,2028-06-30
-NAT,PER,Yon CAMOU,Arrière,24,,77,France,PRO,,2030-06-30
+NAT,PER,Yoan TÉJÉRINA,Centre,20,,83,France,PRO,,2029-06-30
+NAT,PER,Yon CAMOU,Arrière,24,,93,France,PRO,,2030-06-30
 NAT,PER,Émilien BORGES,Pilier,25,,98,France,PRO,,2028-06-30
 NAT,PER,Évrard Dion OULAI,Centre,33,,130,Côte d&#039;Ivoire,PRO,,2028-06-30
 NAT,REN,Adrien MONTEIL,Arrière,21,,79,France,PRO,,2029-06-30
@@ -2178,7 +2191,7 @@ NAT,VIE,Arthur NENNIG,Ailier,26,,76,France,PRO,,2028-06-30
 NAT,VIE,Benjamin DEBETZ,Arrière,25,,75,France,PRO,,2030-06-30
 NAT,VIE,Benjamin ROBIN,Pilier,31,,98,France,PRO,,2028-06-30
 NAT,VIE,Bynjamin RABATEL,3ème ligne,28,,111,France,PRO,,2028-06-30
-NAT,VIE,Chuck ODUM,Pilier,20,,103,Nigéria,PRO,,2029-06-30
+NAT,VIE,Chuck ODUM,Pilier,20,,106,Nigéria,PRO,,2029-06-30
 NAT,VIE,Ciaran O'FLYNN,2ème ligne,31,,107,France,PRO,,2029-06-30
 NAT,VIE,Clément DOUCET,Ouverture,25,,81,France,PRO,,2029-06-30
 NAT,VIE,Dimitri TCHAPNGA,Talonneur,39,,129,Cameroun,PRO,,2028-06-30
@@ -2221,6 +2234,7 @@ NAT,VIE,Évrard Dion OULAI,Ailier,33,,149,Côte d&#039;Ivoire,PRO,,2027-06-30
 NAT,USB,Adriaan VAN DER BANK,Ouverture,29,,89,Afrique du sud,PRO,,2029-06-30
 NAT,USB,Alexandre BADET,Centre,28,,79,France,PRO,,2028-06-30
 NAT,USB,Antoine HÊCHE,Talonneur,22,,110,France,PRO,,2029-06-30
+NAT,USB,Antoine MAYOUD,Talonneur,20,,,France,PRO,,2028-06-30
 NAT,USB,Antoine SOAVE,Pilier,31,,108,France,PRO,,2029-06-30
 NAT,USB,Arthur CASTANT,Ouverture,28,,102,France,PRO,,2027-06-30
 NAT,USB,Arthur ESPEUT,Centre,23,,95,France,PRO,,2029-06-30
@@ -2279,7 +2293,7 @@ NAT,MAR,Aymeric ROUSERÉ,3ème ligne,21,,85,France,PRO,,2028-06-30
 NAT,MAR,Brandon DAYORO,3ème ligne,23,,109,France,PRO,,2028-06-30
 NAT,MAR,Brian GONZÁLEZ,Pilier,27,,136,Argentine,PRO,,2029-06-30
 NAT,MAR,Charles-Edouard EKWAH ELIMBY,Pilier,29,,124,France,PRO,,2028-06-30
-NAT,MAR,Clément GAUBERT,3ème ligne,19,,,France,PRO,,2028-06-30
+NAT,MAR,Clément GAUBERT,3ème ligne,20,,,France,PRO,,2028-06-30
 NAT,MAR,Clément GÉRAULT,Mêlée,18,,91,France,PRO,,2029-06-30
 NAT,MAR,Clément LENDRES,Pilier,20,,,France,PRO,,2029-06-30
 NAT,MAR,Dany ANTUNÈS,Mêlée,29,,73,France,PRO,,2030-06-30
@@ -2410,7 +2424,7 @@ PREM,GLO,Ben LOADER,Ailier,27,,88,Angleterre,PRO,,2028-06-30
 PREM,GLO,Ben REDSHAW,Arrière,21,,83,Angleterre,PRO,,2029-06-30
 PREM,GLO,Beno OBANO,Pilier,31,,117,Angleterre,PRO,,2029-06-30
 PREM,GLO,Caolan ENGLEFIELD,Mêlée,26,,94,Irlande,PRO,,2029-06-30
-PREM,GLO,Charlie ATKINSON,Ouverture,24,,87,Angleterre,PRO,,2029-06-30
+PREM,GLO,Charlie ATKINSON,Ouverture,24,,87,Angleterre,PRO,,2031-06-30
 PREM,GLO,Charlie EWELS,Mêlée,31,,122,Angleterre,PRO,,2028-06-30
 PREM,GLO,Chris CLOETE,Arrière,35,,109,Afrique du sud,PRO,,2029-06-30
 PREM,GLO,Ciaran KNIGHT,Pilier,28,,116,Angleterre,PRO,,2028-06-30
@@ -2426,7 +2440,7 @@ PREM,GLO,Hame FAIVA,3ème ligne,32,,100,Nouvelle-Zélande,PRO,,2029-06-30
 PREM,GLO,Harry TAYLOR,3ème ligne,25,,95,Angleterre,PRO,,2028-06-30
 PREM,GLO,Jac MORGAN,3ème ligne,26,,101,Pays-de-Galles,PRO,,2028-06-30
 PREM,GLO,Jack CLEMENT,3ème ligne,25,,121,Angleterre,PRO,,2029-06-30
-PREM,GLO,Jack GILBERT,3ème ligne,19,,,Pays-de-Galles,PRO,,2029-06-30
+PREM,GLO,Jack GILBERT,3ème ligne,20,,,Pays-de-Galles,PRO,,2029-06-30
 PREM,GLO,Jack INNARD,Talonneur,31,,108,Angleterre,PRO,,2029-06-30
 PREM,GLO,Jack MANN,3ème ligne,26,,123,Ecosse,PRO,,2030-06-30
 PREM,GLO,Jacques DU PLESSIS,Centre,33,,120,Afrique du sud,PRO,,2027-06-30
@@ -2459,11 +2473,12 @@ PREM,GLO,Seb ATKINSON,Centre,24,,113,Angleterre,PRO,,2028-06-30
 PREM,GLO,Seb BLAKE,Talonneur,24,,105,Angleterre,PRO,,2028-06-30
 PREM,GLO,Thomas DU TOIT,2ème ligne,31,,127,Afrique du sud,PRO,,2029-06-30
 PREM,GLO,Tom DUNN,3ème ligne,33,,106,Angleterre,PRO,,2028-06-30
-PREM,GLO,Tom WORTS,3ème ligne,22,,125,Angleterre,PRO,,2028-06-30
+PREM,GLO,Tom WORTS,3ème ligne,23,,125,Angleterre,PRO,,2028-06-30
 PREM,GLO,Val RAPAVA-RUSKIN,Pilier,33,,139,Géorgie,PRO,,2028-06-30
 PREM,GLO,Will JOSEPH,Centre,24,,103,Angleterre,PRO,,2028-06-30
+PREM,GLO,Will KNIGHT,Centre,19,,112,Angleterre,PRO,,2029-06-30
 PREM,GLO,Will STUART,3ème ligne,30,,135,Angleterre,PRO,,2027-06-30
-PREM,GLO,Will TRENHOLM,3ème ligne,25,,98,Angleterre,PRO,,2028-06-30
+PREM,GLO,Will TRENHOLM,3ème ligne,25,,98,Angleterre,PRO,,2030-06-30
 PREM,BAT,Alex RIDGWAY,3ème ligne,20,,106,Pays-de-Galles,PRO,,2028-06-30
 PREM,BAT,Alfie GRIFFIN,Pilier,,,,Angleterre,PRO,,2029-06-30
 PREM,BAT,Archie GRIFFIN,Pilier,25,,127,Australie,PRO,,2029-06-30
@@ -2545,7 +2560,7 @@ PREM,BRS,Benjamín GRONDONA,3ème ligne,22,,112,Argentine,PRO,,2028-06-30
 PREM,BRS,Beno OBANO,Pilier,31,,115,Angleterre,PRO,,2029-06-30
 PREM,BRS,Charlie EWELS,Ouverture,31,,117,Angleterre,PRO,,2029-06-30
 PREM,BRS,Elliot STOOKE,Centre,33,,110,Angleterre,PRO,,2028-06-30
-PREM,BRS,Ellis GENGE,Pilier,31,,108,Angleterre,PRO,,2028-06-30
+PREM,BRS,Ellis GENGE,Pilier,31,,108,Angleterre,PRO,,2029-06-30
 PREM,BRS,Ethan STADDON,3ème ligne,24,,115,Angleterre,PRO,,2029-06-30
 PREM,BRS,Fitz HARDING,3ème ligne,27,,113,Angleterre,PRO,,2029-06-30
 PREM,BRS,Gabriel IBITOYE,Ailier,28,,87,Angleterre,PRO,,2028-06-30
@@ -2578,7 +2593,7 @@ PREM,BRS,Louis REES-ZAMMIT,Ailier,25,,105,Pays-de-Galles,PRO,,2028-06-30
 PREM,BRS,Lovejoy CHAWATAMA,Pilier,34,,108,Zimbabwe,PRO,,2029-06-30
 PREM,BRS,Luka IVANISHVILI,3ème ligne,24,,96,Géorgie,PRO,,2029-06-30
 PREM,BRS,Matías MORONI,Centre,35,,80,Argentine,PRO,,2029-06-30
-PREM,BRS,Max CLARK,Centre,30,,104,Angleterre,PRO,,2028-06-30
+PREM,BRS,Max CLARK,Centre,31,,104,Angleterre,PRO,,2028-06-30
 PREM,BRS,Max LAHIFF,Pilier,36,,112,Angleterre,PRO,,2029-06-30
 PREM,BRS,Max PEPPER,Mêlée,25,,93,Angleterre,PRO,,2028-06-30
 PREM,BRS,Mikey SUMMERFIELD,2ème ligne,23,,130,Angleterre,PRO,,2029-06-30
@@ -2649,7 +2664,7 @@ PREM,SAR,Nick TOMPKINS,Centre,31,,89,Angleterre,PRO,,2028-06-30
 PREM,SAR,Olamide SODEKE,2ème ligne,21,,141,Angleterre,PRO,,2029-06-30
 PREM,SAR,Olly HARTLEY,Centre,24,,118,Angleterre,PRO,,2028-06-30
 PREM,SAR,Owen FARRELL,Ouverture,35,,83,Angleterre,PRO,,2028-06-30
-PREM,SAR,Phil BRANTINGHAM,Pilier,24,,121,Angleterre,PRO,,2029-06-30
+PREM,SAR,Phil BRANTINGHAM,Pilier,25,,121,Angleterre,PRO,,2029-06-30
 PREM,SAR,Quinn ROUX,Ailier,35,,123,Afrique du sud,PRO,,2029-06-30
 PREM,SAR,Rhys CARRÉ,Pilier,28,,130,Pays-de-Galles,PRO,,2029-06-30
 PREM,SAR,Rotimi SEGUN,Ailier,30,,82,Angleterre,PRO,,2028-06-30
@@ -2666,71 +2681,71 @@ PREM,SAR,Tomos WILLIAMS,Mêlée,31,,97,Pays-de-Galles,PRO,,2028-06-30
 PREM,SAR,Totoa AUVA'A,2ème ligne,21,,120,Samoa,PRO,,2028-06-30
 PREM,SAR,Vilikesa NAIRAU,Pilier,24,,,Fidji,PRO,,2028-06-30
 PREM,SAR,Will STUART,2ème ligne,30,,135,Angleterre,PRO,,2027-06-30
-PREM,LEIC,Aaron WAINWRIGHT,3ème ligne,29,,106,Pays-de-Galles,PRO,,2029-06-30
-PREM,LEIC,Adam RADWAN,Ailier,28,,100,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Aaron WAINWRIGHT,3ème ligne,29,,99,Pays-de-Galles,PRO,,2029-06-30
+PREM,LEIC,Adam RADWAN,Ailier,28,,91,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Ale LOMAN,Pilier,26,,132,Suède,PRO,,2029-06-30
 PREM,LEIC,Archie GRIFFIN,Pilier,25,,115,Australie,PRO,,2029-06-30
 PREM,LEIC,Archie VAN DER FLIER,Pilier,24,,108,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Arthur CORDWELL,Pilier,27,,101,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Beno OBANO,Pilier,31,,115,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Billy SEARLE,Ouverture,30,,85,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Billy SEARLE,Ouverture,30,,100,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Cameron HENDERSON,2ème ligne,26,,132,Ecosse,PRO,,2029-06-30
-PREM,LEIC,Charlie BEMAND,Mêlée,20,,78,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Charlie BEMAND,Mêlée,20,,86,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Charlie CLARE,Talonneur,34,,106,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Charlie EWELS,Centre,31,,117,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Charlie MYALL,Centre,21,,98,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Charlie TITCOMBE,Ouverture,24,,102,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Corbin THUNDER,Talonneur,23,,93,Afrique du sud,PRO,,2028-06-30
+PREM,LEIC,Charlie EWELS,Centre,31,,109,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Charlie MYALL,Centre,21,,111,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Charlie TITCOMBE,Ouverture,24,,80,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Dylan CHESSUM,3ème ligne,18,,,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Elliot STOOKE,Ailier,33,,107,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Emeka ILIONE,3ème ligne,24,,125,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Elliot STOOKE,Ailier,33,,137,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Emeka ILIONE,3ème ligne,24,,120,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Finn CARNDUFF,2ème ligne,22,,128,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Finn THEOBALD-THOMAS,Talonneur,23,,123,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Freddie STEWARD,Arrière,25,,93,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Gabe HAMER-WEBB,Ailier,25,,93,Angleterre,PRO,,2029-06-30
-PREM,LEIC,George MARSH,3ème ligne,19,,118,Angleterre,PRO,,2028-06-30
-PREM,LEIC,George PEARSON,Arrière,20,,99,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Hame FAIVA,3ème ligne,32,,96,Nouvelle-Zélande,PRO,,2028-06-30
-PREM,LEIC,Jack DOOREY-PALMER,Talonneur,22,,99,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Jack VAN POORTVLIET,Mêlée,25,,97,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Freddie STEWARD,Arrière,25,,111,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Gabe HAMER-WEBB,Ailier,25,,81,Angleterre,PRO,,2029-06-30
+PREM,LEIC,George MARSH,3ème ligne,19,,101,Angleterre,PRO,,2028-06-30
+PREM,LEIC,George PEARSON,Arrière,20,,87,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Hame FAIVA,3ème ligne,32,,97,Nouvelle-Zélande,PRO,,2029-06-30
+PREM,LEIC,Jack DOOREY-PALMER,Talonneur,23,,99,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Jack VAN POORTVLIET,Mêlée,25,,77,Angleterre,PRO,,2028-06-30
 PREM,LEIC,James THOMPSON,2ème ligne,27,,119,Nouvelle-Zélande,PRO,,2029-06-30
 PREM,LEIC,Jamie BLAMIRE,Talonneur,28,,124,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Jasper SPANDLER,3ème ligne,23,,116,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Joaquin MORO,3ème ligne,25,,89,Argentine,PRO,,2028-06-30
+PREM,LEIC,Jasper SPANDLER,3ème ligne,23,,91,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Joaquin MORO,3ème ligne,25,,91,Argentine,PRO,,2028-06-30
 PREM,LEIC,Joe HEYES,Pilier,27,,134,Angleterre,PRO,,2032-06-30
-PREM,LEIC,Joe JENKINS,Centre,22,,117,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Joe WOODWARD,Centre,23,,92,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Joe JENKINS,Centre,22,,108,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Joe WOODWARD,Centre,23,,103,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Joel SCLAVI,Pilier,32,,146,Argentine,PRO,,2028-06-30
 PREM,LEIC,Johannes JONKER,Talonneur,32,,128,Afrique du sud,PRO,,2028-06-30
-PREM,LEIC,John STEWART,3ème ligne,24,,98,Angleterre,PRO,,2027-06-30
-PREM,LEIC,Josh MANZ,3ème ligne,22,,97,Angleterre,PRO,,2028-06-30
+PREM,LEIC,John STEWART,3ème ligne,24,,109,Angleterre,PRO,,2027-06-30
+PREM,LEIC,Josh MANZ,3ème ligne,22,,98,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Juan SCHOEMAN,2ème ligne,35,,123,Afrique du sud,PRO,,2028-06-30
-PREM,LEIC,Kesena IZU,Ailier,,,85,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Kesena IZU,Ailier,,,88,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Kieran VERDEN,2ème ligne,27,,132,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Lewis CHESSUM,2ème ligne,23,,113,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Mako VUNIPOLA,Pilier,35,,132,Nouvelle-Zélande,PRO,,2029-06-30
 PREM,LEIC,Mikey SUMMERFIELD,2ème ligne,23,,107,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Niall ANNETT,Mêlée,35,,110,Irlande,PRO,,2029-06-30
-PREM,LEIC,Ollie ALLAN,Mêlée,22,,87,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Niall ANNETT,Mêlée,35,,118,Irlande,PRO,,2029-06-30
+PREM,LEIC,Ollie ALLAN,Mêlée,22,,89,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Ollie CHESSUM,2ème ligne,26,,121,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Ollie HASSELL-COLLINS,Ailier,27,,99,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Olly CRACKNELL,3ème ligne,32,,103,Pays-de-Galles,PRO,,2028-06-30
-PREM,LEIC,Orlando BAILEY,Ouverture,25,,103,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Ollie HASSELL-COLLINS,Ailier,27,,91,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Olly CRACKNELL,3ème ligne,32,,129,Pays-de-Galles,PRO,,2028-06-30
+PREM,LEIC,Orlando BAILEY,Ouverture,25,,96,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Osian THOMAS,2ème ligne,21,,100,Pays-de-Galles,PRO,,2028-06-30
-PREM,LEIC,Ryan CROWLEY,Ailier,28,,84,Pays-de-Galles,PRO,,2028-06-30
+PREM,LEIC,Ryan CROWLEY,Ailier,28,,73,Pays-de-Galles,PRO,,2028-06-30
 PREM,LEIC,Sam MOLI,Talonneur,27,,122,Nouvelle-Zélande,PRO,,2029-06-30
-PREM,LEIC,Sam WILLIAMS,3ème ligne,21,,91,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Sam WILLIAMS,3ème ligne,21,,109,Angleterre,PRO,,2029-06-30
 PREM,LEIC,Scott KIRK,2ème ligne,22,,104,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Solomone KATA,Centre,31,,112,Tonga,PRO,,2029-06-30
+PREM,LEIC,Solomone KATA,Centre,31,,116,Tonga,PRO,,2028-06-30
 PREM,LEIC,Tarek HAFFAR,Pilier,25,,125,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Thomas DU TOIT,3ème ligne,31,,122,Afrique du sud,PRO,,2029-06-30
-PREM,LEIC,Tom DUNN,Ouverture,33,,102,Angleterre,PRO,,2028-06-30
-PREM,LEIC,Tom WHITELEY,Mêlée,30,,87,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Tommy REFFELL,3ème ligne,27,,104,Pays-de-Galles,PRO,,2029-06-30
-PREM,LEIC,Wilf MCCARTHY,Centre,,,82,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Thomas DU TOIT,3ème ligne,31,,146,Afrique du sud,PRO,,2028-06-30
+PREM,LEIC,Tom DUNN,Ouverture,33,,117,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Tom MANZ,2ème ligne,25,,115,Angleterre,PRO,,2029-06-30
+PREM,LEIC,Tom WHITELEY,Mêlée,30,,77,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Tommy REFFELL,3ème ligne,27,,88,Pays-de-Galles,PRO,,2029-06-30
+PREM,LEIC,Wilf MCCARTHY,Centre,,,99,Angleterre,PRO,,2028-06-30
 PREM,LEIC,Will HURD,Pilier,27,,135,Angleterre,PRO,,2029-06-30
-PREM,LEIC,Will STUART,3ème ligne,30,,120,Angleterre,PRO,,2027-06-30
-PREM,LEIC,Will WAND,Centre,24,,101,Angleterre,PRO,,2028-06-30
+PREM,LEIC,Will STUART,3ème ligne,30,,119,Angleterre,PRO,,2027-06-30
+PREM,LEIC,Will WAND,Centre,24,,96,Angleterre,PRO,,2028-06-30
 PREM,EXE,Alec CLAREY,Pilier,32,,111,Angleterre,PRO,,2029-06-30
 PREM,EXE,Aleki LUTUI,3ème ligne,48,,125,Tonga,PRO,,2029-06-30
 PREM,EXE,Alex WARDELL,Ailier,24,,128,Angleterre,PRO,,2028-06-30
@@ -2769,7 +2784,7 @@ PREM,EXE,Joe BAILEY,2ème ligne,22,,125,Angleterre,PRO,,2029-06-30
 PREM,EXE,Joe PEARD,Ailier,24,,132,Pays-de-Galles,PRO,,2028-06-30
 PREM,EXE,Joseph DWEBA,Talonneur,30,,119,Afrique du sud,PRO,,2029-06-30
 PREM,EXE,Josh IOSEFA-SCOTT,Pilier,30,,144,Nouvelle-Zélande,PRO,,2028-06-30
-PREM,EXE,Julian HEAVEN,Talonneur,25,,93,Australie,PRO,,2028-06-30
+PREM,EXE,Julian HEAVEN,Talonneur,26,,93,Australie,PRO,,2028-06-30
 PREM,EXE,Kaden PEARCE-PAUL,Ailier,23,,110,Angleterre,PRO,,2028-06-30
 PREM,EXE,Kane JAMES,3ème ligne,21,,102,Pays-de-Galles,PRO,,2028-06-30
 PREM,EXE,Kapeli PIFELETI JR,Centre,27,,127,Tonga,PRO,,2028-06-30
@@ -2857,73 +2872,74 @@ PREM,NEW,Tom WEST,Pilier,30,,114,Angleterre,PRO,,2029-06-30
 PREM,NEW,Vincent GIUDICELLI,Ailier,29,,108,France,PRO,,2028-06-30
 PREM,NEW,Werner KOK,Ailier,33,,107,Afrique du sud,PRO,,2029-06-30
 PREM,NEW,Will RIGG,Centre,26,,109,Angleterre,PRO,,2029-06-30
-PREM,NEW,Zack HENRY,Ouverture,31,,82,Angleterre,PRO,,2029-06-30
+PREM,NEW,Zack HENRY,Ouverture,32,,82,Angleterre,PRO,,2029-06-30
 PREM,NEW,Zuriel TOGIATAMA,Talonneur,27,,101,Nouvelle-Zélande,PRO,,2029-06-30
-PREM,SAL,Aaron REED,Ailier,27,,97,Angleterre,PRO,,2030-06-30
-PREM,SAL,Alex LOZOWSKI,Centre,33,,99,Angleterre,PRO,,2030-06-30
-PREM,SAL,Alex WILLS,Ailier,22,,90,Angleterre,PRO,,2029-06-30
+PREM,SAL,Aaron REED,Ailier,27,,93,Angleterre,PRO,,2030-06-30
+PREM,SAL,Alex LOZOWSKI,Centre,33,,94,Angleterre,PRO,,2030-06-30
+PREM,SAL,Alex WILLS,Ailier,22,,97,Angleterre,PRO,,2028-06-30
 PREM,SAL,Alfie LONGSTAFF,Talonneur,20,,120,Angleterre,PRO,,2030-06-30
 PREM,SAL,Archie GRIFFIN,Pilier,25,,136,Australie,PRO,,2029-06-30
 PREM,SAL,Arthur CORDWELL,Pilier,27,,108,Angleterre,PRO,,2028-06-30
 PREM,SAL,Asher OPOKU,Pilier,22,,116,Angleterre,PRO,,2029-06-30
-PREM,SAL,Ben BAMBER,2ème ligne,25,,128,Angleterre,PRO,,2031-06-30
-PREM,SAL,Ben CURRY,3ème ligne,28,,103,Angleterre,PRO,,2028-06-30
+PREM,SAL,Ben BAMBER,2ème ligne,25,,121,Angleterre,PRO,,2032-06-30
+PREM,SAL,Ben CURRY,3ème ligne,28,,120,Angleterre,PRO,,2028-06-30
 PREM,SAL,Beno OBANO,Pilier,31,,115,Angleterre,PRO,,2029-06-30
 PREM,SAL,Bevan RODD,Pilier,26,,103,Ecosse,PRO,,2028-06-30
 PREM,SAL,Cebo DLAMINI,Pilier,24,,119,Afrique du sud,PRO,,2029-06-30
 PREM,SAL,Charlie BRAY,3ème ligne,18,,,Angleterre,PRO,,2029-06-30
-PREM,SAL,Charlie EWELS,Centre,31,,125,Angleterre,PRO,,2029-06-30
-PREM,SAL,Christ TSHIUNZA,3ème ligne,24,,125,République démocratique du Congo,PRO,,2028-06-30
-PREM,SAL,Courtney LAWES,3ème ligne,37,,112,Angleterre,PRO,,2029-06-30
-PREM,SAL,David OPOKU,Ailier,23,,93,Angleterre,PRO,,2029-06-30
+PREM,SAL,Charlie EWELS,Ouverture,31,,119,Angleterre,PRO,,2029-06-30
+PREM,SAL,Christ TSHIUNZA,3ème ligne,24,,112,République démocratique du Congo,PRO,,2029-06-30
+PREM,SAL,Courtney LAWES,3ème ligne,37,,100,Angleterre,PRO,,2029-06-30
+PREM,SAL,David OPOKU,Ailier,23,,79,Angleterre,PRO,,2029-06-30
 PREM,SAL,Dom HANSON,Mêlée,20,,,Angleterre,PRO,,2029-06-30
-PREM,SAL,Dylan HODKINSON,2ème ligne,,,,Angleterre,PRO,,2029-06-30
-PREM,SAL,Elia CANAKAIVATA,3ème ligne,30,,104,Fidji,PRO,,2029-06-30
-PREM,SAL,Elliot STOOKE,Ailier,33,,110,Angleterre,PRO,,2029-06-30
-PREM,SAL,Ernst VAN RHYN,2ème ligne,29,,122,Afrique du sud,PRO,,2030-06-30
+PREM,SAL,Dylan HODKINSON,2ème ligne,,,,Angleterre,PRO,,2028-06-30
+PREM,SAL,Elia CANAKAIVATA,3ème ligne,30,,102,Fidji,PRO,,2029-06-30
+PREM,SAL,Elliot STOOKE,Ailier,33,,117,Angleterre,PRO,,2028-06-30
+PREM,SAL,Ernst VAN RHYN,2ème ligne,29,,118,Afrique du sud,PRO,,2030-06-30
 PREM,SAL,Ethan CAINE,Talonneur,25,,90,Angleterre,PRO,,2029-06-30
-PREM,SAL,George FORD,Ouverture,33,,89,Angleterre,PRO,,2031-06-30
-PREM,SAL,Gus WARR,Mêlée,27,,91,Ecosse,PRO,,2029-06-30
-PREM,SAL,Hame FAIVA,3ème ligne,32,,95,Nouvelle-Zélande,PRO,,2027-06-30
-PREM,SAL,JJ SCHEEPERS,2ème ligne,28,,127,Afrique du sud,PRO,,2029-06-30
-PREM,SAL,Jacques DU PLESSIS,Arrière,33,,110,Afrique du sud,PRO,,2027-06-30
-PREM,SAL,Jacques VERMEULEN,3ème ligne,31,,117,Afrique du sud,PRO,,2028-06-30
-PREM,SAL,Jasper SPANDLER,3ème ligne,23,,101,Angleterre,PRO,,2028-06-30
+PREM,SAL,George FORD,Ouverture,33,,79,Angleterre,PRO,,2031-06-30
+PREM,SAL,Gus WARR,Mêlée,27,,82,Ecosse,PRO,,2029-06-30
+PREM,SAL,Hame FAIVA,3ème ligne,32,,113,Nouvelle-Zélande,PRO,,2028-06-30
+PREM,SAL,JJ SCHEEPERS,2ème ligne,28,,125,Afrique du sud,PRO,,2029-06-30
+PREM,SAL,Jacques DU PLESSIS,Ailier,33,,139,Afrique du sud,PRO,,2027-06-30
+PREM,SAL,Jacques VERMEULEN,3ème ligne,31,,122,Afrique du sud,PRO,,2029-06-30
+PREM,SAL,Jasper SPANDLER,3ème ligne,23,,93,Angleterre,PRO,,2029-06-30
 PREM,SAL,Joe CARPENTER,Arrière,25,,,Angleterre,PRO,,2031-06-30
-PREM,SAL,Joe MARCHANT,Centre,30,,81,Angleterre,PRO,,2028-06-30
+PREM,SAL,Joe MARCHANT,Centre,30,,92,Angleterre,PRO,,2028-06-30
 PREM,SAL,Johannes JONKER,Talonneur,32,,125,Afrique du sud,PRO,,2029-06-30
-PREM,SAL,John STEWART,3ème ligne,24,,106,Angleterre,PRO,,2028-06-30
+PREM,SAL,John STEWART,3ème ligne,24,,120,Angleterre,PRO,,2027-06-30
 PREM,SAL,Jos GILMORE,3ème ligne,20,,,Angleterre,PRO,,2029-06-30
-PREM,SAL,Juan SCHOEMAN,2ème ligne,35,,125,Afrique du sud,PRO,,2028-06-30
-PREM,SAL,Kieran VERDEN,2ème ligne,27,,120,Angleterre,PRO,,2028-06-30
+PREM,SAL,Josh MCNALLY,Arrière,36,,137,Angleterre,PRO,,2028-06-30
+PREM,SAL,Juan SCHOEMAN,2ème ligne,35,,121,Afrique du sud,PRO,,2028-06-30
+PREM,SAL,Kieran VERDEN,2ème ligne,27,,122,Angleterre,PRO,,2029-06-30
 PREM,SAL,Luke COWAN-DICKIE,Talonneur,33,,100,Angleterre,PRO,,2029-06-30
-PREM,SAL,Luke JAMES,Arrière,27,,113,Angleterre,PRO,,2031-06-30
-PREM,SAL,Marius LOUW,Centre,30,,83,Afrique du sud,PRO,,2029-06-30
-PREM,SAL,Mikey SUMMERFIELD,2ème ligne,23,,113,Angleterre,PRO,,2028-06-30
+PREM,SAL,Luke JAMES,Arrière,27,,94,Angleterre,PRO,,2030-06-30
+PREM,SAL,Marius LOUW,Centre,30,,101,Afrique du sud,PRO,,2028-06-30
+PREM,SAL,Mikey SUMMERFIELD,2ème ligne,23,,116,Angleterre,PRO,,2028-06-30
 PREM,SAL,Nathan JIBULU,Talonneur,23,,115,Angleterre,PRO,,2031-06-30
-PREM,SAL,Niall ANNETT,Mêlée,35,,129,Irlande,PRO,,2028-06-30
+PREM,SAL,Niall ANNETT,Mêlée,35,,131,Irlande,PRO,,2029-06-30
 PREM,SAL,Nicky SMITH,Pilier,32,,115,Pays-de-Galles,PRO,,2031-06-30
-PREM,SAL,Ollie DAVIES,Ouverture,19,,,Angleterre,PRO,,2029-06-30
+PREM,SAL,Ollie DAVIES,Ouverture,19,,,Angleterre,PRO,,2028-06-30
 PREM,SAL,Patreece BELL,Pilier,22,,123,Angleterre,PRO,,2028-06-30
-PREM,SAL,Ponipate LOGANIMASI,Ailier,28,,79,Fidji,PRO,,2030-06-30
+PREM,SAL,Ponipate LOGANIMASI,Ailier,28,,85,Fidji,PRO,,2030-06-30
 PREM,SAL,Ralph MCEACHRAN,Pilier,21,,125,Angleterre,PRO,,2028-06-30
-PREM,SAL,Rekeiti MA'ASI-WHITE,Centre,23,,105,Angleterre,PRO,,2030-06-30
-PREM,SAL,Reuben LOGAN,3ème ligne,21,,122,Angleterre,PRO,,2028-06-30
-PREM,SAL,Sam DUGDALE,3ème ligne,27,,92,Angleterre,PRO,,2030-06-30
-PREM,SAL,Scott KIRK,3ème ligne,22,,115,Angleterre,PRO,,2029-06-30
+PREM,SAL,Rekeiti MA'ASI-WHITE,Centre,23,,92,Angleterre,PRO,,2030-06-30
+PREM,SAL,Reuben LOGAN,3ème ligne,21,,115,Angleterre,PRO,,2029-06-30
+PREM,SAL,Sam DUGDALE,3ème ligne,27,,109,Angleterre,PRO,,2030-06-30
+PREM,SAL,Scott KIRK,3ème ligne,22,,124,Angleterre,PRO,,2028-06-30
 PREM,SAL,Si MCINTYRE,Pilier,35,,113,Angleterre,PRO,,2029-06-30
-PREM,SAL,Thomas DU TOIT,3ème ligne,31,,121,Afrique du sud,PRO,,2029-06-30
-PREM,SAL,Toby WILSON,Ailier,20,,,Angleterre,PRO,,2029-06-30
-PREM,SAL,Tom BURROW,2ème ligne,21,,124,Angleterre,PRO,,2028-06-30
-PREM,SAL,Tom CURRY,3ème ligne,28,,103,Angleterre,PRO,,2029-06-30
-PREM,SAL,Tom DUNN,Ouverture,33,,115,Angleterre,PRO,,2028-06-30
-PREM,SAL,Tom O'FLAHERTY,Ailier,32,,76,Angleterre,PRO,,2028-06-30
-PREM,SAL,Tom ROEBUCK,Ailier,25,,97,Angleterre,PRO,,2029-06-30
+PREM,SAL,Thomas DU TOIT,3ème ligne,31,,136,Afrique du sud,PRO,,2028-06-30
+PREM,SAL,Toby WILSON,Ailier,20,,,Angleterre,PRO,,2028-06-30
+PREM,SAL,Tom BURROW,2ème ligne,21,,111,Angleterre,PRO,,2028-06-30
+PREM,SAL,Tom CURRY,3ème ligne,28,,109,Angleterre,PRO,,2030-06-30
+PREM,SAL,Tom DUNN,Mêlée,33,,98,Angleterre,PRO,,2028-06-30
+PREM,SAL,Tom O'FLAHERTY,Ailier,32,,75,Angleterre,PRO,,2029-06-30
+PREM,SAL,Tom ROEBUCK,Ailier,25,,83,Angleterre,PRO,,2029-06-30
 PREM,SAL,Tomas FRANCIS,Pilier,34,,131,Angleterre,PRO,,2029-06-30
-PREM,SAL,Tristan WOODMAN,3ème ligne,22,,113,Angleterre,PRO,,2028-06-30
+PREM,SAL,Tristan WOODMAN,3ème ligne,22,,116,Angleterre,PRO,,2029-06-30
 PREM,SAL,Tye RAYMONT,Pilier,21,,110,Angleterre,PRO,,2029-06-30
-PREM,SAL,Will STUART,3ème ligne,30,,135,Angleterre,PRO,,2028-06-30
-PREM,SAL,Xavier ROE,Mêlée,27,,90,Nouvelle-Zélande,PRO,,2029-06-30
+PREM,SAL,Will STUART,3ème ligne,30,,126,Angleterre,PRO,,2027-06-30
+PREM,SAL,Xavier ROE,Mêlée,27,,82,Nouvelle-Zélande,PRO,,2029-06-30
 PREM,HAR,Alex DOMBRANDT,3ème ligne,29,,126,Angleterre,PRO,,2028-06-30
 PREM,HAR,Alfie BOWMAN,Mêlée,18,,,Angleterre,PRO,,2028-06-30
 PREM,HAR,Ashton GRAHAM,Talonneur,19,,,Angleterre,PRO,,2028-06-30
@@ -2945,12 +2961,11 @@ PREM,HAR,George FURBANK,Arrière,29,,84,Angleterre,PRO,,2030-06-30
 PREM,HAR,Guido PETTI,2ème ligne,31,,101,Argentine,PRO,,2029-06-30
 PREM,HAR,Harry BROWNE,2ème ligne,22,,96,Angleterre,PRO,,2029-06-30
 PREM,HAR,Harry JOHNSON-HOLMES,Pilier,29,,131,Australie,PRO,,2028-06-30
-PREM,HAR,Harry WILLIAMS,Pilier,34,,141,Angleterre,PRO,,2028-06-30
+PREM,HAR,Harry WILLIAMS,Pilier,35,,141,Angleterre,PRO,,2028-06-30
 PREM,HAR,Jack KENNINGHAM,3ème ligne,26,,105,Angleterre,PRO,,2029-06-30
 PREM,HAR,Jack MUSK,Talonneur,26,,91,Angleterre,PRO,,2028-06-30
 PREM,HAR,Jack WALKER,Talonneur,30,,115,Angleterre,PRO,,2029-06-30
 PREM,HAR,Jake SPURWAY,2ème ligne,22,,90,Ecosse,PRO,,2028-06-30
-PREM,HAR,James CHISHOLM,3ème ligne,31,,122,Angleterre,PRO,,2029-06-30
 PREM,HAR,James DUN,2ème ligne,27,,136,Angleterre,PRO,,2028-06-30
 PREM,HAR,James LANG,Ouverture,31,,86,Angleterre,PRO,,2029-06-30
 PREM,HAR,Jamie MILLER,Pilier,20,,100,Angleterre,PRO,,2029-06-30
@@ -3458,7 +3473,7 @@ URC,CDF,Tiaan LANGE,3ème ligne,24,,102,Afrique du sud,PRO,,2029-06-30
 URC,CDF,Tielman NIEUWOUDT,2ème ligne,24,,141,Afrique du sud,PRO,,2028-06-30
 URC,CDF,Toby FALETAU,3ème ligne,35,,108,Tonga,PRO,,2028-06-30
 URC,CDF,Tom BOWEN,Arrière,20,,87,Pays-de-Galles,PRO,,2028-06-30
-URC,CDF,Tom MANZ,2ème ligne,25,,114,Angleterre,PRO,,2028-06-30
+URC,CDF,Tom HOWE,Talonneur,18,,106,Pays-de-Galles,PRO,,2028-06-30
 URC,CDF,Wilco LOUW,2ème ligne,32,,138,Afrique du sud,PRO,,2028-06-30
 URC,LIO,Akker VAN DER MERWE,2ème ligne,35,,123,Afrique du sud,PRO,,2028-06-30
 URC,LIO,Angelo DAVIDS,Ailier,27,,92,Afrique du sud,PRO,,2029-06-30
@@ -3468,7 +3483,7 @@ URC,LIO,Boan VENTER,Pilier,29,,119,Afrique du sud,PRO,,2028-06-30
 URC,LIO,Boeta CHAMBERLAIN,Ouverture,27,,100,Afrique du sud,PRO,,2029-06-30
 URC,LIO,Bronson MILLS,Centre,23,,95,Afrique du sud,PRO,,2031-06-30
 URC,LIO,Cameron HANEKOM,Ailier,24,,103,Afrique du sud,PRO,,2028-06-30
-URC,LIO,Chris SMITH,Ouverture,32,,82,Afrique du sud,PRO,,2028-06-30
+URC,LIO,Chris SMITH,Ouverture,32,,82,Afrique du sud,PRO,,2030-06-30
 URC,LIO,Conraad VAN VUUREN,Pilier,31,,116,Afrique du sud,PRO,,2028-06-30
 URC,LIO,Cyle BRINK,Ailier,32,,115,Afrique du sud,PRO,,2029-06-30
 URC,LIO,Daniel KASENDE,Arrière,31,,100,République démocratique du Congo,PRO,,2029-06-30
@@ -3648,12 +3663,13 @@ URC,TRE,Riccardo FAVRETTO,2ème ligne,24,,100,Italie,PRO,,2031-06-30
 URC,TRE,Seb NEGRI,3ème ligne,32,,112,Italie,PRO,,2029-06-30
 URC,TRE,Simone FERRARI,Pilier,32,,112,Italie,PRO,,2031-06-30
 URC,TRE,Siua MAILE,Talonneur,29,,127,Tonga,PRO,,2030-06-30
-URC,TRE,So'otala FA'ASO'O,3ème ligne,31,,145,Samoa,PRO,,2029-06-30
+URC,TRE,So'otala FA'ASO'O,3ème ligne,32,,145,Samoa,PRO,,2029-06-30
 URC,TRE,Swan CORMENIER,Ouverture,30,,118,France,PRO,,2029-06-30
 URC,TRE,Tevita TATAFU,Centre,23,,151,Tonga,PRO,,2027-06-30
 URC,TRE,Tiziano PASQUALI,Pilier,32,,118,Italie,PRO,,2030-06-30
 URC,TRE,Tomás MEDINA,Centre,21,,82,Argentine,PRO,,2029-06-30
 URC,LEI,Akker VAN DER MERWE,2ème ligne,35,,113,Afrique du sud,PRO,,2027-06-30
+URC,LEI,Alan SPICER,2ème ligne,21,,144,Irlande,PRO,,2029-06-30
 URC,LEI,Alex SOROKA,3ème ligne,25,,98,Irlande,PRO,,2028-06-30
 URC,LEI,Alex USANOV,Pilier,21,,106,Irlande,PRO,,2028-06-30
 URC,LEI,Andrew OSBORNE,Ailier,23,,106,Irlande,PRO,,2029-06-30
@@ -3681,6 +3697,7 @@ URC,LEI,Gus MCCARTHY,Talonneur,23,,94,Irlande,PRO,,2028-06-30
 URC,LEI,Harry BYRNE,Ouverture,27,,83,Irlande,PRO,,2029-06-30
 URC,LEI,Hugh COONEY,Centre,23,,85,Irlande,PRO,,2029-06-30
 URC,LEI,Hugo KEENAN,Arrière,30,,83,Irlande,PRO,,2029-06-30
+URC,LEI,Hugo MCLAUGHLIN,Ailier,22,,83,Irlande,PRO,,2029-06-30
 URC,LEI,JF VAN HEERDEN,Mêlée,22,,135,Afrique du sud,PRO,,2029-06-30
 URC,LEI,Jack BOYLE,Pilier,24,,124,Irlande,PRO,,2028-06-30
 URC,LEI,Jack CONAN,3ème ligne,34,,109,Irlande,PRO,,2029-06-30
@@ -3703,7 +3720,7 @@ URC,LEI,Joshua KENNY,Ailier,23,,90,Irlande,PRO,,2029-06-30
 URC,LEI,Khutha MCHUNU,Pilier,29,,132,Afrique du sud,PRO,,2028-06-30
 URC,LEI,Marcell COETZEE,Ailier,35,,124,Afrique du sud,PRO,,2029-06-30
 URC,LEI,Marco VAN STADEN,Ailier,31,,98,Afrique du sud,PRO,,2028-06-30
-URC,LEI,Max DEEGAN,3ème ligne,29,,110,Irlande,PRO,,2028-06-30
+URC,LEI,Max DEEGAN,3ème ligne,30,,110,Irlande,PRO,,2028-06-30
 URC,LEI,Merwe OLIVIER,Ouverture,23,,97,Afrique du sud,PRO,,2028-06-30
 URC,LEI,Mihlali MOSI,Ailier,30,,92,Afrique du sud,PRO,,2029-06-30
 URC,LEI,Mornay SMITH,Pilier,28,,128,Afrique du sud,PRO,,2028-06-30
@@ -3813,7 +3830,7 @@ URC,MUN,Brian GLEESON,3ème ligne,22,,130,Irlande,PRO,,2029-06-30
 URC,MUN,Calvin NASH,Ailier,29,,94,Irlande,PRO,,2029-06-30
 URC,MUN,Cameron HANEKOM,Centre,24,,124,Afrique du sud,PRO,,2029-06-30
 URC,MUN,Charlie O'SHEA,Ouverture,20,,,Irlande,PRO,,2028-06-30
-URC,MUN,Conor RYAN,2ème ligne,22,,128,Irlande,PRO,,2030-06-30
+URC,MUN,Conor RYAN,2ème ligne,23,,128,Irlande,PRO,,2030-06-30
 URC,MUN,Craig CASEY,Mêlée,27,,77,Irlande,PRO,,2030-06-30
 URC,MUN,Cyle BRINK,Ailier,32,,112,Afrique du sud,PRO,,2029-06-30
 URC,MUN,Dan KELLY,Centre,25,,107,Angleterre,PRO,,2029-06-30
@@ -3865,13 +3882,13 @@ URC,MUN,Seb LOMBARD,Talonneur,23,,117,Afrique du sud,PRO,,2029-06-30
 URC,MUN,Seán EDOGBO,3ème ligne,22,,97,Irlande,PRO,,2029-06-30
 URC,MUN,Seán O'BRIEN,Centre,28,,96,Irlande,PRO,,2028-06-30
 URC,MUN,Shane DALY,Centre,29,,84,Irlande,PRO,,2029-06-30
-URC,MUN,Shay MCCARTHY,Ailier,23,,92,Irlande,PRO,,2029-06-30
+URC,MUN,Shay MCCARTHY,Ailier,23,,94,Irlande,PRO,,2029-06-30
 URC,MUN,Simphiwe MATANZIMA,Talonneur,29,,135,Afrique du sud,PRO,,2028-06-30
 URC,MUN,Tadhg BEIRNE,2ème ligne,34,,128,Irlande,PRO,,2029-06-30
 URC,MUN,Tiaan LANGE,3ème ligne,24,,111,Afrique du sud,PRO,,2028-06-30
 URC,MUN,Tielman NIEUWOUDT,2ème ligne,24,,133,Afrique du sud,PRO,,2029-06-30
 URC,MUN,Tom AHERN,2ème ligne,26,,109,Irlande,PRO,,2028-06-30
-URC,MUN,Tom FARRELL,Centre,32,,117,Irlande,PRO,,2029-06-30
+URC,MUN,Tom FARRELL,Centre,33,,117,Irlande,PRO,,2029-06-30
 URC,MUN,Wilco LOUW,2ème ligne,32,,152,Afrique du sud,PRO,,2028-06-30
 URC,MUN,Will HARRISON,Ouverture,27,,94,Australie,PRO,,2028-06-30
 URC,SCA,Alex GROVES,2ème ligne,25,,126,Afrique du sud,PRO,,2029-06-30
@@ -3934,10 +3951,10 @@ URC,OSP,Akker VAN DER MERWE,3ème ligne,35,,109,Afrique du sud,PRO,,2028-06-30
 URC,OSP,Ben ROBERTS,2ème ligne,25,,,Pays-de-Galles,PRO,,2029-06-30
 URC,OSP,Ben WARREN,Pilier,26,,131,Pays-de-Galles,PRO,,2029-06-30
 URC,OSP,Cameron HANEKOM,Ailier,24,,114,Afrique du sud,PRO,,2028-06-30
-URC,OSP,Cameron JONES,Pilier,24,,133,Pays-de-Galles,PRO,,2028-06-30
+URC,OSP,Cameron JONES,Pilier,25,,133,Pays-de-Galles,PRO,,2028-06-30
 URC,OSP,Cyle BRINK,Arrière,32,,102,Afrique du sud,PRO,,2029-06-30
 URC,OSP,Dan EDWARDS,Ouverture,23,,75,Pays-de-Galles,PRO,,2029-06-30
-URC,OSP,Dan JOHN,Centre,24,,84,Pays-de-Galles,PRO,,2029-06-30
+URC,OSP,Dan JOHN,Centre,25,,84,Pays-de-Galles,PRO,,2029-06-30
 URC,OSP,Deon SLABBERT,Mêlée,26,,111,Afrique du sud,PRO,,2028-06-30
 URC,OSP,Dylan SMITH,Pilier,32,,108,Afrique du sud,PRO,,2028-06-30
 URC,OSP,Efan DANIEL,Talonneur,23,,98,Pays-de-Galles,PRO,,2028-06-30
@@ -4062,57 +4079,59 @@ URC,CON,Tielman NIEUWOUDT,2ème ligne,24,,143,Afrique du sud,PRO,,2029-06-30
 URC,CON,Tom CONNOLLY,Pilier,26,,,Irlande,PRO,,2028-06-30
 URC,CON,Wilco LOUW,2ème ligne,32,,132,Afrique du sud,PRO,,2027-06-30
 URC,CON,Will CONNORS,3ème ligne,30,,114,Irlande,PRO,,2029-06-30
-URC,ZEB,Alessandro FUSCO,Mêlée,26,,76,Italie,PRO,,2031-06-30
-URC,ZEB,Alessandro ORTOMBINA,3ème ligne,23,,103,Italie,PRO,,2029-06-30
-URC,ZEB,Alex MATTIOLI,2ème ligne,23,,123,Italie,PRO,,2030-06-30
-URC,ZEB,Bautista STAVILE,3ème ligne,29,,86,Argentine,PRO,,2029-06-30
-URC,ZEB,Damiano MAZZA,Centre,27,,96,Italie,PRO,,2029-06-30
-URC,ZEB,David ODIASE,3ème ligne,23,,100,Italie,PRO,,2029-06-30
-URC,ZEB,Davide RUGGERI,3ème ligne,27,,119,Italie,PRO,,2028-06-30
-URC,ZEB,Facundo BOSCH,Centre,35,,90,Argentine,PRO,,2027-06-30
+URC,ZEB,Alessandro FUSCO,Mêlée,26,,101,Italie,PRO,,2030-06-30
+URC,ZEB,Alessandro ORTOMBINA,3ème ligne,23,,105,Italie,PRO,,2029-06-30
+URC,ZEB,Alex MATTIOLI,2ème ligne,23,,100,Italie,PRO,,2031-06-30
+URC,ZEB,Bautista STAVILE,3ème ligne,29,,86,Argentine,PRO,,2030-06-30
+URC,ZEB,Damiano MAZZA,Centre,27,,100,Italie,PRO,,2029-06-30
+URC,ZEB,David ODIASE,3ème ligne,23,,108,Italie,PRO,,2029-06-30
+URC,ZEB,Davide RUGGERI,3ème ligne,27,,123,Italie,PRO,,2029-06-30
+URC,ZEB,Facundo BOSCH,Centre,35,,101,Argentine,PRO,,2027-06-30
 URC,ZEB,Federico PISANI,Pilier,22,,127,Italie,PRO,,2028-06-30
 URC,ZEB,Filippo ALONGI,Pilier,26,,104,Italie,PRO,,2028-06-30
-URC,ZEB,Francesco RUFFOLO,3ème ligne,23,,132,Italie,PRO,,2029-06-30
-URC,ZEB,Francisco MINERVINO,Talonneur,27,,126,Argentine,PRO,,2029-06-30
-URC,ZEB,Franco CARRERA,2ème ligne,27,,102,Argentine,PRO,,2028-06-30
-URC,ZEB,Giacomo DA RE,Ouverture,27,,83,Italie,PRO,,2030-06-30
-URC,ZEB,Giacomo FERRARI,3ème ligne,24,,103,Italie,PRO,,2029-06-30
-URC,ZEB,Giampietro RIBALDI,Talonneur,29,,114,Italie,PRO,,2029-06-30
-URC,ZEB,Giovanni LICATA,3ème ligne,29,,111,Italie,PRO,,2029-06-30
-URC,ZEB,Giovanni MONTEMAURI,Ouverture,25,,90,Italie,PRO,,2030-06-30
-URC,ZEB,Giovanni QUATTRINI,Talonneur,23,,101,Italie,PRO,,2028-06-30
-URC,ZEB,Giulio BERTACCINI,Centre,25,,87,Italie,PRO,,2028-06-30
-URC,ZEB,Jacopo BOTTURI,3ème ligne,22,,119,Italie,PRO,,2029-06-30
-URC,ZEB,Jacopo TRULLA,Ailier,26,,73,Italie,PRO,,2030-06-30
+URC,ZEB,Francesco RUFFOLO,3ème ligne,23,,130,Italie,PRO,,2028-06-30
+URC,ZEB,Francisco MINERVINO,Talonneur,27,,110,Argentine,PRO,,2028-06-30
+URC,ZEB,Franco CARRERA,2ème ligne,27,,104,Argentine,PRO,,2028-06-30
+URC,ZEB,Giacomo DA RE,Ouverture,27,,95,Italie,PRO,,2029-06-30
+URC,ZEB,Giacomo FERRARI,3ème ligne,24,,111,Italie,PRO,,2029-06-30
+URC,ZEB,Giampietro RIBALDI,Talonneur,29,,100,Italie,PRO,,2028-06-30
+URC,ZEB,Giovanni LICATA,3ème ligne,29,,123,Italie,PRO,,2030-06-30
+URC,ZEB,Giovanni MONTEMAURI,Ouverture,25,,86,Italie,PRO,,2029-06-30
+URC,ZEB,Giovanni QUATTRINI,Talonneur,23,,97,Italie,PRO,,2028-06-30
+URC,ZEB,Giulio BERTACCINI,Centre,25,,104,Italie,PRO,,2028-06-30
+URC,ZEB,Jacopo BOTTURI,3ème ligne,22,,121,Italie,PRO,,2029-06-30
+URC,ZEB,Jacopo TRULLA,Ailier,26,,93,Italie,PRO,,2029-06-30
 URC,ZEB,Juan BARBOTTI,Pilier,29,,132,Argentine,PRO,,2029-06-30
 URC,ZEB,Juan PITINARI,Pilier,31,,121,Argentine,PRO,,2028-06-30
 URC,ZEB,Juan-Ignacio CASTELLANO,Pilier,32,,134,Argentine,PRO,,2029-06-30
-URC,ZEB,Leonard KRUMOV,2ème ligne,30,,109,Italie,PRO,,2029-06-30
-URC,ZEB,Leonardo SODO MIGLIORI,Ailier,22,,122,Italie,PRO,,2028-06-30
-URC,ZEB,Lorenzo CITTON,Mêlée,27,,108,Italie,PRO,,2030-06-30
-URC,ZEB,Lorenzo PANI,Arrière,24,,86,Italie,PRO,,2028-06-30
+URC,ZEB,Leonard KRUMOV,2ème ligne,30,,106,Italie,PRO,,2030-06-30
+URC,ZEB,Leonardo SODO MIGLIORI,Ailier,22,,113,Italie,PRO,,2029-06-30
+URC,ZEB,Lorenzo CITTON,Mêlée,27,,92,Italie,PRO,,2031-06-30
+URC,ZEB,Lorenzo PANI,Arrière,24,,102,Italie,PRO,,2028-06-30
+URC,ZEB,Louis ORTOLAN,Ailier,24,,99,France,PRO,,2029-06-30
 URC,ZEB,Luca FRANCESCHETTO,Pilier,27,,136,Italie,PRO,,2029-06-30
 URC,ZEB,Luca RIZZOLI,Pilier,24,,124,Italie,PRO,,2030-06-30
 URC,ZEB,Luke TAGI,Pilier,29,,129,Fidji,PRO,,2027-06-30
-URC,ZEB,Marco ZANON,Centre,28,,103,Italie,PRO,,2028-06-30
-URC,ZEB,Martin VILLAR,Talonneur,23,,113,Argentine,PRO,,2028-06-30
-URC,ZEB,Matis PERCHAUD,2ème ligne,24,,106,France,PRO,,2029-06-30
-URC,ZEB,Matteo CANALI,2ème ligne,28,,123,Italie,PRO,,2030-06-30
-URC,ZEB,Mirko BELLONI,Ailier,22,,105,Italie,PRO,,2028-06-30
+URC,ZEB,Marco ZANON,Centre,29,,103,Italie,PRO,,2029-06-30
+URC,ZEB,Martin VILLAR,Pilier,23,,128,Argentine,PRO,,2029-06-30
+URC,ZEB,Matis PERCHAUD,Talonneur,24,,101,France,PRO,,2028-06-30
+URC,ZEB,Matteo CANALI,2ème ligne,28,,116,Italie,PRO,,2030-06-30
+URC,ZEB,Mirko BELLONI,Ailier,22,,105,Italie,PRO,,2029-06-30
 URC,ZEB,Muhamed HASA,Pilier,25,,112,Italie,PRO,,2030-06-30
-URC,ZEB,Paolo BUONFIGLIO,Pilier,31,,110,Italie,PRO,,2029-06-30
-URC,ZEB,Pascal COTET,2ème ligne,32,,108,France,PRO,,2028-06-30
-URC,ZEB,Patricio BARONIO,Mêlée,30,,84,Argentine,PRO,,2028-06-30
-URC,ZEB,Pierre CASTILLON,3ème ligne,23,,100,France,PRO,,2029-06-30
-URC,ZEB,Pieter SCHOLTZ,3ème ligne,32,,126,Afrique du sud,PRO,,2027-06-30
-URC,ZEB,Pietro TURRISI,2ème ligne,23,,113,Italie,PRO,,2030-06-30
-URC,ZEB,Quentin BÉTHUNE,3ème ligne,31,,120,France,PRO,,2029-06-30
-URC,ZEB,Samuele LOCATELLI,3ème ligne,25,,95,Italie,PRO,,2030-06-30
-URC,ZEB,Sergio PELLICCIOLI,Pilier,21,,114,Italie,PRO,,2029-06-30
-URC,ZEB,Simone GESI,Ailier,25,,76,Italie,PRO,,2029-06-30
-URC,ZEB,Swan CORMENIER,Mêlée,30,,122,France,PRO,,2029-06-30
-URC,ZEB,Tevita TATAFU,Ouverture,23,,127,Tonga,PRO,,2028-06-30
-URC,ZEB,Thomas DOMINGUEZ,Mêlée,26,,91,Argentine,PRO,,2029-06-30
-URC,ZEB,Tommaso ALLAN,Ouverture,33,,96,Italie,PRO,,2029-06-30
-URC,ZEB,Tommaso DI BARTOLOMEO,Talonneur,25,,112,Italie,PRO,,2029-06-30
-URC,ZEB,Zane BESTER,Centre,24,,75,Afrique du sud,PRO,,2028-06-30
+URC,ZEB,Octavio BARBATTI,Pilier,24,,126,Argentine,PRO,,2029-06-30
+URC,ZEB,Paolo BUONFIGLIO,Pilier,31,,111,Italie,PRO,,2029-06-30
+URC,ZEB,Pascal COTET,2ème ligne,32,,122,France,PRO,,2028-06-30
+URC,ZEB,Patricio BARONIO,Mêlée,30,,71,Argentine,PRO,,2029-06-30
+URC,ZEB,Pierre CASTILLON,3ème ligne,23,,116,France,PRO,,2028-06-30
+URC,ZEB,Pieter SCHOLTZ,3ème ligne,32,,134,Afrique du sud,PRO,,2029-06-30
+URC,ZEB,Pietro TURRISI,2ème ligne,23,,115,Italie,PRO,,2029-06-30
+URC,ZEB,Quentin BÉTHUNE,3ème ligne,31,,121,France,PRO,,2028-06-30
+URC,ZEB,Samuele LOCATELLI,3ème ligne,25,,122,Italie,PRO,,2031-06-30
+URC,ZEB,Sergio PELLICCIOLI,Pilier,21,,122,Italie,PRO,,2029-06-30
+URC,ZEB,Simone GESI,Ailier,25,,66,Italie,PRO,,2029-06-30
+URC,ZEB,Swan CORMENIER,Mêlée,30,,116,France,PRO,,2028-06-30
+URC,ZEB,Tevita TATAFU,Mêlée,23,,153,Tonga,PRO,,2028-06-30
+URC,ZEB,Thomas DOMINGUEZ,Mêlée,26,,89,Argentine,PRO,,2028-06-30
+URC,ZEB,Tommaso ALLAN,Ouverture,33,,97,Italie,PRO,,2030-06-30
+URC,ZEB,Tommaso DI BARTOLOMEO,Talonneur,25,,117,Italie,PRO,,2029-06-30
+URC,ZEB,Zane BESTER,Centre,24,,90,Afrique du sud,PRO,,2028-06-30
