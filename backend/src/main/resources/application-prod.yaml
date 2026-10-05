@@ -88,7 +88,7 @@ ovalytics:
   transfer-sync:
     enabled: true
     scrape-enabled: true
-    cron: "0 0 8,12,16,20 * * *"
+    cron: "0 0 12,20 * * *"
     repo-root: /app
     python-command: python3
     output: /import/transfers.csv
@@ -111,5 +111,8 @@ ovalytics:
     enabled: true
     catch-up-on-startup: false
     api-key: ${OVALYTICS_ANALYSIS_API_KEY:${GEMINI_API_KEY:}}
+  jobs-auth:
+    enabled: true
+    key: ${OVALYTICS_JOBS_KEY:}
   cors:
-    allowed-origins: ${OVALYTICS_CORS_ORIGINS:*}
+    allowed-origins: ${OVALYTICS_CORS_ORIGINS:https://ovalytics.up.railway.app}

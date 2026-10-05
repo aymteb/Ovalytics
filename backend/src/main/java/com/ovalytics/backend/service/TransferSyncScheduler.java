@@ -31,7 +31,7 @@ public class TransferSyncScheduler {
 		this.transferImportJob = transferImportJob;
 	}
 
-	@Scheduled(cron = "${ovalytics.transfer-sync.cron:0 0 8,12,16,20 * * *}", zone = "Europe/Paris")
+	@Scheduled(cron = "${ovalytics.transfer-sync.cron:0 0 12,20 * * *}", zone = "Europe/Paris")
 	public void syncTransfers() {
 		if (!properties.isEnabled()) {
 			return;
