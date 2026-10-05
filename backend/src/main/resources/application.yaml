@@ -105,7 +105,7 @@ ovalytics:
     output: data/import/absences.csv
   transfer-sync:
     enabled: false
-    cron: "0 0 8,12,16,20 * * *"
+    cron: "0 0 12,20 * * *"
     scrape-enabled: true
     repo-root: ..
     python-command: python3
@@ -130,5 +130,8 @@ ovalytics:
     cron: "0 0 9 * * *"
     catch-up-on-startup: false
     api-key: ${OVALYTICS_ANALYSIS_API_KEY:${GEMINI_API_KEY:}}
+  jobs-auth:
+    enabled: false
+    key: ${OVALYTICS_JOBS_KEY:}
   cors:
     allowed-origins: http://localhost:4200

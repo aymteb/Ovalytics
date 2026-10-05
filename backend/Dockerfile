@@ -18,5 +18,6 @@ COPY --from=build /app/target/*.jar app.jar
 COPY scripts /app/scripts
 RUN mkdir -p /import /app/data/import
 ENV SPRING_PROFILES_ACTIVE=prod
+ENV JAVA_OPTS="-Xms256m -Xmx512m"
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]

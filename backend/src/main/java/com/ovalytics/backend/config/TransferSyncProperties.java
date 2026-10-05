@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class TransferSyncProperties {
 
 	private boolean enabled = false;
-	private String cron = "0 0 8,12,16,20 * * *";
+	private String cron = "0 0 12,20 * * *";
 	private boolean scrapeEnabled = true;
 	private String repoRoot = "..";
 	private String pythonCommand = "python3";
