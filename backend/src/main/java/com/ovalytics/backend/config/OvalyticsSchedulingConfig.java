@@ -13,8 +13,7 @@ import org.springframework.context.annotation.Configuration;
 		TransferSyncProperties.class,
 		H2hSyncProperties.class,
 		AnalysisProperties.class,
-		CorsProperties.class,
-		JobsAuthProperties.class
+		CorsProperties.class
 })
 public class OvalyticsSchedulingConfig {
 }
